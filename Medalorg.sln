@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5CE926D5-3698-4912-BB49-7E8FF25C3853}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.md = LICENSE.md
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "POC", "POC", "{27591553-3A52-4E52-997A-B1019BD675F5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{C01684DF-908D-4B6B-878A-60C103A271D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medalorg-POC", "Medalorg-POC\Medalorg-POC.csproj", "{E32BA7D9-A021-4C1B-804C-D5D476186791}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "libvideo", "Dependencies\libvideo-master\src\libvideo\libvideo.csproj", "{132B3AB3-4D67-4DD6-B7CD-CCCB85631812}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E32BA7D9-A021-4C1B-804C-D5D476186791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E32BA7D9-A021-4C1B-804C-D5D476186791}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E32BA7D9-A021-4C1B-804C-D5D476186791}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E32BA7D9-A021-4C1B-804C-D5D476186791}.Release|Any CPU.Build.0 = Release|Any CPU
+		{132B3AB3-4D67-4DD6-B7CD-CCCB85631812}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{132B3AB3-4D67-4DD6-B7CD-CCCB85631812}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{132B3AB3-4D67-4DD6-B7CD-CCCB85631812}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{132B3AB3-4D67-4DD6-B7CD-CCCB85631812}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E32BA7D9-A021-4C1B-804C-D5D476186791} = {27591553-3A52-4E52-997A-B1019BD675F5}
+		{132B3AB3-4D67-4DD6-B7CD-CCCB85631812} = {C01684DF-908D-4B6B-878A-60C103A271D9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4EBFC58C-0FC9-40C7-B211-086178608F27}
+	EndGlobalSection
+EndGlobal
