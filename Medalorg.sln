@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "POC", "POC", "{27591553-3A52-4E52-997A-B1019BD675F5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{C01684DF-908D-4B6B-878A-60C103A271D9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medalorg-POC", "Medalorg-POC\Medalorg-POC.csproj", "{E32BA7D9-A021-4C1B-804C-D5D476186791}"
 EndProject
 Global
