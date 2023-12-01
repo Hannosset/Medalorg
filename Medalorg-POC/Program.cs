@@ -274,12 +274,12 @@ namespace utubdl
 				{
 					if(ex.Status == WebExceptionStatus.ProtocolError)
 					{
-						Console.Write( $" --> wait a {timeout / 1000} secs                                                                                                        " );
+						Console.Write( $" --> wait a {timeout / 1000} secs\r" );
 						System.Threading.Thread.Sleep( timeout );
 					}
 					if(ex.Status == WebExceptionStatus.Timeout || ex.Status == WebExceptionStatus.Pending || ex.Status == WebExceptionStatus.ProtocolError)
 					{
-						Console.Write( $" --> wait a {timeout / 1000} secs                                                                                                        " );
+						Console.Write( $" --> wait a {timeout / 1000} secs\r" );
 						System.Threading.Thread.Sleep( timeout );
 					}
 					else
@@ -289,7 +289,7 @@ namespace utubdl
 				{
 					if(ex.HResult == -2146232800)  //	Received an unexpected EOF or 0 bytes from the transport stream.
 					{
-						Console.Write( $" --> wait a {timeout / 1000} secs                                                                                                        " );
+						Console.Write( $" --> wait a {timeout / 1000} secs\r" );
 						System.Threading.Thread.Sleep( timeout );
 					}
 					else

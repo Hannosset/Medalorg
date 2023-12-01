@@ -15,7 +15,7 @@ The information are:
 4. For each media, we can download in parallel the audio, the video and the subtitles.
 5. Some alternative to download using *Google* or some example from *libvideo* expect you to create a cookie of the form as shown below. I personally do not like and mistrust any cookies
 	...
-    new Cookie("CONSENT", "YES+cb", "/", "youtube.com")
+    new Cookie( "CONSENT", "YES+cb", "/", "youtube.com" )
 	...
 
 ## GUI application
