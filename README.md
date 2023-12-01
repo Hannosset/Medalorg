@@ -13,5 +13,9 @@ The information are:
    The solution is to wait a few seconds and to restart the process. I am still puzzled about the *protocol error* message. 
   My take is that the audio or video access request is cancelled by the server as the media is maybe located on a remote backup server and need to be brought back to *life* - all I know is that after a few hours, I can then start to download the media.
 4. For each media, we can download in parallel the audio, the video and the subtitles.
+5. Some alternative to download using *Google* or some example from *libvideo* expect you to create a cookie of the form as shown below. I personally do not like and mistrust any cookies
+	...
+    new Cookie("CONSENT", "YES+cb", "/", "youtube.com")
+	...
 
 ## GUI application

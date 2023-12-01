@@ -9,10 +9,10 @@ using System.Web;
 using VideoLibrary;
 
 using YoutubeTranscriptApi;
+
 using static System.Net.WebRequestMethods;
 //	Install-Package VideoLibrary
 //		https://stackoverflow.com/questions/44126644/download-you-tube-video-using-c
-//		https://github.com/omansak/libvideo
 //
 //	https://www.youtube.com/watch?v=_3scLqnUU3Y&list=RDEMOkYeH-TEy6z6ucRChOXTAQ&index=26
 //	https://www.bing.com/search?q=c%23+youtube+subtitle+downloader&qs=n&form=QBRE&sp=-1&lq=0&pq=c%23+youtube+subtitle+downloader&sc=4-30&sk=&cvid=9858C1BA249F4F628E643F4F50162FE1&ghsh=0&ghacc=0&ghpl=
@@ -41,6 +41,10 @@ namespace utubdl
 	class Program
 	{
 		static string TargetPath;
+		static int maxbufsizeaudio = 0, nrbufreadaudio = 0;
+		static decimal avgbufreadaudio = 0;
+		static int maxbufsizevideo = 0, nrbufreadvideo = 0;
+		static decimal avgbufreadvideo = 0;
 
 		static void Download( string url )
 		{
@@ -72,11 +76,11 @@ namespace utubdl
 						//Console.WriteLine( item.Resolution + "," + item.Format + "," + item.AudioFormat + "," + item.AudioBitrate + "," + item.ContentLength + "," + item.AdaptiveKind );
 					}
 				}
-				if( !System.IO.File.Exists( TargetPath + $@"\{title}.mp3" ) && !System.IO.File.Exists( TargetPath + $@"\{title}.mp4" ) )
+				if(!System.IO.File.Exists( TargetPath + $@"\{title}.mp3" ) && !System.IO.File.Exists( TargetPath + $@"\{title}.mp4" ))
 					Console.WriteLine( "\ndownload {2}: video resolution {0} and audio bitrate {1}" , hightvideo , hightaudio , title );
-				else if(!System.IO.File.Exists( TargetPath + $@"\{title}.mp3" ) )
+				else if(!System.IO.File.Exists( TargetPath + $@"\{title}.mp3" ))
 					Console.WriteLine( "\ndownload {2}: audio bitrate {1}" , hightvideo , hightaudio , title );
-				else if( !System.IO.File.Exists( TargetPath + $@"\{title}.mp4" ) )
+				else if(!System.IO.File.Exists( TargetPath + $@"\{title}.mp4" ))
 					Console.WriteLine( "\ndownload {2}: video resolution {0}" , hightvideo , hightaudio , title );
 
 				if(!System.IO.File.Exists( TargetPath + $@"\{title}.mp3" ))
@@ -87,7 +91,7 @@ namespace utubdl
 						if(split[0] == item.AudioFormat.ToString() && split[1] == item.AudioBitrate.ToString() && split[2] == item.ContentLength.ToString())
 						{
 							//Console.WriteLine( "\ndownload audio with bitrate {0} and size {1} MB" , item.AudioBitrate , Math.Round( (double)item.ContentLength / (1024 * 1024.0) , 2 ) );
-							if(downloadbest( item , TargetPath + $@"\{title}.mp3" ))
+							if(downloadbest( item , TargetPath + $@"\{title}.mp3" , ref nrbufreadaudio , ref maxbufsizeaudio , ref avgbufreadaudio ))
 								Console.Write( "\rAudio downloaded                                                               " );
 							else
 								return;
@@ -101,7 +105,7 @@ namespace utubdl
 						if(item.Resolution == hightvideo)
 						{
 							//Console.WriteLine( "\ndownload video with Resolution {0} and size {1} MB" , item.Resolution , Math.Round( (double)item.ContentLength / (1024 * 1024.0) , 2 ) );
-							if(downloadbest( item , TargetPath + "\\file123456798.mp4" ))
+							if(downloadbest( item , TargetPath + "\\file123456798.mp4" , ref nrbufreadvideo , ref maxbufsizevideo , ref avgbufreadvideo ))
 								Console.Write( "\rVideo downloaded                                                               " );
 							else
 								return;
@@ -133,8 +137,8 @@ namespace utubdl
 
 			string[] uris = new string[]
 				{
-					//"https://www.youtube.com/watch?v=wTP2RUD_cL0&list=RDwTP2RUD_cL0",
-					//"https://www.youtube.com/watch?v=NuZklVrHspM&list=PLDA56F24B0A270792",
+					"https://www.youtube.com/watch?v=wTP2RUD_cL0&list=RDwTP2RUD_cL0",
+					"https://www.youtube.com/watch?v=NuZklVrHspM&list=PLDA56F24B0A270792",
 					"https://www.youtube.com/watch?v=i2wmKcBm4Ik&list=PLrl15fpG8H1yY7UOoO2kJGo_yJ9UGX-ox",
 					"https://www.youtube.com/watch?v=XPn52kRQx3k&list=PLDintB9nu_R505y2Z7673a57-x4pbqLVa",
 					"https://www.youtube.com/watch?v=SMR8S154_zA&list=PLMmHE6UVFkH_YUAIHCnZi5jKWbPra7qrb",
@@ -175,9 +179,9 @@ namespace utubdl
 					TranscriptList tl = uttla.ListTranscripts( uri.Substring( uri.IndexOf( '=' ) + 1 ) );
 					foreach(Transcript t in tl)
 					{
-						Console.Write($"\rVideo_id = {t.VideoId}, Language {t.Language} ({t.LanguageCode}");
 						if(t.LanguageCode == lang)
 						{
+							Console.Write( $"\rVideo_id = {t.VideoId}, Language {t.Language}" );
 							fs = new FileStream( $"{fname}.{t.LanguageCode}.srt" , FileMode.Create );
 
 							int i = 1;
@@ -185,7 +189,7 @@ namespace utubdl
 							{
 								DateTime from = new DateTime( ti.Start * 10 * 1000 );
 								//	Console.WriteLine( $"{i++}\n{from:HH:mm:ss,fff} --> {from.AddMilliseconds( ti.Duration ):HH:mm:ss,fff}\n{ti.Text}\n" );
-								byte[] txt = Encoding.UTF8.GetBytes( string.Format( $"{(i > 1? "\n" : "")}{i++}\n{from:HH:mm:ss,fff} --> {from.AddMilliseconds( ti.Duration ):HH:mm:ss,fff}\n{ti.Text}\n" ) );
+								byte[] txt = Encoding.UTF8.GetBytes( string.Format( $"{(i > 1 ? "\n" : "")}{i++}\n{from:HH:mm:ss,fff} --> {from.AddMilliseconds( ti.Duration ):HH:mm:ss,fff}\n{ti.Text}\n" ) );
 								fs.Write( txt , 0 , txt.Length );
 							}
 							ans = true;
@@ -210,15 +214,15 @@ namespace utubdl
 		static void combine( string title )
 		{
 			Process p = new Process();
-
 			p.StartInfo.FileName = new FileInfo( @".\ffmpeg.exe" ).FullName;
 			p.StartInfo.Arguments = "-i \"" + TargetPath + "\\file123456798.mp4\" -i \"" + TargetPath + $"\\{title}.mp3\" -preset veryfast  \"" + TargetPath + $"\\{title}.mp4\"";
-			
+
 			p.Start();
 			p.WaitForExit();
 		}
-		static bool downloadbest( YouTubeVideo y , string patch )
+		static bool downloadbest( YouTubeVideo y , string patch , ref int nr , ref int maxread , ref decimal avg )
 		{
+			Console.Write( "\n" );
 			bool ans = false;
 			string action = patch.Contains( ".mp3" ) ? "audio" : "video";
 			int attempt = 0;
@@ -247,9 +251,18 @@ namespace utubdl
 							do
 							{
 								bytesRead = streamweb.Read( buffer , 0 , buffer.Length );
-								fs.Write( buffer , 0 , bytesRead );
-								total += bytesRead;
-								Console.Write( $"\r{attempt}) Downloading {action} ({Math.Round( ((double)total / (int)y.ContentLength) * 100 , 2 ).ToString( "00.00" )}%) {total / 1024:#,###,###,###}/{y.ContentLength / 1024:#,###,###,###)} Kb.     " );
+								if(bytesRead > 0)
+								{
+									decimal tot = avg * nr;
+									maxread = Math.Max( maxread , bytesRead );
+									nr += 1;
+									avg = (tot + bytesRead) / nr;
+
+									fs.Write( buffer , 0 , bytesRead );
+									total += bytesRead;
+									Console.Write(
+										$"\r{attempt}) Downloading {action} ({Math.Round( ((double)total / (int)y.ContentLength) * 100 , 2 ).ToString( "00.00" )}%) {total / 1024:#,###,###,###}/{y.ContentLength / 1024:#,###,###,###)} Kb. (maxbuf = {maxread:#,##0} bytes - avg buf = {avg:#,##0}         " );
+								}
 							} while(bytesRead > 0);
 							//Console.WriteLine( "\nDownload Complete" );
 						}
@@ -276,7 +289,7 @@ namespace utubdl
 				{
 					if(ex.HResult == -2146232800)  //	Received an unexpected EOF or 0 bytes from the transport stream.
 					{
-						Console.Write( $" --> wait a {timeout/1000} secs                                                                                                        " );
+						Console.Write( $" --> wait a {timeout / 1000} secs                                                                                                        " );
 						System.Threading.Thread.Sleep( timeout );
 					}
 					else
@@ -335,12 +348,12 @@ namespace utubdl
 				{
 					if(ex.Status == WebExceptionStatus.ProtocolError)
 					{
-						Console.WriteLine( "skip task and restart after several hours" );
+						Console.WriteLine( " --> skip task and restart after several hours" );
 						break;
 					}
 					if(ex.Status == WebExceptionStatus.Timeout || ex.Status == WebExceptionStatus.Pending || ex.Status == WebExceptionStatus.ProtocolError)
 					{
-						Console.WriteLine( "wait a few secs" );
+						Console.WriteLine( " -- > wait a few secs" );
 						System.Threading.Thread.Sleep( 1000 );
 					}
 					else
@@ -350,7 +363,7 @@ namespace utubdl
 				{
 					if(ex.HResult == -2146232800)  //	Received an unexpected EOF or 0 bytes from the transport stream.
 					{
-						Console.WriteLine( "wait a few secs" );
+						Console.WriteLine( " -- > wait a few secs" );
 						System.Threading.Thread.Sleep( 1000 );
 					}
 					else
