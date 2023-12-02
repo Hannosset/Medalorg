@@ -46,8 +46,10 @@ namespace utubdl
 		static int maxbufsizevideo = 0, nrbufreadvideo = 0;
 		static decimal avgbufreadvideo = 0;
 
-		static void Download( string url )
+		static bool Download( string url )
 		{
+			bool ans = false;
+
 			try
 			{
 				//Console.WriteLine( "Processing you tube " + url );
@@ -76,66 +78,89 @@ namespace utubdl
 						//Console.WriteLine( item.Resolution + "," + item.Format + "," + item.AudioFormat + "," + item.AudioBitrate + "," + item.ContentLength + "," + item.AdaptiveKind );
 					}
 				}
-				if(!System.IO.File.Exists( TargetPath + $@"\{title}.mp3" ) && !System.IO.File.Exists( TargetPath + $@"\{title}.mp4" ))
-					Console.WriteLine( "\ndownload {2}: video resolution {0} and audio bitrate {1}" , hightvideo , hightaudio , title );
-				else if(!System.IO.File.Exists( TargetPath + $@"\{title}.mp3" ))
-					Console.WriteLine( "\ndownload {2}: audio bitrate {1}" , hightvideo , hightaudio , title );
-				else if(!System.IO.File.Exists( TargetPath + $@"\{title}.mp4" ))
-					Console.WriteLine( "\ndownload {2}: video resolution {0}" , hightvideo , hightaudio , title );
+				//	Video not existing true = processed succesfully.
+				if(string.IsNullOrEmpty( title ))
+					return true;
 
-				if(!System.IO.File.Exists( TargetPath + $@"\{title}.mp3" ))
+				//	if a mpeg and a mp4 exist, this means the merge was not successfull and we delete it all.
+				if(System.IO.File.Exists( TargetPath + $@"\{title}.mpeg" ) && System.IO.File.Exists( TargetPath + $@"\{title}.mp4" ))
 				{
-					string[] split = information.Split( ',' );
-					foreach(var item in videos)//download audio
+					System.IO.File.Delete( TargetPath + $@"\{title}.mp4" );
+					System.IO.File.Delete( TargetPath + $@"\{title}.mp3" );
+					System.IO.File.Delete( TargetPath + $@"\{title}.mpeg" );
+				}
+
+				long audiosize = 0;
+				string[] split = information.Split( ',' );
+				foreach(var item in videos)//download audio
+				{
+					if(split[0] == item.AudioFormat.ToString() && split[1] == item.AudioBitrate.ToString() && split[2] == item.ContentLength.ToString())
 					{
-						if(split[0] == item.AudioFormat.ToString() && split[1] == item.AudioBitrate.ToString() && split[2] == item.ContentLength.ToString())
+						audiosize = (long)(item.ContentLength == null ? 0 : item.ContentLength);
+						if(!System.IO.File.Exists( TargetPath + $@"\{title}.mp3" ) || new FileInfo( TargetPath + $@"\{title}.mp3" ).Length != audiosize)
 						{
-							//Console.WriteLine( "\ndownload audio with bitrate {0} and size {1} MB" , item.AudioBitrate , Math.Round( (double)item.ContentLength / (1024 * 1024.0) , 2 ) );
+							Console.WriteLine( "\ndownload {2}: audio bitrate {1}" , hightvideo , hightaudio , title );
 							if(downloadbest( item , TargetPath + $@"\{title}.mp3" , ref nrbufreadaudio , ref maxbufsizeaudio , ref avgbufreadaudio ))
-								Console.Write( "\rAudio downloaded                                                               " );
+								Console.Write( "\rAudio downloaded" );
 							else
-								return;
+								System.IO.File.Delete( TargetPath + $@"\{title}.mp3" );
+							Console.WriteLine();
 						}
+						break;
 					}
 				}
+				long videosize = 0;
 				if(!System.IO.File.Exists( TargetPath + $@"\{title}.mp4" ))
 				{
+					Console.WriteLine( "\ndownload {2}: video resolution {0}" , hightvideo , hightaudio , title );
 					foreach(var item in videos)//download video
 					{
 						if(item.Resolution == hightvideo)
 						{
-							//Console.WriteLine( "\ndownload video with Resolution {0} and size {1} MB" , item.Resolution , Math.Round( (double)item.ContentLength / (1024 * 1024.0) , 2 ) );
-							if(downloadbest( item , TargetPath + "\\file123456798.mp4" , ref nrbufreadvideo , ref maxbufsizevideo , ref avgbufreadvideo ))
-								Console.Write( "\rVideo downloaded                                                               " );
-							else
-								return;
-							//Console.Write( "end\n" );
+							videosize = (long)(item.ContentLength == null ? 0 : item.ContentLength);
+							if(!System.IO.File.Exists( TargetPath + $@"\{title}.mpeg" ) || new FileInfo( TargetPath + $@"\{title}.mpeg" ).Length != videosize)
+							{
+								if(downloadbest( item , TargetPath + $@"\{title}.mpeg" , ref nrbufreadvideo , ref maxbufsizevideo , ref avgbufreadvideo ))
+									Console.Write( "\rVideo downloaded" );
+								else
+									System.IO.File.Delete( TargetPath + $@"\{title}.mpeg" );
+								Console.WriteLine();
+							}
 							break;
 						}
 					}
 					//				Console.WriteLine( "wait for merge" );
-					combine( title );
+					if(System.IO.File.Exists( TargetPath + $@"\{title}.mp3" ) && new FileInfo( TargetPath + $@"\{title}.mp3" ).Length == audiosize && System.IO.File.Exists( TargetPath + $@"\{title}.mpeg" ) && new FileInfo( TargetPath + $@"\{title}.mpeg" ).Length == videosize)
+					{
+						if(!combine( title ))
+						{
+							System.IO.File.Delete( TargetPath + $@"\{title}.mp4" );
+							System.IO.File.Delete( TargetPath + $@"\{title}.mp3" );
+						}
+						System.IO.File.Delete( TargetPath + $@"\{title}.mpeg" );
+					}
 				}
-
+				else
+					Console.WriteLine( "\ndownload {2}[{1}:{0}] downloaded" , hightvideo , hightaudio , title );
 				if(!System.IO.File.Exists( TargetPath + $@"\{title}.en.srt" ))
-				{
 					DownloadSubtitle( url , "en" , TargetPath + $@"\{title}" );
+				if(!System.IO.File.Exists( TargetPath + $@"\{title}.fr.srt" ))
 					DownloadSubtitle( url , "fr" , TargetPath + $@"\{title}" );
-					//	File.Delete( TargetPath + "\\file123456798.mp3" );
-					System.IO.File.Delete( TargetPath + "\\file123456798.mp4" );
-				}
+
+				ans = System.IO.File.Exists( TargetPath + $@"\{title}.mp4" ) && System.IO.File.Exists( TargetPath + $@"\{title}.mp3" );
 			}
 			catch(Exception ex)
 			{
 				Console.WriteLine( "\n\n\n\n" + ex );
 				//Console.ReadKey();
 			}
+			return ans;
 		}
 		static void Main( string[] args )
 		{
 			TargetPath = new DirectoryInfo( "." ).CreateSubdirectory( "Media" ).FullName;
 
-			string[] uris = new string[]
+			List<string> activeuri = new List<string>()
 				{
 					"https://www.youtube.com/watch?v=wTP2RUD_cL0&list=RDwTP2RUD_cL0",
 					"https://www.youtube.com/watch?v=NuZklVrHspM&list=PLDA56F24B0A270792",
@@ -151,16 +176,29 @@ namespace utubdl
 					 "https://www.youtube.com/watch?v=gAirINwjaxE",
 					 "https://www.youtube.com/watch?v=h0ffIJ7ZO4U",
 				};
-			foreach(string uri in uris)
-				if(uri.Contains( "&list=" ))
-				{
-					string[] videolist = DownloadPlaylist( uri );
-					//	foreach(string url in videolist)
-					for(int i = 0 ; i < videolist.Length ; i++)
-						Download( "https://www.youtube.com" + videolist[i] );
-				}
-				else
-					Download( uri );
+			while(activeuri.Count > 0)
+			{
+				string[] uris = activeuri.ToArray();
+
+				foreach(string uri in uris)
+					if(uri.Contains( "&list=" ))
+					{
+						List<string> activevidlist = new List<string>();
+						activevidlist.AddRange( DownloadPlaylist( uri ) );
+						while(activevidlist.Count > 0)
+						{
+							string[] videolist = activevidlist.ToArray();
+
+							for(int i = 0 ; i < videolist.Length ; i++)
+								if(Download( "https://www.youtube.com" + videolist[i] ))
+									lock(activevidlist)
+										activevidlist.Remove( videolist[i] );
+						}
+					}
+					else if(Download( uri ))
+						lock(activeuri)
+							activeuri.Remove( uri );
+			}
 
 			Console.WriteLine( "press any key to continue..." );
 			Console.ReadKey();
@@ -211,18 +249,19 @@ namespace utubdl
 		}
 		//	https://ffmpeg.org/download.html#build-windows
 		//	https://github.com/BtbN/FFmpeg-Builds/releases
-		static void combine( string title )
+		static bool combine( string title )
 		{
 			Process p = new Process();
 			p.StartInfo.FileName = new FileInfo( @".\ffmpeg.exe" ).FullName;
-			p.StartInfo.Arguments = "-i \"" + TargetPath + "\\file123456798.mp4\" -i \"" + TargetPath + $"\\{title}.mp3\" -preset veryfast  \"" + TargetPath + $"\\{title}.mp4\"";
+			p.StartInfo.Arguments = "-v 0 -y -max_error_rate 0.0 -i \"" + TargetPath + $"\\{title}.mpeg\" -i \"" + TargetPath + $"\\{title}.mp3\" -preset veryfast  \"" + TargetPath + $"\\{title}.mp4\"";
 
 			p.Start();
 			p.WaitForExit();
+
+			return p.ExitCode == 0;
 		}
 		static bool downloadbest( YouTubeVideo y , string patch , ref int nr , ref int maxread , ref decimal avg )
 		{
-			Console.Write( "\n" );
 			bool ans = false;
 			string action = patch.Contains( ".mp3" ) ? "audio" : "video";
 			int attempt = 0;
@@ -244,7 +283,7 @@ namespace utubdl
 						if(w_response != null)
 						{
 							fs = new FileStream( patch , FileMode.Create );
-							byte[] buffer = new byte[1024 * 1024];
+							byte[] buffer = new byte[20 * 1024];
 							int bytesRead = 0;
 							streamweb = w_response.GetResponseStream();
 							//Console.WriteLine( "Download Started" );
@@ -261,7 +300,7 @@ namespace utubdl
 									fs.Write( buffer , 0 , bytesRead );
 									total += bytesRead;
 									Console.Write(
-										$"\r{attempt}) Downloading {action} ({Math.Round( ((double)total / (int)y.ContentLength) * 100 , 2 ).ToString( "00.00" )}%) {total / 1024:#,###,###,###}/{y.ContentLength / 1024:#,###,###,###)} Kb. (maxbuf = {maxread:#,##0} bytes - avg buf = {avg:#,##0}         " );
+										$"\r{attempt}) {action} ({Math.Round( ((double)total / (int)y.ContentLength) * 100 , 2 ).ToString( "00.00" )}%) {total / 1024:#,###,###,###}/{y.ContentLength / 1024:#,###,###,###)} Kb. (max={maxread:#,##0}b. - avg={avg:#,##0}b                   " );
 								}
 							} while(bytesRead > 0);
 							//Console.WriteLine( "\nDownload Complete" );
@@ -310,6 +349,7 @@ namespace utubdl
 						streamweb.Close();
 				}
 			}
+			Console.Write( "\n" );
 			return ans;
 		}
 		static string[] DownloadPlaylist( string uri )
