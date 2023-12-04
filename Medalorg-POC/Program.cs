@@ -276,17 +276,17 @@ namespace VideoLibrary
 					{
 						if( ex.Status == WebExceptionStatus.ProtocolError )
 						{
-							Console.Write( $" --> Protocol error... abort any attempts and restart much later\r" );
+							Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb) --> Protocol error... abort any attempts and restart much later\r" );
 							break;
 						}
 						else if( ex.Status == WebExceptionStatus.Timeout )
 						{
-							Console.Write( $" --> timeout....                     \r" );
+							Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb) --> timeout....                     \r" );
 							timeout *= 2;
 						}
 						else if( ex.Status == WebExceptionStatus.Pending )
 						{
-							Console.Write( $" --> wait a {timeout / 1000} secs    \r" );
+							Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb) --> wait a {timeout / 1000} secs    \r" );
 							timeout *= 2;
 							System.Threading.Thread.Sleep( timeout );
 						}
@@ -297,20 +297,20 @@ namespace VideoLibrary
 					{
 						if( ex.HResult == -2146232800 )  //	Received an unexpected EOF or 0 bytes from the transport stream.
 						{
-							Console.Write( $" --> wait a {timeout / 1000} secs\r" );
+							Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb) --> wait a {timeout / 1000} secs\r" );
 							System.Threading.Thread.Sleep( timeout );
 						}
 						else
 						{
 							//	Log the error for investigation
-							Console.WriteLine( "*******(IO) " + ex );
+							Console.WriteLine( "\n*******(IO) " + ex );
 							break;
 						}
 					}
 					catch( Exception ex )
 					{
 						//	Log the error for investigation
-						Console.WriteLine( "******* " + ex );
+						Console.WriteLine( "\n******* " + ex );
 						break;
 					}
 					finally
