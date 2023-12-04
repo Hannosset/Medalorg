@@ -41,7 +41,16 @@ facts:
 1. The best alternative is to store the data in a *MemoryStream* object and flush the object only if fully downloaded. Therefore upon a fully donwloaded media, we will have an *.aac/*.ogg/*.opus* and an *.mpeg* file completed (the preferred audio and video format is confiogurable - default *.ogg* and *.mp4* - Note that the video file will always have the extension *.mpeg*) - the merge will generate an *.mp4 or .webm* file and the *.mpeg* file will be deleted. 
 2. It appears that due to the activity on the you tube server we are connecting, we may receive a protocol error - camcal the operation thet will be resumed later on.
 3. When receiving an EOF, timeout or pending, we simply increase the web timeout and *sleep()*
-
+### Phase V
+**Goal**: multi-threading engine and an object-oriented approach.
+1. Based on a paremeter determining the number of concurrent threads, process an audio, video or merging operation in a concurrent mode.
+2. *Writer* is an asynchronous updated list of object to process by one of the *Reader* engine.
+3. Once an object is fully processed, it is marked as *finalized* and will then be ignored by the *reader* engine.
+4. If an object is being processed by an engine, the object is markjed as *Busy*.
+5. To be processed an object must have the state *Available*.
+6. If an object failed to become *finalized*, the state is set to *Pending*.
+7. When an engine completed the processing of the last *Available* object, it will then morph all the *Pending* states to *Available* allowing all the object another chance to become *finalized*
+8. In a multi- threaded environment, the state is done by locking the objevct itself.
 ## GUI application
 ### Configuration
 

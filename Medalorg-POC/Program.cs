@@ -203,7 +203,7 @@ namespace VideoLibrary
 		{
 			bool ans = false;
 
-			Console.WriteLine( $"{media.FullName} ({media.ContentLength/1024} kb)" );
+			Console.WriteLine( $"\n{media.FullName} ({media.ContentLength/1024} kb)" );
 			if( !System.IO.File.Exists( filename ) )
 			{
 				int timeout = 1000;
@@ -236,7 +236,7 @@ namespace VideoLibrary
 											ms.Write( buffer , 0 , bytesRead );
 
 										total += bytesRead;
-										Console.Write( $"\r{attempt}) ({Math.Round( ((double)total / (int)media.ContentLength) * 100 , 2 ):00.00}%) {total / 1024:#,###,###,###}/{media.ContentLength / 1024:#,###,###,###)} Kb.                         " );
+										Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb - {Math.Round( ((double)total / (int)media.ContentLength) * 100 , 2 ):00.00}%) {total / 1024:#,###,###,###} Kb.                        " );
 
 									} while( bytesRead > 0 );
 								}
