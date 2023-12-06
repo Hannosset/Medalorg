@@ -212,6 +212,7 @@
     <Compile Include="Errors.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TemporaryFile.cs" />
     <Compile Include="Transcripts.cs" />
   </ItemGroup>
   <ItemGroup>

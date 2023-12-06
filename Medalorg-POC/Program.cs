@@ -1,19 +1,26 @@
 ﻿using Google.Apis.YouTube.v3.Data;
 
+using Medalorg_POC;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography;
 using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 
 using VideoLibrary;
 
 using YoutubeTranscriptApi;
 
+using static Google.Apis.Requests.BatchRequest;
 using static System.Collections.Specialized.BitVector32;
 using static System.Net.WebRequestMethods;
 //	Install-Package VideoLibrary
@@ -47,6 +54,7 @@ namespace VideoLibrary
 	{
 		public YouTubeVideo Audio { get; set; }
 		public YouTubeVideo Video { get; set; }
+		public string url { get; set; }
 	}
 
 	class Program
@@ -165,7 +173,7 @@ namespace VideoLibrary
 				if( BestAudio != null && Bestmpeg != null )
 				{
 					Console.WriteLine( $" -> {ToName( BestAudio )}  OK" );
-					return new MediaFile[] { new MediaFile { Audio = BestAudio } , new MediaFile { Video = Bestmpeg } , new MediaFile { Audio = BestAudio , Video = Bestmpeg } };
+					return new MediaFile[] { new MediaFile { Audio = BestAudio , url = uri } , new MediaFile { Video = Bestmpeg , url = uri } , new MediaFile { Audio = BestAudio , Video = Bestmpeg , url = uri } };
 				}
 
 				Console.WriteLine( "  NOK" );
@@ -182,52 +190,77 @@ namespace VideoLibrary
 		/// </summary>
 		/// <param name="url">Playlist url</param>
 		/// <returns>an array of youtube video</returns>
-		static MediaFile[] GetVideoList( string url )
+		static MediaFile[] GetVideoList( string url , AudioFormat preferredAudio = AudioFormat.Opus , VideoFormat prefrerredVideo = VideoFormat.WebM )
 		{
 			List<MediaFile> lst = new List<MediaFile>();
 
 			foreach( string uri in DownloadPlaylist( url ) )
-				lst.AddRange( GetMedia( uri ) );
+				lst.AddRange( GetMedia( uri , preferredAudio , prefrerredVideo ) );
 
 			return lst.ToArray();
 		}
+
 		/// <summary>
-		/// What: download either an audio or a video file
-		/// Why: the ultimate purpose is to create a video media file.
-		/// Note: the file will only download if the file does not exists of if the file length is different (in that case the existing file will be deleted)
+		/// What: Http client global thread object.
+		/// Why: We can have only one instance per thread to prevent the waste of sockets by reusing them
+		/// Note: Do not dispose of or wrap your HttpClient in a using unless you explicitly are looking for a particular behaviour (such as causing your services to fail).
+		/// reference :
+		/// https://www.aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
 		/// </summary>
-		/// <param name="media"></param>
-		/// <param name="filename"></param>
-		/// <returns>true if the file fully downloaded</returns>
-		static bool DownloadMedia( YouTubeVideo media , string filename )
+		private static HttpClient WebClientRequest = new HttpClient( new HttpClientHandler() { UseDefaultCredentials = true } );
+		static readonly HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds( 300 ) };
+		/// <summary>
+		/// What Global to the thread
+		/// Why: Prevent allocating all the time a buffer ans stressing the memory.
+		/// </summary>
+		static byte[] buffer = new byte[16 * 1024];
+		static bool DownloadFromStream( YouTubeVideo media , int attempt , Stream streamweb , string filename )
+		{
+			int total = 0;
+			int bytesRead = 0;
+			using( var tempFile = new TemporaryFile() )
+			{
+				using( FileStream fileStream = System.IO.File.Create( tempFile.FilePath ) )
+				{
+					do
+					{
+						bytesRead = streamweb.Read( buffer , 0 , buffer.Length );
+						if( bytesRead > 0 )
+							fileStream.Write( buffer , 0 , bytesRead );
+
+						total += bytesRead;
+						Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb - {Math.Round( ((double)total / (int)media.ContentLength) * 100 , 2 ):00.00}%) {total / 1024:#,###,###,###} Kb.  " );
+
+					} while( bytesRead > 0 );
+				}
+				System.IO.File.Move( tempFile.FilePath , filename );
+				return true;
+			}
+		}
+		static int counter = 0;
+		static private bool WebDownload( YouTubeVideo media , string filename )
 		{
 			bool ans = false;
+			int timeout = 1000;
+			byte[] buffer = new byte[16 * 1024];
 
-			Console.WriteLine( $"\n{media.FullName} ({media.ContentLength/1024} kb)" );
-			if( !System.IO.File.Exists( filename ) )
+			WebResponse w_response = null;
+			for( int attempt = 0 ; attempt < 10 && !ans ; attempt++ )
 			{
-				int timeout = 1000;
-				byte[] buffer = new byte[16 * 1024];
-
-				for( int attempt = 0 ; attempt < 10 ; attempt++ )
+				try
 				{
-					int total = 0;
-					Stream streamweb = null;
-					WebResponse w_response = null;
-					try
+					WebRequest w_request = WebRequest.Create( media.Uri );
+					if( w_request != null )
 					{
-						WebRequest w_request = WebRequest.Create( media.Uri );
-						if( w_request != null )
+						w_request.Timeout = timeout;
+						w_response = w_request.GetResponse();
+						if( w_response != null )
 						{
-							w_request.Timeout = timeout;
-							w_response = w_request.GetResponse();
-							if( w_response != null )
+							using( Stream streamweb = w_response.GetResponseStream() )
 							{
-								streamweb = w_response.GetResponseStream();
-
+								int total = 0;
 								int bytesRead = 0;
-								MemoryStream ms = new MemoryStream( media.ContentLength is null || media.ContentLength < buffer.Length ? buffer.Length : (int)(media.ContentLength) );
-								try
+								using( MemoryStream ms = new MemoryStream( media.ContentLength is null || media.ContentLength < buffer.Length ? buffer.Length : (int)(media.ContentLength) ) )
 								{
 									do
 									{
@@ -239,37 +272,204 @@ namespace VideoLibrary
 										Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb - {Math.Round( ((double)total / (int)media.ContentLength) * 100 , 2 ):00.00}%) {total / 1024:#,###,###,###} Kb.                        " );
 
 									} while( bytesRead > 0 );
-								}
-								catch( Exception ex )
-								{
-									throw ex;
-								}
-								FileStream fs = null;
-								try
-								{
-									fs = new FileStream( filename , FileMode.Create );
-									fs.Write( ms.GetBuffer() , 0 , (int)ms.Length );
-									fs.Flush();
-									fs.Close();
-								}
-								catch( Exception ex )
-								{
-									//	Delete the file if already created
-									fs?.Close();
-									System.IO.File.Delete( filename );
-									throw ex;
-								}
-								finally
-								{
-									fs?.Dispose();
-
-									//	Release the memory
-									ms?.Close();
-									ms?.Dispose();
+									using( FileStream fs = new FileStream( filename , FileMode.Create ) )
+									{
+										ms.CopyTo( fs );
+										fs.Flush();
+									}
 								}
 							}
 						}
+					}
+					ans = true;
+					break;
+				}
+				catch( WebException ex )
+				{
+					if( ex.Status == WebExceptionStatus.ProtocolError )
+					{
+						Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb) --> Protocol error... abort any attempts and restart much later\r" );
+						break;
+					}
+					else if( ex.Status == WebExceptionStatus.Timeout )
+					{
+						Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb) --> timeout....                     \r" );
+						timeout *= 2;
+					}
+					else if( ex.Status == WebExceptionStatus.Pending )
+					{
+						Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb) --> wait a {timeout / 1000} secs    \r" );
+						timeout *= 2;
+						System.Threading.Thread.Sleep( timeout );
+					}
+					else
+						Console.WriteLine( "\n\n" + ex );
+				}
+				catch( IOException ex )
+				{
+					if( ex.HResult == -2146232800 )  //	Received an unexpected EOF or 0 bytes from the transport stream.
+					{
+						Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb) --> wait a {timeout / 1000} secs\r" );
+						System.Threading.Thread.Sleep( timeout );
+					}
+					else
+					{
+						//	Log the error for investigation
+						Console.WriteLine( "\n*******(IO) " + ex );
+						break;
+					}
+				}
+				catch( Exception ex )
+				{
+					//	Log the error for investigation
+					if( ex.HResult == -2146233029 )
+						Console.WriteLine( $"  --> {ex.Message}" );
+					else
+						Console.WriteLine( "\n******* " + ex );
+					break;
+				}
+				finally
+				{
+					//w_response?.Close();
+				}
+			}
+			return ans;
+		}
+		/// <summary>
+		/// What: download either an audio or a video file
+		/// Why: the ultimate purpose is to create a video media file.
+		/// Note: the file will only download if the file does not exists of if the file length is different (in that case the existing file will be deleted)
+		/// reference :
+		/// https://www.bing.com/search?form=&q=c%23+crelease+WebRequest.Create&form=QBLH&sp=-1&lq=0&pq=c%23+crelease+webrequest.create&sc=0-29&qs=n&sk=&cvid=38A275BB796340A495B26BA1667F698D&ghsh=0&ghacc=0&ghpl=
+		/// https://stackoverflow.com/questions/71553075/webrequest-createstring-is-obsolete-webrequest-use-httpclient-instead
+		/// </summary>
+		/// <param name="media"></param>
+		/// <param name="filename"></param>
+		/// <returns>true if the file fully downloaded</returns>
+		//		static async Task<bool> DownloadMedia( YouTubeVideo media , string filename )
+		static bool DownloadMedia( YouTubeVideo media , string filename )
+		{
+			bool ans = false;
+
+			Console.Write( $"{counter}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb)" );
+			if( !System.IO.File.Exists( filename ) )
+			{
+#if HTTP
+				for( int attempt = 1 ; attempt < 2 && !ans ; attempt++ )
+				{
+					try
+					{
+						using( Task<HttpResponseMessage> httpresponse = WebClientRequest.GetAsync( media.Uri ) )
+						//using( HttpResponseMessage httpmsg = WebClientRequest.GetAsync( media.Uri ).GetAwaiter().GetResult() )
+						{
+							using( HttpResponseMessage httpmsg = httpresponse.GetAwaiter().GetResult() )
+							{
+								if( httpmsg.StatusCode == HttpStatusCode.OK )
+								{
+									httpmsg.EnsureSuccessStatusCode();
+									using( Stream stream = httpmsg.Content.ReadAsStreamAsync().GetAwaiter().GetResult() )
+									{
+										using( Stream fs = System.IO.File.Create( filename ) )
+											stream.CopyTo( fs );
+										/*
+										using( var tempFile = new TemporaryFile() )
+										{
+											using( FileStream fileStream = System.IO.File.Create( tempFile.FilePath ) )
+											{
+												int bytesRead = 0;
+												int total = 0;
+												do
+												{
+													bytesRead = stream.Read( buffer , 0 , buffer.Length );
+													total += bytesRead;
+													if( bytesRead > 0 )
+														Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb - {Math.Round( ((double)total / (int)media.ContentLength) * 100 , 2 ):00.00}%) {total / 1024:#,###,###,###} Kb.  											" );
+												} while( bytesRead > 0 );
+
+												//stream.CopyTo( fileStream );
+												ans = true;
+												Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024} kb) --> Completed" );
+											}
+											System.IO.File.Copy( tempFile.FilePath , filename );
+										}
+										*/
+									}
+								}
+								else if( httpmsg.StatusCode == HttpStatusCode.Forbidden )
+								{
+									Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb --> {httpmsg.StatusCode}: ERR 403 the server refuse to fulfill the request" );
+									break;
+								}
+								else
+								{
+									Console.Write( $"\r{media.FullName} ({media.ContentLength / 1024} kb) --> {httpmsg.StatusCode}\r" );
+								}
+							}
+						}
+					}
+					catch( HttpRequestException ex )
+					{
+						Console.WriteLine( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb  --> HttpRequestException: {ex.Message}" );
+					}
+					catch( Exception ex )
+					{
+						//	Log the error for investigation
+						if( ex.HResult == -2146233029 )
+						{
+							Console.Write( $"\r{attempt}) {media.FullName} ({media.ContentLength / 1024:#,###,###,###} kb  --> Exception: {ex.Message}" );
+							System.Threading.Thread.Sleep( 1000 );
+						}
+						else
+						{
+							Console.Write( "\n******* " + ex );
+							break;
+						}
+					}
+					finally
+					{
+						Console.WriteLine();
+					}
+				}
+			}
+#endif
+				int timeout = 1000;
+
+#if TT
+				for( int attempt = 0 ; attempt < 10 ; attempt++ )
+				{
+					try 
+					{
+						using( HttpResponseMessage response = await client.GetAsync( media.Uri ) )
+						{
+							response.EnsureSuccessStatusCode();
+							using( Stream streamweb = await response.Content.ReadAsStreamAsync() )
+							{
+								DownloadFromStream( media , attempt , streamweb , filename );
+							}
+						}
+#endif
+				HttpWebRequest w_request = (HttpWebRequest)WebRequest.Create( media.Uri );
+				w_request.ServicePoint.MaxIdleTime = 1000;
+				for( int attempt = counter ; attempt < counter + 10 ; attempt++ )
+				{
+					HttpWebResponse w_response = null;
+					try
+					{
+						if( w_request != null )
+						{
+							//	https://stackoverflow.com/questions/716436/is-there-a-correct-way-to-dispose-of-a-httpwebrequest
+							w_request.KeepAlive = false;
+							w_request.Timeout = 300000;
+							w_response = (HttpWebResponse)w_request.GetResponse();
+							if( w_response != null )
+							{
+								using( Stream streamweb = w_response.GetResponseStream() )
+									DownloadFromStream( media , attempt , streamweb , filename );
+							}
+						}
 						ans = true;
+						Console.Write( "  OK" );
+						counter += 1;
 						break;
 					}
 					catch( WebException ex )
@@ -316,11 +516,21 @@ namespace VideoLibrary
 					finally
 					{
 						w_response?.Close();
-						streamweb?.Close();
+						w_response?.Dispose();
+						w_response = null;
+
+						w_request?.Abort();
+						w_request = null;
+
+						GC.Collect();
+						GC.WaitForPendingFinalizers();
+						GC.Collect();
 					}
 				}
 			}
-
+			else
+				ans = true;
+			Console.WriteLine();
 			return ans;
 		}
 		//	https://ffmpeg.org/download.html#build-windows
@@ -347,57 +557,78 @@ namespace VideoLibrary
 			}
 			return true;
 		}
-		static bool DownloadSubtitle( string uri , string lang , string fname )
+		static bool DownloadSubtitle( MediaFile media , string lang , string fname )
 		{
-			bool ans = false;
+			string langlist = lang;
+			foreach( string LanguageCode in lang.Split( ',' ) )
+				if( System.IO.File.Exists( $"{fname}.{LanguageCode}.srt" ) )
+					langlist = langlist.Replace( LanguageCode , "" );
+			langlist = langlist.Replace( ",," , "," ).Trim();
 
-			using( YouTubeTranscriptApi uttla = new YouTubeTranscriptApi() )
+			bool ans = string.IsNullOrEmpty( langlist );
+
+			if( !ans )
 			{
-				FileStream fs = null;
-
-				try
+				using( YouTubeTranscriptApi uttla = new YouTubeTranscriptApi() )
 				{
-					TranscriptList tl = uttla.ListTranscripts( uri.Substring( uri.IndexOf( '=' ) + 1 ) );
-					foreach( Transcript t in tl )
+					try
 					{
-						if( t.LanguageCode == lang )
+						TranscriptList tl = uttla.ListTranscripts( media.url.Substring( media.url.IndexOf( '=' ) + 1 ) );
+						foreach( Transcript t in tl )
 						{
-							Console.Write( $"\rVideo_id = {t.VideoId}, Language {t.Language}" );
-							fs = new FileStream( $"{fname}.{t.LanguageCode}.srt" , FileMode.Create );
-
-							int i = 1;
-							foreach( TranscriptItem ti in t.Fetch() )
+							if( langlist.Contains( t.LanguageCode ) )
 							{
-								DateTime from = new DateTime( ti.Start * 10 * 1000 );
-								//	Console.WriteLine( $"{i++}\n{from:HH:mm:ss,fff} --> {from.AddMilliseconds( ti.Duration ):HH:mm:ss,fff}\n{ti.Text}\n" );
-								byte[] txt = Encoding.UTF8.GetBytes( string.Format( $"{(i > 1 ? "\n" : "")}{i++}\n{from:HH:mm:ss,fff} --> {from.AddMilliseconds( ti.Duration ):HH:mm:ss,fff}\n{ti.Text}\n" ) );
-								fs.Write( txt , 0 , txt.Length );
+								string filename = $"{fname}.{t.LanguageCode}.srt";
+								Console.Write( $"\nVideo_id = {t.VideoId}, Language {t.Language}" );
+								int i = 1;
+								if( System.IO.File.Exists( $"{fname}.{t.LanguageCode}.srt" ) )
+								{
+									while( System.IO.File.Exists( $"{fname}.{i}.{t.LanguageCode}.srt" ) )
+										i += 1;
+									filename = $"{fname}.{i}.{t.LanguageCode}.srt";
+
+								}
+								i = 1;
+								using( FileStream fs = new FileStream( filename , FileMode.Create ) )
+								{
+									foreach( TranscriptItem ti in t.Fetch() )
+									{
+										DateTime from = new DateTime( ti.Start * 10 * 1000 );
+										//	Console.WriteLine( $"{i++}\n{from:HH:mm:ss,fff} --> {from.AddMilliseconds( ti.Duration ):HH:mm:ss,fff}\n{ti.Text}\n" );
+										byte[] txt = Encoding.UTF8.GetBytes( string.Format( $"{(i > 1 ? "\n" : "")}{i++}\n{from:HH:mm:ss,fff} --> {from.AddMilliseconds( ti.Duration ):HH:mm:ss,fff}\n{ti.Text}\n" ) );
+										fs.Write( txt , 0 , txt.Length );
+									}
+									ans = true;
+									Console.Write( " -> " + new FileInfo( filename ).Name );
+								}
 							}
-							ans = true;
-							Console.WriteLine( " -> " + new FileInfo( $"{fname}.{t.LanguageCode}.srt" ).Name );
-							break;
 						}
 					}
-				}
-				catch( Exception )
-				{
-				}
-				finally
-				{
-					if( fs != null )
-						fs.Close();
+					catch( Exception )
+					{
+					}
+					finally
+					{
+						Console.WriteLine();
+					}
 				}
 			}
 			return ans;
 		}
 		static void Main( string[] args )
+		//	static async Task Main( string[] args )
 		{
 			TargetPath = new DirectoryInfo( "." ).CreateSubdirectory( "Media" ).FullName;
 
 			List<string> activeuri = new List<string>()
 				{
+					"https://www.youtube.com/watch?v=Cfn6Nbd1UQU",
+					"https://www.youtube.com/watch?v=sveQ2cuTthQ",
+					"https://www.youtube.com/watch?v=16y1AkoZkmQ&list=PLGBuKfnErZlAth3g6feG58mrqNQj8p32c"
+					/*
+					"https://www.youtube.com/watch?v=tFMg0_bLO58&t=378s",
+					"https://www.youtube.com/watch?v=xFrGuyw1V8s&list=PLGBuKfnErZlCnsp1WWMqy-LHlvpCj_RuX",
 					"https://www.youtube.com/watch?v=wTP2RUD_cL0&list=RDwTP2RUD_cL0",
-					"https://www.youtube.com/watch?v=NuZklVrHspM&list=PLDA56F24B0A270792",
 					"https://www.youtube.com/watch?v=i2wmKcBm4Ik&list=PLrl15fpG8H1yY7UOoO2kJGo_yJ9UGX-ox",
 					"https://www.youtube.com/watch?v=XPn52kRQx3k&list=PLDintB9nu_R505y2Z7673a57-x4pbqLVa",
 					"https://www.youtube.com/watch?v=SMR8S154_zA&list=PLMmHE6UVFkH_YUAIHCnZi5jKWbPra7qrb",
@@ -409,13 +640,14 @@ namespace VideoLibrary
 					 "https://www.youtube.com/watch?v=jhdFe3evXpk",
 					 "https://www.youtube.com/watch?v=gAirINwjaxE",
 					 "https://www.youtube.com/watch?v=h0ffIJ7ZO4U",
+					*/
 				};
 			List<MediaFile> VideoList = new List<MediaFile>();
 			foreach( string uri in activeuri )
 				if( uri.Contains( "&list=" ) )
-					VideoList.AddRange( GetVideoList( uri ) );
+					VideoList.AddRange( GetVideoList( uri , AudioFormat.Opus , VideoFormat.Mp4 ) );
 				else
-					VideoList.AddRange( GetMedia( uri ) );
+					VideoList.AddRange( GetMedia( uri , AudioFormat.Opus , VideoFormat.Mp4 ) );
 
 			while( VideoList.Count > 0 )
 			{
@@ -425,7 +657,11 @@ namespace VideoLibrary
 					if( media.Video != null && media.Audio != null )
 					{
 						if( combine( ToFullfilename( media.Audio ) , ToFullfilename( media.Video ) ) )
+						{
 							VideoList.Remove( media );
+							DownloadSubtitle( media , "en,fr" , TargetPath + $@"\{ToName( media.Video )}" );
+						}
+						GC.Collect( GC.MaxGeneration , GCCollectionMode.Forced );
 					}
 					else if( media.Audio != null )
 					{
@@ -451,65 +687,51 @@ namespace VideoLibrary
 			{
 				sb.Clear();
 
-				Stream streamweb = null;
-				WebResponse w_response = null;
 				try
 				{
-					WebRequest w_request = WebRequest.Create( uri );
-					w_request.Timeout = timeout;
-					if( w_request != null )
+					using( Task<HttpResponseMessage> httpresponse = WebClientRequest.GetAsync( uri ) )
 					{
-						w_response = w_request.GetResponse();
-						if( w_response != null )
+						HttpResponseMessage httpmsg = httpresponse.GetAwaiter().GetResult();
+						if( httpmsg.StatusCode == HttpStatusCode.OK )
 						{
-							byte[] buffer = new byte[1024 * 1024];
-							int bytesRead = 0;
-							streamweb = w_response.GetResponseStream();
-							do
+							using( Stream stream = httpmsg.Content.ReadAsStreamAsync().GetAwaiter().GetResult() )
 							{
-								bytesRead = streamweb.Read( buffer , 0 , buffer.Length );
-								if( bytesRead > 0 )
-									sb.Append( Encoding.Default.GetString( buffer , 0 , bytesRead ) );
-							} while( bytesRead > 0 );
+								byte[] buffer = new byte[16 * 1024];
+								int bytesRead = 0;
+								do
+								{
+									bytesRead = stream.Read( buffer , 0 , buffer.Length );
+									if( bytesRead > 0 )
+										sb.Append( Encoding.Default.GetString( buffer , 0 , bytesRead ) );
+								} while( bytesRead > 0 );
+							}
+						}
+						else
+						{
+							Console.WriteLine( $" --> {httpmsg.StatusCode}" );
 						}
 					}
-					break;
 				}
-				catch( WebException ex )
+				catch( HttpRequestException ex )
 				{
-					if( ex.Status == WebExceptionStatus.ProtocolError )
-					{
-						Console.WriteLine( " --> skip task and restart after several hours" );
-						break;
-					}
-					if( ex.Status == WebExceptionStatus.Timeout || ex.Status == WebExceptionStatus.Pending || ex.Status == WebExceptionStatus.ProtocolError )
-					{
-						Console.WriteLine( " -- > wait a few secs" );
-						System.Threading.Thread.Sleep( 1000 );
-					}
-					else
-						Console.WriteLine( "\n\n" + ex );
-				}
-				catch( IOException ex )
-				{
-					if( ex.HResult == -2146232800 )  //	Received an unexpected EOF or 0 bytes from the transport stream.
-					{
-						Console.WriteLine( " -- > wait a few secs" );
-						System.Threading.Thread.Sleep( 1000 );
-					}
-					else
-						Console.WriteLine( "\n\n" + ex );
+					Console.WriteLine( "  ******* " + ex );
 				}
 				catch( Exception ex )
 				{
-					Console.WriteLine( "\n\n" + ex );
+					//	Log the error for investigation
+					if( ex.HResult == -2146233029 )
+					{
+						Console.WriteLine( " ******* " + ex.Message );
+						System.Threading.Thread.Sleep( 1000 );
+					}
+					else
+					{
+						Console.WriteLine( " ******* " + ex );
+						break;
+					}
 				}
 				finally
 				{
-					if( w_response != null )
-						w_response.Close();
-					if( streamweb != null )
-						streamweb.Close();
 				}
 			}
 
@@ -528,9 +750,72 @@ namespace VideoLibrary
 						lst.Add( http.Substring( from , at - from + tag.Length ) );
 					}
 				}
-
 			}
 			return lst.ToArray();
+
+#if TT
+			Stream streamweb = null;
+			WebResponse w_response = null;
+			try
+			{
+				WebRequest w_request = WebRequest.Create( uri );
+				w_request.Timeout = timeout;
+				if( w_request != null )
+				{
+					w_response = w_request.GetResponse();
+					if( w_response != null )
+					{
+						streamweb = w_response.GetResponseStream();
+						byte[] buffer = new byte[16 * 1024];
+						int bytesRead = 0;
+						do
+						{
+							bytesRead = streamweb.Read( buffer , 0 , buffer.Length );
+							if( bytesRead > 0 )
+								sb.Append( Encoding.Default.GetString( buffer , 0 , bytesRead ) );
+						} while( bytesRead > 0 );
+					}
+				}
+				break;
+			}
+			catch( WebException ex )
+			{
+				if( ex.Status == WebExceptionStatus.ProtocolError )
+				{
+					Console.WriteLine( " --> skip task and restart after several hours" );
+					break;
+				}
+				if( ex.Status == WebExceptionStatus.Timeout || ex.Status == WebExceptionStatus.Pending || ex.Status == WebExceptionStatus.ProtocolError )
+				{
+					Console.WriteLine( " -- > wait a few secs" );
+					System.Threading.Thread.Sleep( 1000 );
+				}
+				else
+					Console.WriteLine( "\n\n" + ex );
+			}
+			catch( IOException ex )
+			{
+				if( ex.HResult == -2146232800 )  //	Received an unexpected EOF or 0 bytes from the transport stream.
+				{
+					Console.WriteLine( " -- > wait a few secs" );
+					System.Threading.Thread.Sleep( 1000 );
+				}
+				else
+					Console.WriteLine( "\n\n" + ex );
+			}
+			catch( Exception ex )
+			{
+				Console.WriteLine( "\n\n" + ex );
+			}
+			finally
+			{
+				if( w_response != null )
+					w_response.Close();
+				if( streamweb != null )
+					streamweb.Close();
+			}
+		}
+#endif
 		}
 	}
 }

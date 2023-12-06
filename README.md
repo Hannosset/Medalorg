@@ -42,15 +42,32 @@ facts:
 2. It appears that due to the activity on the you tube server we are connecting, we may receive a protocol error - camcal the operation thet will be resumed later on.
 3. When receiving an EOF, timeout or pending, we simply increase the web timeout and *sleep()*
 ### Phase V
-**Goal**: multi-threading engine and an object-oriented approach.
-1. Based on a paremeter determining the number of concurrent threads, process an audio, video or merging operation in a concurrent mode.
-2. *Writer* is an asynchronous updated list of object to process by one of the *Reader* engine.
-3. Once an object is fully processed, it is marked as *finalized* and will then be ignored by the *reader* engine.
-4. If an object is being processed by an engine, the object is markjed as *Busy*.
-5. To be processed an object must have the state *Available*.
-6. If an object failed to become *finalized*, the state is set to *Pending*.
-7. When an engine completed the processing of the last *Available* object, it will then morph all the *Pending* states to *Available* allowing all the object another chance to become *finalized*
-8. In a multi- threaded environment, the state is done by locking the objevct itself.
+**Goal**: discover and test the best and most reliable API fuctionalities to access the audio and mpeg file.
+1. the community recommend to use the *HttpClient()* and calloing the *await client.GetAsync()* to access the response and then get the stream. Using such method prevent me to access the data: 90% of the files received a 403 forbidden to download or a cancellation in the middle of the task. Is there a reason for it? Certainly, but I do not want to investigate: such way is not reliable for my solution.
+2. The main issue with the *WebRequest.Create()* is that the local endpoint is not immediately released and that will always end up in a *WebExceptionStatus.ProtocolError*. To resolve the 'bad design' issue from the .Net library simply set the folloowing:
+  w_request.ServicePoint.MaxIdleTime = 1000;
+  w_request.KeepAlive = false;
+  The *MaxIdleTime* will maintain the used connection alive 1 second and the *KeepAlive* will prevent to reuse
+3. Extract a spcific fucntion that is downloading from a Stream. The function uses a *TemporaryFile Disposable* object to store the stream in (cfr https://stackoverflow.com/questions/20146/how-to-create-a-temporary-file-for-writing-to-in-c). Once the stream is locally transferred, the file is then renamed to the title of the video with either an audio or video extension. This aensure that a file on the support is fully downloaded making sure the merging process will be successfull.
+4. Release of the heap memory allocation. In orfder to release the heap and maintain the applicatin light we will proceed to 2 different types of garbage collection:
+    - after each download
+	  GC.Collect();
+      GC.WaitForPendingFinalizers();
+      GC.Collect();
+	- a forced one after the merge
+	  GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+5. .Net has a poor network memory management - whatever I do, I always end up with a *WebExceptionStatus.ProtocolError*. The solution would be to execute the launch the download engine as an external application and automatically restart the engine after a *WebExceptionStatus.ProtocolError*. 
+   **Solution**: implement the download engine in an external console application that can be executed. The arguments will be a file containing a list in an xml format of the media to download. the output and error channel will be uswd by the console application to either report an error or the progress on the standard output channel.
+6. In order toi implement such solution, we need to reduce/eliminate the dependency of the *YouTubeVideo* object. We are using
+	- the category (audio or video)
+	- the type (aac, vorbis, opus, mp4 or webm)
+	- the length of the data to download
+	- the uri
+	- the title of the media
+7. Create a **IMediaData** interface representing the processing of either a audio, video, merge or subtitle. The interafce will be applied on the *MediaAudio*, *MediaVideo*, *MediaMerge* and *MediaSubtitle* objects. Serialize the objects.
+    - Create one executable depending on *libvideo* to extract the media information and serialize these.
+    - Create an executable downloading the subtitles and depending on *Google.Apis*.
+	The solution allows us to stress and implement stand alone solutions while solving our *WebExceptionStatus.ProtocolError* as each application instance will be tasked to download only one media (audio, video).
 ## GUI application
 ### Configuration
 
