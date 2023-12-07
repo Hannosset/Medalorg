@@ -464,7 +464,11 @@ namespace VideoLibrary
 							if( w_response != null )
 							{
 								using( Stream streamweb = w_response.GetResponseStream() )
+								{
 									DownloadFromStream( media , attempt , streamweb , filename );
+									streamweb.Close();
+								}
+								w_response.Close();
 							}
 						}
 						ans = true;
