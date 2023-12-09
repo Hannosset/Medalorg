@@ -5,6 +5,7 @@ VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5CE926D5-3698-4912-BB49-7E8FF25C3853}"
 	ProjectSection(SolutionItems) = preProject
+		flow.JPG = flow.JPG
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 	EndProjectSection
@@ -12,6 +13,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "POC", "POC", "{27591553-3A52-4E52-997A-B1019BD675F5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medalorg-POC", "Medalorg-POC\Medalorg-POC.csproj", "{E32BA7D9-A021-4C1B-804C-D5D476186791}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mid", "mid\mid.csproj", "{FE6717E5-1978-4C58-89A0-402EF44F814C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mde", "mde\mde.csproj", "{C5A8BB0B-F824-4728-95A4-7F9E2A2D6C85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "msd", "msd\msd.csproj", "{CEE200FD-F1B8-4A78-A656-6CF8AA1E4C9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +30,18 @@ Global
 		{E32BA7D9-A021-4C1B-804C-D5D476186791}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E32BA7D9-A021-4C1B-804C-D5D476186791}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E32BA7D9-A021-4C1B-804C-D5D476186791}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE6717E5-1978-4C58-89A0-402EF44F814C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE6717E5-1978-4C58-89A0-402EF44F814C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE6717E5-1978-4C58-89A0-402EF44F814C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE6717E5-1978-4C58-89A0-402EF44F814C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5A8BB0B-F824-4728-95A4-7F9E2A2D6C85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5A8BB0B-F824-4728-95A4-7F9E2A2D6C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5A8BB0B-F824-4728-95A4-7F9E2A2D6C85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5A8BB0B-F824-4728-95A4-7F9E2A2D6C85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEE200FD-F1B8-4A78-A656-6CF8AA1E4C9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEE200FD-F1B8-4A78-A656-6CF8AA1E4C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEE200FD-F1B8-4A78-A656-6CF8AA1E4C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEE200FD-F1B8-4A78-A656-6CF8AA1E4C9A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

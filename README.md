@@ -69,15 +69,59 @@ facts:
     - Create one executable depending on *libvideo* to extract the media information and serialize these.
     - Create an executable downloading the subtitles and depending on *Google.Apis*.
 	The solution allows us to stress and implement standalone solutions while solving our *WebExceptionStatus.ProtocolError* as each application instance will be tasked to download only one media (audio, video).
-## Application Framework
-### Modules
-### Protocol
-### Engine
-#### *Download media*
-#### *Download subtitles*
-#### *Merge*
-### User Interface
-#### *Configuration*
-#### *Main Interface*
+## Modules
+### Media Download Engine
+As a result of the memory management and the web network connection ending up as a protocol error. The engine is an executable where the argument specifies the media to download and where to store the downloaded file. The console application output and error will be redirected to a callback of the caller.
+### Media Subtitle Download
+The download process is in a separate executable because depending of Google.Api module. The arguments will precise the url as well as the subtitle language and the destination path.
+### Media Info Download
+Using the external libvideo library, download all the video and audio information: type of media (aac, vorbis, opus, mp4 or webm), the data length, the title, the uri, …
+### ‘ffmpeg.exe’
+External application that is merging an audio file with a mpeg file in order to produce a video media file.
+## Flow
+![flow](./flow.jpg "flow")
+## Technical Analysis
+### Configuration
+**Default selections**
+The end-user also default selects the format and resolution of the media as well as the number of concurrent downloads.
+**Media root target directory**
+For each type the end-user can specify a target directory where the media audio and/or video will be generated.
+**Category as sub-directory**
+The end-user lists the type of media like jazz, blues, rock, … but also informatic, physics, news, etc.…
+Author as sub-directory
+Most of the time the title of the media starts with the name of song or group followed by a separator like ‘-‘, ‘:’ or ‘,’. The configuration offers to store the media in the sub directory of the name of the singer or group.
+Alternatively, the end user may select to include the author name.in the media pathname.
+### mid.exe
+**Input**: a list of video ID
+**Output**: for each video extracted a csv in the output stream or an error if the video is not available. Note that if a video from a list is not available, the output will simply be omitted.
+The format is as follows:
+> title , author , nr-media-data
+> type , format , resolution , length
+where:
+> title = the string identifying the media
+> author = web ID of the person/organization posting the media
+> type = audio | video
+> format = acc | vorbis | opus | mp4 | webm
+> resolution = audio-bit-rate | video-pixel-resolution
+### mde.exe
+The argument of the executable is composed of the full pathname of the nfo file containing the information to download and store the downloaded data.
+The subtitles, if requested, will be generated upon successful download of the media. The subtitles will be converted to lyrics (.lrc) in the audio directory and .srt in the video directory.
+### msd.exe
+The application will extract the lyrics for audio files and/or subtitles for video files. 
+The input arguments are:
+> url  language-code  -s *subtitle-filename* -l *lyrics-filename*
+### ffmpeg.exe
+The application will be executed only if the audio and video download are successful. The argument provided are 
+> -v 0 -y -max_error_rate 0.0 -i audio-file -i video-file -preset veryfast *video-media-file.mp4*
+### user interface
+**Starting**
+Upon startup, the application initiates a refresh: it loads from the database all the downloaded information and displays only the media yet to be downloaded.
+**Requests**
+The application monitors the clipboard and selects every valid http address. Once a web address is recognized as valid, the application executes the mid.exe and if the output data correspond to a media, adds the new media to the list view with the date and time stanps.
+**Download criteria**
+Once the end user selects a media to be downloaded, the right panel displays the formats, resolution, subtitle language (if available), bit rate and also confirms the destination pathname(s). After selecting the parameters and confirming the destination, the user can then initiate the download process.
+**Downloading**
+After displaying the alternative to download from the mid.exe, once the user selects the audio and/or video to download, the application generates a <id>.nfo file in the application database directory for each media to download before calling the mde.exe.
+The nfo file format is an xml file list the media information to download and the full pathname to store the downloaded data.
 
 
