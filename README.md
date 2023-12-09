@@ -79,7 +79,7 @@ Using the external libvideo library, download all the video and audio informatio
 ### ‘ffmpeg.exe’
 External application that is merging an audio file with a mpeg file in order to produce a video media file.
 ## Flow
-![flow](blob/main/flow.jpg "flow")
+![flow](./flow.jpg "flow")
 ## Technical Analysis
 ### Configuration
 **Default selections**
