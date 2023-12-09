@@ -75,8 +75,8 @@ As a result of the memory management and the web network connection ending up as
 ### Media Subtitle Download
 The download process is in a separate executable because depending of Google.Api module. The arguments will precise the url as well as the subtitle language and the destination path.
 ### Media Info Download
-Using the external libvideo library, download all the video and audio information: type of media (aac, vorbis, opus, mp4 or webm), the data length, the title, the uri, …
-### ‘ffmpeg.exe’
+Using the external libvideo library, download all the video and audio information: type of media (aac, vorbis, opus, mp4 or webm), the data length, the title, the uri,
+### ffmpeg.exe
 External application that is merging an audio file with a mpeg file in order to produce a video media file.
 ## Flow
 ![flow](./flow.jpg "flow")
