@@ -87,9 +87,9 @@ The end-user also default selects the format and resolution of the media as well
 **Media root target directory**
 For each type the end-user can specify a target directory where the media audio and/or video will be generated.
 **Category as sub-directory**
-The end-user lists the type of media like jazz, blues, rock, … but also informatic, physics, news, etc.…
+The end-user lists the type of media like jazz, blues, rock, but also informatic, physics, news, etc.
 Author as sub-directory
-Most of the time the title of the media starts with the name of song or group followed by a separator like ‘-‘, ‘:’ or ‘,’. The configuration offers to store the media in the sub directory of the name of the singer or group.
+Most of the time the title of the media starts with the name of song or group followed by a separator like -, : or ,. The configuration offers to store the media in the sub directory of the name of the singer or group.
 Alternatively, the end user may select to include the author name.in the media pathname.
 ### mid.exe
 **Input**: a list of video ID
