@@ -12,20 +12,21 @@ using VideoLibrary;
 
 namespace mid
 {
+#if TT
 	internal class MediaInfo
 	{
 		#region TYPES
 		internal class InfoData
 		{
 			#region TYPES
-			internal enum MediaType { Other, Audio, Video };
-			internal enum MediaFormat { Other, acc, vorbis, opus, mp4, webm };
+			internal enum MediaType { NotSpecified, Audio, Video };
+			internal enum MediaFormat { None, acc, vorbis, opus, mp4, webm };
 			internal enum AudioFormat { Any, acc, vorbis, opus };
 			#endregion
 
 			#region ACCESSORS
-			internal MediaType Type { get; private set; } = MediaType.Other;
-			internal MediaFormat Format { get; private set; } = MediaFormat.Other;
+			internal MediaType Type { get; private set; } = MediaType.NotSpecified;
+			internal MediaFormat Format { get; private set; } = MediaFormat.None;
 			internal decimal Resolution { get; private set; }
 			internal AudioFormat VideoAudio { get; private set; } = AudioFormat.Any;
 			internal long AudioBitrate { get; private set; } = -1;
@@ -110,4 +111,5 @@ namespace mid
 		public override string ToString() => $"\"{Title}\"\t\"{Author}\"\t{_infoDatas.Count()}\n" + string.Join( "\n" , _infoDatas );
 		#endregion
 	}
+#endif
 }
