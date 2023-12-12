@@ -20,6 +20,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mde", "mde\mde.csproj", "{C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "msd", "msd\msd.csproj", "{CEE200FD-F1B8-4A78-A656-6CF8AA1E4C9A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mui", "mui\mui.csproj", "{158C404A-87F5-4D0D-B376-B828D0AF4405}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xnext", "xnext\xnext.csproj", "{2C2DB6E5-83E8-4BDE-BBD0-63F44265B80D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +46,14 @@ Global
 		{CEE200FD-F1B8-4A78-A656-6CF8AA1E4C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEE200FD-F1B8-4A78-A656-6CF8AA1E4C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEE200FD-F1B8-4A78-A656-6CF8AA1E4C9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{158C404A-87F5-4D0D-B376-B828D0AF4405}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{158C404A-87F5-4D0D-B376-B828D0AF4405}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{158C404A-87F5-4D0D-B376-B828D0AF4405}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{158C404A-87F5-4D0D-B376-B828D0AF4405}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C2DB6E5-83E8-4BDE-BBD0-63F44265B80D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C2DB6E5-83E8-4BDE-BBD0-63F44265B80D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C2DB6E5-83E8-4BDE-BBD0-63F44265B80D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C2DB6E5-83E8-4BDE-BBD0-63F44265B80D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

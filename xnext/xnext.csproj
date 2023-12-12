@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2C2DB6E5-83E8-4BDE-BBD0-63F44265B80D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>xnext</RootNamespace>
+    <AssemblyName>xnext</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>false</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Context\CltWinEnv.cs" />
+    <Compile Include="Context\UserSettings.cs" />
+    <Compile Include="ui\BaseMainWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\BaseMainWindow.Designer.cs">
+      <DependentUpon>BaseMainWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Context\StatusEventArgs.cs" />
+    <Compile Include="ui\ClipboardMonitor .cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Diagnostics\Execute.cs" />
+    <Compile Include="Diagnostics\Logger.cs" />
+    <Compile Include="Diagnostics\LogIssues.cs" />
+    <Compile Include="Diagnostics\LogTrace.cs" />
+    <Compile Include="Diagnostics\RecordIssue.cs" />
+    <Compile Include="Files\BufferedFile.cs" />
+    <Compile Include="Files\DirectoryMonitor.cs" />
+    <Compile Include="Files\RealTimeFile.cs" />
+    <Compile Include="Files\Wildcard.cs" />
+    <Compile Include="Native\kernel32.cs" />
+    <Compile Include="Native\user32.cs" />
+    <Compile Include="Context\Profile\IApplication.cs" />
+    <Compile Include="Context\Profile\LocalFileSettingProvider.cs" />
+    <Compile Include="Context\Profile\Manager.cs" />
+    <Compile Include="Context\Profile\PrivateProfileFile.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\SecNetBaikal-AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ui\BaseMainWindow.resx">
+      <DependentUpon>BaseMainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\ClipboardMonitor .resx">
+      <DependentUpon>ClipboardMonitor .cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
