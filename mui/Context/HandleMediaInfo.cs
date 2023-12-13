@@ -47,10 +47,8 @@ namespace mui.Context
 			if( !File.Exists( Filename ) )
 				using( FileStream fs = new FileStream( Filename , FileMode.Create , FileAccess.Write , FileShare.Read ) )
 					new XmlSerializer( typeof( MediaInfo[] ) ).Serialize( fs , Array.Empty<MediaInfo>() );
-
-			using( FileStream fs = new FileStream( Filename , FileMode.Open , FileAccess.Read , FileShare.Read ) )
-			using( XmlReader reader = XmlReader.Create( fs , new XmlReaderSettings() { XmlResolver = null } ) )
-				Info._Details = new List<MediaInfo>( new XmlSerializer( typeof( MediaInfo[] ) ).Deserialize( reader ) as MediaInfo[] );
+			
+			Info._Details = new List<MediaInfo>( Deserialize() );
 		}
 		public static void Update( string[] fields )
 		{
@@ -101,7 +99,7 @@ namespace mui.Context
 		/// <summary>Deserializes the specified filename <param name="filename">The filename.</param></summary>
 		/// m&gt;
 		/// <returns></returns>
-		internal static MediaInfo[] Deserialize( string filename = null )
+		private static MediaInfo[] Deserialize( string filename = null )
 		{
 			if( filename == null )
 				filename = Filename;

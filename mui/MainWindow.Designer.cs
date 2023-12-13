@@ -41,9 +41,15 @@
 			this.clipboardMonitor1 = new xnext.ui.ClipboardMonitor();
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+			this.listView1 = new System.Windows.Forms.ListView();
+			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
 			this.toolStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -56,16 +62,19 @@
             this.toolStripButton3});
 			this.toolStrip1.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Size = new System.Drawing.Size(660, 25);
+			this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+			this.toolStrip1.Size = new System.Drawing.Size(812, 25);
 			this.toolStrip1.TabIndex = 24;
 			this.toolStrip1.Text = "toolStrip1";
 			// 
 			// toolStripButton1
 			// 
+			this.toolStripButton1.Image = global::mui.Properties.Resources.Settings;
 			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButton1.Name = "toolStripButton1";
-			this.toolStripButton1.Size = new System.Drawing.Size(85, 22);
+			this.toolStripButton1.Size = new System.Drawing.Size(101, 22);
 			this.toolStripButton1.Text = "Configuration";
+			this.toolStripButton1.Click += new System.EventHandler(this.OnConfigure);
 			// 
 			// toolStripSeparator1
 			// 
@@ -74,15 +83,18 @@
 			// 
 			// toolStripButton2
 			// 
+			this.toolStripButton2.Image = global::mui.Properties.Resources.RefreshDocViewHS;
 			this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButton2.Name = "toolStripButton2";
-			this.toolStripButton2.Size = new System.Drawing.Size(50, 22);
+			this.toolStripButton2.Size = new System.Drawing.Size(66, 22);
 			this.toolStripButton2.Text = "Refresh";
+			this.toolStripButton2.Click += new System.EventHandler(this.OnRefresh);
 			// 
 			// toolStripButton3
 			// 
 			this.toolStripButton3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripButton3.Image = global::mui.Properties.Resources.help;
 			this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButton3.Name = "toolStripButton3";
 			this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
@@ -104,10 +116,10 @@
 			this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
 			this.button1.ImageIndex = 0;
 			this.button1.ImageList = this.imageList1;
-			this.button1.Location = new System.Drawing.Point(616, 41);
+			this.button1.Location = new System.Drawing.Point(768, 39);
 			this.button1.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(32, 20);
+			this.button1.Size = new System.Drawing.Size(32, 21);
 			this.button1.TabIndex = 26;
 			this.button1.UseVisualStyleBackColor = true;
 			this.button1.Click += new System.EventHandler(this.OnAddWebVideo);
@@ -136,7 +148,7 @@
 			this.textBox1.Location = new System.Drawing.Point(110, 40);
 			this.textBox1.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
 			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(506, 20);
+			this.textBox1.Size = new System.Drawing.Size(658, 20);
 			this.textBox1.TabIndex = 28;
 			// 
 			// splitContainer1
@@ -144,17 +156,65 @@
 			this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
 			this.splitContainer1.Location = new System.Drawing.Point(12, 66);
 			this.splitContainer1.Name = "splitContainer1";
-			this.splitContainer1.Size = new System.Drawing.Size(636, 357);
-			this.splitContainer1.SplitterDistance = 212;
+			// 
+			// splitContainer1.Panel1
+			// 
+			this.splitContainer1.Panel1.Controls.Add(this.listView1);
+			this.splitContainer1.Size = new System.Drawing.Size(788, 357);
+			this.splitContainer1.SplitterDistance = 460;
 			this.splitContainer1.TabIndex = 29;
+			// 
+			// listView1
+			// 
+			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader3,
+            this.columnHeader4,
+            this.columnHeader5});
+			this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.listView1.FullRowSelect = true;
+			this.listView1.GridLines = true;
+			this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.listView1.HideSelection = false;
+			this.listView1.Location = new System.Drawing.Point(0, 0);
+			this.listView1.MultiSelect = false;
+			this.listView1.Name = "listView1";
+			this.listView1.ShowGroups = false;
+			this.listView1.ShowItemToolTips = true;
+			this.listView1.Size = new System.Drawing.Size(460, 357);
+			this.listView1.TabIndex = 0;
+			this.listView1.UseCompatibleStateImageBehavior = false;
+			this.listView1.View = System.Windows.Forms.View.Details;
+			this.listView1.SelectedIndexChanged += new System.EventHandler(this.OnItemSelected);
+			// 
+			// columnHeader1
+			// 
+			this.columnHeader1.Text = "Title";
+			this.columnHeader1.Width = 120;
+			// 
+			// columnHeader3
+			// 
+			this.columnHeader3.Text = "# Video";
+			this.columnHeader3.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			// 
+			// columnHeader4
+			// 
+			this.columnHeader4.Text = "# Audio";
+			this.columnHeader4.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			// 
+			// columnHeader5
+			// 
+			this.columnHeader5.Text = "Status";
+			this.columnHeader5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			// 
 			// MainWindow
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(660, 450);
+			this.ClientSize = new System.Drawing.Size(812, 450);
 			this.Controls.Add(this.splitContainer1);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.clipboardMonitor1);
@@ -176,6 +236,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
 			this.toolStrip1.ResumeLayout(false);
 			this.toolStrip1.PerformLayout();
+			this.splitContainer1.Panel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
 			this.splitContainer1.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -196,6 +257,11 @@
 		private xnext.ui.ClipboardMonitor clipboardMonitor1;
 		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.SplitContainer splitContainer1;
+		private System.Windows.Forms.ListView listView1;
+		private System.Windows.Forms.ColumnHeader columnHeader1;
+		private System.Windows.Forms.ColumnHeader columnHeader3;
+		private System.Windows.Forms.ColumnHeader columnHeader4;
+		private System.Windows.Forms.ColumnHeader columnHeader5;
 	}
 }
 

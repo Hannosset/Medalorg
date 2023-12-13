@@ -85,7 +85,8 @@ namespace xnet.Diagnostics
 					RedirectStandardError = true ,
 					CreateNoWindow = true ,
 					Arguments = args ,
-					RedirectStandardInput = true
+					RedirectStandardInput = true,
+					StandardOutputEncoding = Encoding.UTF8
 				}
 			};
 			p.ErrorDataReceived += new DataReceivedEventHandler( ErrorDataReceived );

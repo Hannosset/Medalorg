@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -16,12 +19,22 @@ namespace mui.Context
 		{
 			[XmlAttribute]
 			public MediaType Type { get; set; }
+
+			[XmlAttribute]
+			public bool Downloaded { get; set; } = false;
+
+			[XmlIgnore]
+			public bool Selected { get; set; } = false;
+
+			[XmlText]
 			public string Uri { get; set; }
+
 		}
 		public class AudioData : MediaData
 		{
 			[XmlAttribute]
 			public AudioModel Model { get; set; } = AudioModel.Any;
+
 			[XmlAttribute]
 			public int BitRate { get; set; } = -1;
 		}
@@ -29,6 +42,7 @@ namespace mui.Context
 		{
 			[XmlAttribute]
 			public VideoFormat Format { get; set; } = VideoFormat.mp4;
+
 			[XmlAttribute]
 			public int Resolution { get; set; }
 		}
@@ -41,20 +55,32 @@ namespace mui.Context
 		#region PUBLIC PROPERTIES
 		[XmlAttribute]
 		public string VideoId { get; set; }
+
 		[XmlAttribute]
 		public string Title { get; set; }
+
 		[XmlAttribute]
 		public string Author { get; set; }
+
+		[XmlAttribute]
+		public DateTime LastDownload { get; set; } = DateTime.MinValue;
+
 		[
 			XmlElement( Type = typeof( MediaData ) , IsNullable = true ),
 			XmlElement( Type = typeof( AudioData ) , IsNullable = true ),
 			XmlElement( Type = typeof( VideoData ) , IsNullable = true )
 		]
-		public MediaData[] Details 
+		public MediaData[] Details
 		{
 			get => _Items.ToArray();
 			set => _Items.AddRange( value );
 		}
+		#endregion
+
+		#region PREDICATE
+		public bool Downloaded => Details.Where( x => x.Downloaded ).Any();
+		public int AudioCount => Details.Where( x => x.Type == MediaType.Audio ).Count();
+		public int VideoCount => Details.Where( x => x.Type == MediaType.Video ).Count();
 		#endregion
 
 		#region CONSTRUCTOR
@@ -62,7 +88,7 @@ namespace mui.Context
 		public MediaInfo( string videoId , string title , string author )
 		{
 			VideoId = videoId;
-			Title = title;
+			Title = title .Trim( new char[] { '\"' , ' ' , '\'' , '?' , '.' } );
 			Author = author;
 		}
 		#endregion

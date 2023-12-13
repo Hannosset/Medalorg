@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Globalization;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 
 using xnet.Diagnostics;
@@ -12,6 +11,9 @@ namespace mui
 {
 	public partial class MainWindow : xnet.ui.BaseMainWindow
 	{
+		#region LOCAL VARIABLE
+		private Font ItalicFont;
+		#endregion LOCAL VARIABLE
 		/// <summary>Gets the identifier.</summary>
 		/// <value>The identifier.</value>
 		public override string Identifier { get; } = "Medalorg";
@@ -23,6 +25,7 @@ namespace mui
 			if( LicenseManager.UsageMode == LicenseUsageMode.Runtime )
 			{
 				LogTrace.Label();
+				_ = typeof( Control ).InvokeMember( "DoubleBuffered" , BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic , null , listView1 , new object[] { true } , CultureInfo.CurrentCulture );
 			}
 		}
 
@@ -31,6 +34,11 @@ namespace mui
 			if( LicenseManager.UsageMode == LicenseUsageMode.Runtime )
 			{
 				LogTrace.Label();
+				ItalicFont = new Font( listView1.Font.FontFamily , 8.25f , FontStyle.Strikeout );
+
+				Context.HandleMediaInfo.LoadFromFile();
+
+				OnRefresh( sender , e );
 			}
 		}
 
@@ -44,7 +52,7 @@ namespace mui
 		#endregion
 
 
-		#region WINDOWS EVENTS
+		#region CLIPBOARD & MID.EXE EVENTS
 		private void OnClipboardChanged( object sender , xnext.ui.ClipboardChangedEventArgs e )
 		{
 			if( e.Text.Substring( 0 , 4 ).ToLower() == "http" )
@@ -63,7 +71,6 @@ namespace mui
 				exec.Launch( "mid.exe " , textBox1.Text );
 			}
 		}
-
 		private void Exec_ConsoleEvent( object sender , ExecuteEventArgs e )
 		{
 			if( !string.IsNullOrEmpty( e.Output ) )
@@ -80,8 +87,66 @@ namespace mui
 				else
 					Console.WriteLine( "ERROR: " + e.Error );
 			}
+
+			Invoke( (Action)delegate
+			{
+				OnRefresh( sender , e );
+			} );
 		}
 		#endregion
 
+		#region LISTVIEW EVENTS
+		private void OnItemSelected( object sender , EventArgs e )
+		{
+
+		}
+		#endregion
+
+		private void OnConfigure( object sender , EventArgs e )
+		{
+
+		}
+
+		#region TOOLBAR EVENTS
+		private void OnRefresh( object sender , EventArgs e )
+		{
+			LogTrace.Label();
+			Cursor crs = Cursor;
+			Cursor = Cursors.WaitCursor;
+			listView1.BeginUpdate();
+			try
+			{
+				listView1.Items.Clear();
+				foreach( Context.MediaInfo item in Context.HandleMediaInfo.Info.Details )
+				{
+					ListViewItem lvi = new ListViewItem( item.Title );
+					lvi.SubItems.Add( item.VideoCount.ToString() );
+					lvi.SubItems.Add( item.AudioCount.ToString() );
+					if( item.Downloaded )
+					{
+						lvi.SubItems.Add(  "100 %"  );
+						lvi.Font = ItalicFont;
+					}
+					else
+						lvi.SubItems.Add( "0 %" );
+
+					lvi.Tag = item;
+
+					listView1.Items.Add( lvi );
+				}
+			}
+			catch( Exception ex )
+			{
+				Logger.TraceException( ex , "List of media to download incomplete" , "verify the 'data/MediaInfo.xml' is not corrupted and after correcttion restart the application." );
+			}
+			finally
+			{
+				listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.ColumnContent );
+				listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.HeaderSize );
+				listView1.EndUpdate();
+				Cursor = crs;
+			}
+		}
+		#endregion
 	}
 }

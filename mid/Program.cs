@@ -152,6 +152,8 @@ namespace mid
 
 		static void Main( string[] args )
 		{
+			Console.OutputEncoding = Encoding.UTF8;
+
 			foreach( string url in args )
 				if( url.ToLower().IndexOf( "http" ) == 0 )
 					if( url.Contains( "&list=" ) )
