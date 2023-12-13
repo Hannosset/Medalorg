@@ -129,29 +129,23 @@ namespace mid
 
 		static void OutputMediaInfo( string url )
 		{
+			int at = url.IndexOf( "?v=" );
+			if( at < 0 )
+				return;
+
+			string VideoId = url.Substring( url.IndexOf( "?v=" ) + 3 );
+			at = VideoId.IndexOf( "/" );
+			if( at > 0 )
+				VideoId = VideoId.Substring( 0 , at );
+
 			IEnumerable<YouTubeVideo> videos = YouTube.Default.GetAllVideos( url );
 
 			if( videos.Count() > 0 )
 			{
-				Console.Out.WriteLine( $"\"{videos.First().Title}\"\t\"{videos.First().Info.Author}\"\t{videos.Count()}" );
+				Console.Out.WriteLine( $"{VideoId}\t\"{videos.First().Title}\"\t\"{videos.First().Info.Author}\"\t{videos.Count()}" );
 				foreach( YouTubeVideo item in videos )
 				{
-					if( item.AdaptiveKind == AdaptiveKind.Audio )
-					{
-						Console.Out.WriteLine( $"{item.AdaptiveKind},,,{item.AudioFormat},{item.AudioBitrate},{item.Uri}" );
-					}
-					else if( item.AdaptiveKind == AdaptiveKind.Video )
-					{
-						if( item.Format != VideoFormat.Unknown )
-						{
-							Console.Out.Write( $"{item.AdaptiveKind},{item.Format},{item.Resolution}," );
-							
-							if( item.AudioFormat != AudioFormat.Unknown )
-								Console.Out.WriteLine( $"{item.AudioFormat},{item.AudioBitrate},{item.Uri}" );
-							else
-								Console.Out.WriteLine( $",,{item.Uri}" );
-						}
-					}
+					Console.Out.WriteLine( $"{VideoId}\t{item.AdaptiveKind}\t{item.AudioFormat}\t{item.AudioBitrate}\t{item.Format}\t{item.Resolution}\t{item.Uri}" );
 				}
 			}
 		}
@@ -164,7 +158,7 @@ namespace mid
 						foreach( string url_ in DownloadPlaylist( url ) )
 							OutputMediaInfo( url_ );
 					else
-							OutputMediaInfo( url );
+						OutputMediaInfo( url );
 #if TT
 						Console.Out.Write( new MediaInfo( url_ ) );
 					else

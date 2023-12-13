@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
@@ -56,6 +57,7 @@ namespace mui
 		{
 			if( textBox1.Text.Substring( 0 , 4 ).ToLower() == "http" )
 			{
+				LogTrace.Label( $"Execute mid.exe {textBox1.Text}" );
 				Execute exec = new Execute();
 				exec.ConsoleEvent += Exec_ConsoleEvent;
 				exec.Launch( "mid.exe " , textBox1.Text );
@@ -65,9 +67,19 @@ namespace mui
 		private void Exec_ConsoleEvent( object sender , ExecuteEventArgs e )
 		{
 			if( !string.IsNullOrEmpty( e.Output ) )
+			{
+				Context.HandleMediaInfo.Update( e.Output.Split( new char[] { '\t' } , StringSplitOptions.None ) );
+#if DEBUG
 				Console.WriteLine( e.Output );
-			else
-				Console.WriteLine( "ERROR: " + e.Error );
+#endif
+			}
+			else if( e.ExitCode != int.MinValue )
+			{
+				if( e.ExitCode == 0 )
+					Context.HandleMediaInfo.Info.Serialize();
+				else
+					Console.WriteLine( "ERROR: " + e.Error );
+			}
 		}
 		#endregion
 

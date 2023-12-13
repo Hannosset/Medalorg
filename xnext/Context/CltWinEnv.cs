@@ -45,9 +45,9 @@ namespace xnet.Context
 			{
 				Info.MainIdentifier = identifier;
 
-				Manager.Instance.WorkingDirectory = Directory.CreateDirectory( Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData ) + $@"\{identifier}" );
+				Manager.Instance.WorkingDirectory = Directory.CreateDirectory( Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.LocalApplicationData ) , identifier) );
 				Manager.Instance.IsNetworked = false;
-				Manager.Instance.AppSetting.SetData( "Configuration" , "Data Path" , Directory.CreateDirectory( Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.LocalApplicationData ) , identifier , "Data" ) ).FullName );
+				Manager.Instance.AppSetting.SetData( "Configuration" , "Data Path" , Directory.CreateDirectory( Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData ) , identifier , "Data" ) ).FullName );
 				Manager.Instance.AppSetting.SetData( "Configuration" , "Log Path" , Directory.CreateDirectory( Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.LocalApplicationData ) , identifier , "Log" ) ).FullName );
 				
 				Manager.Instance.Master = Manager.Instance.AppReadSetting;
@@ -57,8 +57,8 @@ namespace xnet.Context
 					AbsoluteExpiration = ObjectCache.InfiniteAbsoluteExpiration ,
 					Priority = CacheItemPriority.NotRemovable
 				};
-				MemoryCache.Default.Add( "DataPath" , Manager.Instance.AppSetting.GetData( "Configuration" , "Published Path" ) , Policy );
 				MemoryCache.Default.Add( "Configuration" , Manager.Instance.ApplicationSettingsDirectory.FullName , Policy );
+				MemoryCache.Default.Add( "DataPath" , Manager.Instance.AppSetting.GetData( "Configuration" , "Data Path" ) , Policy );
 				MemoryCache.Default.Add( "LogPath" , Manager.Instance.AppSetting.GetData( "Configuration" , "Log Path" ) , Policy );
 
 				LogTrace.Begin();

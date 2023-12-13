@@ -127,7 +127,7 @@ namespace xnet.Diagnostics
 			}
 			else if( p != null && p.HasExited && p.ExitCode == 0 )
 			{
-				OnLogEvent( sender , "0" , "" );
+				ConsoleEvent?.Invoke( sender , new ExecuteEventArgs( p.ExitCode ) );
 				p.Close();
 				p.Dispose();
 				p = null;
@@ -143,7 +143,7 @@ namespace xnet.Diagnostics
 			}
 			else if( p != null && p.HasExited && p.ExitCode != 0 )
 			{
-				OnLogEvent( sender , null , $"{p.ExitCode}" );
+				ConsoleEvent?.Invoke( sender , new ExecuteEventArgs( p.ExitCode ) );
 				p.Close();
 				p.Dispose();
 				p = null;
@@ -193,6 +193,7 @@ namespace xnet.Diagnostics
 		/// </summary>
 		/// <value> The error. </value>
 		public string Error => _Error;
+		public int ExitCode { get; private set; } = int.MinValue;
 		#endregion PUBLIC PROPERTIES
 
 		#region CONSTRUCTOR
@@ -205,6 +206,10 @@ namespace xnet.Diagnostics
 		{
 			_Output = output;
 			_Error = error;
+		}
+		internal ExecuteEventArgs( int exitCode )
+		{
+			ExitCode = exitCode; ;
 		}
 		#endregion CONSTRUCTOR
 	}
