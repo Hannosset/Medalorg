@@ -37,6 +37,7 @@ namespace mui
 				ItalicFont = new Font( listView1.Font.FontFamily , 8.25f , FontStyle.Strikeout );
 
 				Context.HandleMediaInfo.LoadFromFile();
+				Context.HandleMediaGenre.LoadFromFile();
 
 				OnRefresh( sender , e );
 			}
@@ -57,6 +58,7 @@ namespace mui
 		{
 			if( e.Text.Substring( 0 , 4 ).ToLower() == "http" )
 			{
+				LogTrace.Label(e.Text);
 				textBox1.Text = e.Text;
 				button1.PerformClick();
 			}
@@ -73,6 +75,7 @@ namespace mui
 		}
 		private void Exec_ConsoleEvent( object sender , ExecuteEventArgs e )
 		{
+			LogTrace.Label();
 			if( !string.IsNullOrEmpty( e.Output ) )
 			{
 				Context.HandleMediaInfo.Update( e.Output.Split( new char[] { '\t' } , StringSplitOptions.None ) );
@@ -102,12 +105,18 @@ namespace mui
 		}
 		#endregion
 
+		#region TOOLBAR EVENTS
 		private void OnConfigure( object sender , EventArgs e )
 		{
-
+			using( Configuration dlg = new Configuration() )
+			{
+				if( dlg.ShowDialog( this ) == DialogResult.OK )
+				{
+					//	Refresh right panel
+				}
+			}
 		}
 
-		#region TOOLBAR EVENTS
 		private void OnRefresh( object sender , EventArgs e )
 		{
 			LogTrace.Label();

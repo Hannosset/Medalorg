@@ -6,6 +6,8 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
+using xnet.Diagnostics;
+
 namespace mui.Context
 {
 	public class MediaInfo
@@ -109,6 +111,7 @@ namespace mui.Context
 		/// <param name="fields"></param>
 		public void Add( string[] fields )
 		{
+			LogTrace.Label();
 			MediaType type;
 			if( Enum.TryParse( fields[1] , true , out type ) )
 			{

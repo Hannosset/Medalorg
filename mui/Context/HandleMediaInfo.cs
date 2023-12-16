@@ -47,19 +47,28 @@ namespace mui.Context
 			if( !File.Exists( Filename ) )
 				using( FileStream fs = new FileStream( Filename , FileMode.Create , FileAccess.Write , FileShare.Read ) )
 					new XmlSerializer( typeof( MediaInfo[] ) ).Serialize( fs , Array.Empty<MediaInfo>() );
-			
+
 			Info._Details = new List<MediaInfo>( Deserialize() );
 		}
 		public static void Update( string[] fields )
 		{
+			LogTrace.Label( string.Join( "," , fields ) );
+
 			if( fields.Length > 3 )
+			{
 				lock( Info )
 				{
 					if( Info[fields[0]] == null )
 						Info._Details.Add( new MediaInfo( fields[0] , fields[1] , fields[2] ) );
 					else if( fields.Length > 6 )
+					{
+						foreach( MediaInfo.MediaData mdata in Info[fields[0]].Details )
+							if( mdata.Uri == fields[6] )
+								return;
 						Info[fields[0]].Add( fields );
+					}
 				}
+			}
 		}
 		#endregion PUBLIC METHODS
 
@@ -88,6 +97,7 @@ namespace mui.Context
 			lock( Info )
 				try
 				{
+					LogTrace.Label( filename );
 					using( FileStream fs = new FileStream( filename , FileMode.Create , FileAccess.Write , FileShare.None ) )
 						new XmlSerializer( typeof( MediaInfo[] ) ).Serialize( fs , Details );
 				}
@@ -105,6 +115,7 @@ namespace mui.Context
 				filename = Filename;
 			try
 			{
+				LogTrace.Label( filename );
 				if( File.Exists( filename ) )
 					using( FileStream fs = new FileStream( filename , FileMode.Open , FileAccess.Read , FileShare.Read ) )
 					using( XmlReader reader = XmlReader.Create( fs , new XmlReaderSettings() { XmlResolver = null } ) )
