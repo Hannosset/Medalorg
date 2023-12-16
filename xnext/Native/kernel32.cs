@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace xnet.Native
+namespace xnext.Native
 {
 	public static partial class NativeMethods
 	{

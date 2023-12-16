@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace xnet.Diagnostics
+namespace xnext.Diagnostics
 {
 	/// <summary>Class RecordTrace. This class cannot be inherited.</summary>
 	/// <remarks>

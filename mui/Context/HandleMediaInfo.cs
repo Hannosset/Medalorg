@@ -5,7 +5,7 @@ using System.Runtime.Caching;
 using System.Xml;
 using System.Xml.Serialization;
 
-using xnet.Diagnostics;
+using xnext.Diagnostics;
 
 namespace mui.Context
 {

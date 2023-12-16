@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace xnet.Diagnostics
+namespace xnext.Diagnostics
 {
 	/// <summary>
 	/// Log event to the OS event viewer, and/or Log file.

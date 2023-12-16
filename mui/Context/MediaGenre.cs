@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-using xnet.Diagnostics;
+using xnext.Diagnostics;
 
 namespace mui.Context
 {

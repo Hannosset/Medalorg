@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 
-using xnet.Context.Profile;
+using xnext.Context;
 
-namespace xnet.Diagnostics
+namespace xnext.Diagnostics
 {
 	/// <summary>
 	/// Class LogTrace. Implements the <see cref="xnet.Diagnostics.Logger"/> Log events in a file.
@@ -29,7 +29,7 @@ namespace xnet.Diagnostics
 		#region CONSTRUCTOR
 		private LogTrace()
 		{
-			string TraceTimeZoneId = Manager.Instance.AppReadSetting.GetData( "Log" , "Time Zone ID" );
+			string TraceTimeZoneId = CltWinEnv.AppReadSetting.GetData( "Log" , "Time Zone ID" );
 			if( !string.IsNullOrEmpty( TraceTimeZoneId ) )
 				TraceTimeZone = TimeZoneInfo.FindSystemTimeZoneById( TraceTimeZoneId );
 		}

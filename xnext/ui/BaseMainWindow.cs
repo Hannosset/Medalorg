@@ -1,16 +1,15 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
-using xnet.Context;
-using xnet.Diagnostics;
+using xnext.Context;
+using xnext.Diagnostics;
 
-namespace xnet.ui
+namespace xnext.ui
 {
 	public partial class BaseMainWindow : Form
 	{
@@ -82,7 +81,7 @@ namespace xnet.ui
 				{
 					Text = WindowTitle;
 
-					UserSettings.Load( Identifier , this );
+					CltWinEnv.UserReadSetting.Load( this );
 
 					sbMode.ForeColor = SystemColors.WindowText;
 					sbMode.Text = "";
@@ -103,7 +102,7 @@ namespace xnet.ui
 				DateTimeTimer.Stop();
 				try
 				{
-					UserSettings.Save( Identifier , this );
+					CltWinEnv.UserSetting.Save( this );
 				}
 				catch( System.Exception ex )
 				{

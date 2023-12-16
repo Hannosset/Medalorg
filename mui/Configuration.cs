@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using xnet.Context.Profile;
-using xnet.Diagnostics;
+using xnext.Context;
+using xnext.Diagnostics;
 
 namespace mui
 {
@@ -26,18 +20,19 @@ namespace mui
 			if( !DesignMode && LicenseManager.UsageMode == LicenseUsageMode.Runtime )
 			{
 				LogTrace.Label();
-				if( Manager.Instance.AppReadSetting.GetData( Name , "Genre" , "Audio" ) == "Video" )
+				CltWinEnv.UserReadSetting.Load( this );
+				if( CltWinEnv.AppReadSetting.GetData( Name , "Genre" , "Audio" ) == "Video" )
 					radioButton3.Checked = true;
 				else
 					radioButton4.Checked = true;
-				if( Manager.Instance.AppReadSetting.GetData( Name , "Use Default Pathname" , "True" ) == "False" )
+				if( CltWinEnv.AppReadSetting.GetData( Name , "Use Default Pathname" , "True" ) == "False" )
 					radioButton2.Checked = true;
 				else
 					radioButton1.Checked = true;
 
-				textBox3.Text = Manager.Instance.AppReadSetting.GetData( Name , "User Pathname" , "{Root}" );
-				textBox1.Text = Manager.Instance.AppReadSetting.GetData( Name , "Audio {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyMusic ) );
-				textBox2.Text = Manager.Instance.AppReadSetting.GetData( Name , "Video {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyVideos ) );
+				textBox3.Text = CltWinEnv.AppReadSetting.GetData( Name , "User Pathname" , "{Root}" );
+				textBox1.Text = CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyMusic ) );
+				textBox2.Text = CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyVideos ) );
 			}
 		}
 
@@ -46,10 +41,13 @@ namespace mui
 			if( !DesignMode && LicenseManager.UsageMode == LicenseUsageMode.Runtime )
 			{
 				LogTrace.Label();
+
+				CltWinEnv.UserSetting.Save( this );
+
 				if( radioButton3.Checked )
-					Manager.Instance.AppSetting.SetData( Name , "Genre" , "Audio" );
+					CltWinEnv.AppSetting.SetData( Name , "Genre" , "Audio" );
 				else
-					Manager.Instance.AppSetting.SetData( Name , "Genre" , "Video" );
+					CltWinEnv.AppSetting.SetData( Name , "Genre" , "Video" );
 			}
 		}
 		#endregion CONSTRUCTOR
@@ -413,11 +411,11 @@ namespace mui
 		private void OnApply( object sender , EventArgs e )
 		{
 			LogTrace.Label();
-			Manager.Instance.AppSetting.SetData( Name , "Audio {Root}" , textBox1.Text );
-			Manager.Instance.AppSetting.SetData( Name , "Video {Root}" , textBox2.Text );
+			CltWinEnv.AppSetting.SetData( Name , "Audio {Root}" , textBox1.Text );
+			CltWinEnv.AppSetting.SetData( Name , "Video {Root}" , textBox2.Text );
 
-			Manager.Instance.AppSetting.SetData( Name , "Use Default Pathname" , radioButton1.Checked ? "True" : "False" );
-			Manager.Instance.AppSetting.SetData( Name , "User Pathname" , textBox3.Text );
+			CltWinEnv.AppSetting.SetData( Name , "Use Default Pathname" , radioButton1.Checked ? "True" : "False" );
+			CltWinEnv.AppSetting.SetData( Name , "User Pathname" , textBox3.Text );
 
 			Context.HandleMediaGenre.Info.Serialize();
 		}

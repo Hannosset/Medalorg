@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-using xnet.Diagnostics;
+using xnext.Diagnostics;
 
 namespace xnext.ui
 {

@@ -1,4 +1,4 @@
-﻿using xnet.Files;
+﻿using xnext.Files;
 
 using System;
 using System.Diagnostics;
@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
 
-namespace xnet.Diagnostics
+namespace xnext.Diagnostics
 {
 	/// <summary>
 	/// Class LogRecTrace. This class cannot be inherited.

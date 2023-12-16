@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
-namespace xnet.Diagnostics
+namespace xnext.Diagnostics
 {
 	/// <summary>
 	/// Object executing a executable and redirecting the I/O to events

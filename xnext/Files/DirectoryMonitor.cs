@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Timers;
 
-namespace xnet.Files
+namespace xnext.Files
 {
 	public enum MonitorChangeType
 	{

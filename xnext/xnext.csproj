@@ -40,7 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Context\CltWinEnv.cs" />
-    <Compile Include="Context\UserSettings.cs" />
+    <Compile Include="Context\UserProfile.cs" />
     <Compile Include="ui\BaseMainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -62,10 +62,8 @@
     <Compile Include="Files\Wildcard.cs" />
     <Compile Include="Native\kernel32.cs" />
     <Compile Include="Native\user32.cs" />
-    <Compile Include="Context\Profile\IApplication.cs" />
-    <Compile Include="Context\Profile\LocalFileSettingProvider.cs" />
-    <Compile Include="Context\Profile\Manager.cs" />
-    <Compile Include="Context\Profile\PrivateProfileFile.cs" />
+    <Compile Include="Context\ISetting.cs" />
+    <Compile Include="Context\ProfileFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\SecNetBaikal-AssemblyInfo.cs" />
   </ItemGroup>

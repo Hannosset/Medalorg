@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Windows.Forms;
 
-namespace xnet.Context.Profile
+namespace xnext.Context
 {
-	public interface IApplicationSettingsReader : IDisposable
+	public interface ISettingsReader : IDisposable
 	{
 		/// <summary>
 		///  What: Access the ini configuration file associated with this object
@@ -70,20 +70,8 @@ namespace xnet.Context.Profile
 		string GetData( string section , string key , string defaultValue );
 	}
 
-	public interface IApplicationSettingsWriter : IApplicationSettingsReader
+	public interface ISettingsWriter : ISettingsReader
 	{
-		/// <summary>
-		///  What: propagate the modification on the ini file to the original network path if any
-		///  Why: allow to copy the ini file locally and when we have worked save the changes on the network to improve performances
-		/// </summary>
-		void Flush();
-
-		/// <summary>
-		///  What: Reset the file container object
-		///  Why: when we change the configuration directory, we have to flush the configuration files then empty our file list reference to start anew.
-		/// </summary>
-		void Reset();
-
 		/// <summary>
 		///  What: stores some configuration data in the ini file
 		///  Why: allow to save configuration data.
@@ -113,5 +101,17 @@ namespace xnet.Context.Profile
 		/// <param name="value"> The value. </param>
 		/// <returns> </returns>
 		bool SetData( string section , string key , decimal value );
+	}
+	public interface IUserSettingsReader : ISettingsReader
+	{
+		bool Load( Control form );
+		bool Load( Control form , bool location );
+		System.Drawing.Rectangle Load( string section , string key , System.Drawing.Rectangle defaultValue );
+	}
+	public interface IUserSettingsWriter: ISettingsWriter
+	{
+		bool Save( Control form );
+		
+		bool Save( string section , string key , System.Drawing.Rectangle value );
 	}
 }

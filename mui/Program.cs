@@ -4,8 +4,7 @@ using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 
-using xnet.Native;
-using xnet.Context.Profile;
+using xnext.Native;
 
 namespace mui
 {
@@ -47,10 +46,6 @@ namespace mui
 				catch( Exception ex )
 				{
 					_ = MessageBox.Show( ex.ToString() , "Application Level Exception" , MessageBoxButtons.OK , MessageBoxIcon.Error , MessageBoxDefaultButton.Button1 , MessageBoxOptions.DefaultDesktopOnly );
-				}
-				finally
-				{
-					Manager.Instance.Dispose();
 				}
 		}
 	}

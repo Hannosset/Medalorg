@@ -1,4 +1,4 @@
-﻿namespace xnet.Files
+﻿namespace xnext.Files
 {
 	public class RealTimeFile : BufferedFile
 	{

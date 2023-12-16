@@ -1,4 +1,4 @@
-﻿namespace xnet.ui
+﻿namespace xnext.ui
 {
 	partial class BaseMainWindow
 	{

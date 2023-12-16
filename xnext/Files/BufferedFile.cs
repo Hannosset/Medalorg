@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 
-namespace xnet.Files
+namespace xnext.Files
 {
 	public class BufferedFile : IDisposable
 	{

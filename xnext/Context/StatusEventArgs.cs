@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace xnet.Context
+namespace xnext.Context
 {
 	/// <summary>
 	/// Class StatusEventArgs. Prints a message on the status bar The message will be automatically set to empty after 10 secs

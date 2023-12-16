@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
-namespace xnet.Native
+namespace xnext.Native
 {
 	/// <summary>
 	/// Class User32.

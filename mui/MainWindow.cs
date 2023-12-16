@@ -5,11 +5,11 @@ using System.Globalization;
 using System.Reflection;
 using System.Windows.Forms;
 
-using xnet.Diagnostics;
+using xnext.Diagnostics;
 
 namespace mui
 {
-	public partial class MainWindow : xnet.ui.BaseMainWindow
+	public partial class MainWindow : xnext.ui.BaseMainWindow
 	{
 		#region LOCAL VARIABLE
 		private Font ItalicFont;

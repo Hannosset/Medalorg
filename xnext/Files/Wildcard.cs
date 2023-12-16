@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace xnet.Files
+namespace xnext.Files
 {
 	public static class Wildcard
 	{
