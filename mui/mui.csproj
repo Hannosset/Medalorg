@@ -56,6 +56,8 @@
     <Compile Include="Configuration.Designer.cs">
       <DependentUpon>Configuration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Context\CountryCode.cs" />
+    <Compile Include="Context\HandleCountryCode.cs" />
     <Compile Include="Context\HandleMediaGenre.cs" />
     <Compile Include="Context\HandleMediaInfo.cs" />
     <Compile Include="Context\MediaGenre.cs" />

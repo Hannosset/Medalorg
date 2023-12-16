@@ -33,6 +33,35 @@ namespace mui
 				textBox3.Text = CltWinEnv.AppReadSetting.GetData( Name , "User Pathname" , "{Root}" );
 				textBox1.Text = CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyMusic ) );
 				textBox2.Text = CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyVideos ) );
+
+				string subtitles = CltWinEnv.AppReadSetting.GetData( Name , "Subtitles" , "en" );
+				Cursor crs = Cursor;
+				Cursor = Cursors.WaitCursor;
+				listView3.BeginUpdate();
+				try
+				{
+					listView3.Items.Clear();
+					foreach( Context.CountryCode cc in Context.HandleCountryCode.Info.Details )
+					{
+						ListViewItem lvi = new ListViewItem( cc.Label );
+						lvi.ToolTipText = $"Country code is '{cc.Code}'";
+						lvi.Checked = subtitles.Contains( cc.Code );
+						lvi.Tag = cc;
+						listView3.Items.Add( lvi );
+					}
+				}
+				catch( Exception ex )
+				{
+					Logger.TraceException( ex , "List of Genre not updated correctly" , "verify the 'data/MediaGenre.xml' is not corrupted and restart the application." );
+				}
+				finally
+				{
+					listView3.AutoResizeColumns( ColumnHeaderAutoResizeStyle.ColumnContent );
+					listView3.AutoResizeColumns( ColumnHeaderAutoResizeStyle.HeaderSize );
+					listView3.EndUpdate();
+					Cursor = crs;
+				}
+
 			}
 		}
 
@@ -58,7 +87,7 @@ namespace mui
 			LogTrace.Label();
 			using( FolderBrowserDialog dlg = new FolderBrowserDialog() )
 			{
-				dlg.RootFolder = Environment.SpecialFolder.MyComputer;	//	Desktop;
+				dlg.RootFolder = Environment.SpecialFolder.MyComputer;  //	Desktop;
 				dlg.SelectedPath = textBox1.Text;
 				dlg.ShowNewFolderButton = true;
 				if( dlg.ShowDialog() == DialogResult.OK )
@@ -416,6 +445,12 @@ namespace mui
 
 			CltWinEnv.AppSetting.SetData( Name , "Use Default Pathname" , radioButton1.Checked ? "True" : "False" );
 			CltWinEnv.AppSetting.SetData( Name , "User Pathname" , textBox3.Text );
+
+			string subtitles = "";
+			foreach( ListViewItem lvi in listView3.CheckedItems )
+				subtitles = subtitles + (lvi.Tag as Context.CountryCode).Code + ",";
+
+			CltWinEnv.AppSetting.SetData( Name , "Subtitles" , subtitles.Trim( ',' ) );
 
 			Context.HandleMediaGenre.Info.Serialize();
 		}

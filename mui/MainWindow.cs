@@ -38,6 +38,7 @@ namespace mui
 
 				Context.HandleMediaInfo.LoadFromFile();
 				Context.HandleMediaGenre.LoadFromFile();
+				Context.HandleCountryCode.LoadFromFile();
 
 				OnRefresh( sender , e );
 			}

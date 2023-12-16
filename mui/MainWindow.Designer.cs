@@ -63,7 +63,7 @@
 			this.toolStrip1.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip1.Name = "toolStrip1";
 			this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-			this.toolStrip1.Size = new System.Drawing.Size(812, 25);
+			this.toolStrip1.Size = new System.Drawing.Size(932, 25);
 			this.toolStrip1.TabIndex = 24;
 			this.toolStrip1.Text = "toolStrip1";
 			// 
@@ -116,7 +116,7 @@
 			this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
 			this.button1.ImageIndex = 0;
 			this.button1.ImageList = this.imageList1;
-			this.button1.Location = new System.Drawing.Point(768, 39);
+			this.button1.Location = new System.Drawing.Point(888, 39);
 			this.button1.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(32, 21);
@@ -148,7 +148,7 @@
 			this.textBox1.Location = new System.Drawing.Point(110, 40);
 			this.textBox1.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
 			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(658, 20);
+			this.textBox1.Size = new System.Drawing.Size(778, 20);
 			this.textBox1.TabIndex = 28;
 			// 
 			// splitContainer1
@@ -163,8 +163,8 @@
 			// splitContainer1.Panel1
 			// 
 			this.splitContainer1.Panel1.Controls.Add(this.listView1);
-			this.splitContainer1.Size = new System.Drawing.Size(788, 357);
-			this.splitContainer1.SplitterDistance = 460;
+			this.splitContainer1.Size = new System.Drawing.Size(908, 357);
+			this.splitContainer1.SplitterDistance = 429;
 			this.splitContainer1.TabIndex = 29;
 			// 
 			// listView1
@@ -184,7 +184,7 @@
 			this.listView1.Name = "listView1";
 			this.listView1.ShowGroups = false;
 			this.listView1.ShowItemToolTips = true;
-			this.listView1.Size = new System.Drawing.Size(460, 357);
+			this.listView1.Size = new System.Drawing.Size(429, 357);
 			this.listView1.TabIndex = 0;
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
@@ -214,7 +214,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(812, 450);
+			this.ClientSize = new System.Drawing.Size(932, 450);
 			this.Controls.Add(this.splitContainer1);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.clipboardMonitor1);
