@@ -52,7 +52,7 @@ namespace mui.Context
 					//	https://www.studiobinder.com/blog/movie-genres-list/#animation-genre
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Action" , Description = "Movies in the action genre are defined by risk and stakes.\nWhile many movies may feature an action sequence, to be appropriately categorized inside the action genre, the bulk of the content must be action-oriented, including fight scenes, stunts, car chases, and general danger.",
+						Type = MediaType.Video , Label = "Action" , Description = "Movies in the action genre are defined by risk and stakes.\nWhile many movies may feature an action sequence, to be appropriately categorized inside the action genre, the bulk of the content must be action-oriented, including fight scenes, stunts, car chases, and general danger.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Heroic Bloodshed" , Description = "This action sub-genre is defined by values like duty, brotherhood, honor, redemption, and the protection of the vulnerable. It was initially created in Hong Kong cinema but has since made its way around the world." },
@@ -66,7 +66,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Animation" , Description = "The animation genre is defined by inanimate objects being manipulated to appear as though they are living.",
+						Type = MediaType.Video , Label = "Animation" , Description = "The animation genre is defined by inanimate objects being manipulated to appear as though they are living.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Traditional" , Description = "Traditional animation is defined by hand-drawn and painted images that are assembled to animate a cartoon that tells a story." },
@@ -80,7 +80,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Comedy" , Description = "The comedy genre is defined by events that are intended to make someone laugh, no matter if the story is macabre, droll, or zany. Comedy can be found in most movies, but if the majority of the film is intended to be a comedy you may safely place it in this genre.",
+						Type = MediaType.Video , Label = "Comedy" , Description = "The comedy genre is defined by events that are intended to make someone laugh, no matter if the story is macabre, droll, or zany. Comedy can be found in most movies, but if the majority of the film is intended to be a comedy you may safely place it in this genre.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Action-Comedy" , Description = "The action-comedy sub-genre incorporates humorous actions within the action, using the exciting events in the story for laughs." },
@@ -100,7 +100,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Cooking" , Description = "All the cooking video",
+						Type = MediaType.Video , Label = "Cooking" , Description = "All the cooking video",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Every day" , Description = "Every day cooking recipes." },
@@ -110,7 +110,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Crime" , Description = "The crime genre deals with both sides of the criminal justice system but does not focus on legislative matters or civil suits and legal actions. The best crime movies often occupy moral gray areas where heroes and villains are much harder to define. ",
+						Type = MediaType.Video , Label = "Crime" , Description = "The crime genre deals with both sides of the criminal justice system but does not focus on legislative matters or civil suits and legal actions. The best crime movies often occupy moral gray areas where heroes and villains are much harder to define. ",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Caper" , Description = "The caper sub-genre is defined by a group of criminals, often non-violent, who set out on a heist or job. A caper is often humorous and less serious in nature when compared to the other crime sub-genres." },
@@ -124,14 +124,14 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Documentaries" , Description = "",
+						Type = MediaType.Video , Label = "Documentaries" , Description = "",
 						Details = new MediaGenre.MediaStyle[]
 						{
 						}
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Scientific" , Description = "All lessons or courses on-line",
+						Type = MediaType.Video , Label = "Scientific" , Description = "All lessons or courses on-line",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Informatic" , Description = "Computer and language related course" },
@@ -147,7 +147,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Drama" , Description = "The drama genre is defined by conflict and often looks to reality rather than sensationalism. Emotions and intense situations are the focus, but where other genres might use unique or exciting moments to create a feeling, movies in the drama genre focus on common occurrences.",
+						Type = MediaType.Video , Label = "Drama" , Description = "The drama genre is defined by conflict and often looks to reality rather than sensationalism. Emotions and intense situations are the focus, but where other genres might use unique or exciting moments to create a feeling, movies in the drama genre focus on common occurrences.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Melodrama" , Description = "A modern melodrama is defined by the prioritization of dramatic rhetoric and plot over character. The events are intended to elicit an intense emotional response. A melodrama strives for situations used to illustrate a larger moral thesis that acts as an agent of empathy." },
@@ -163,7 +163,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Experiemental" , Description = "The experimental genre is often defined by the idea that the work of art and entertainment does not fit into a particular genre or sub-genre, and is intended as such. Experimental art can completely forego a cohesive narrative in exchange for an emotional response or nothing at all. ",
+						Type = MediaType.Video , Label = "Experiemental" , Description = "The experimental genre is often defined by the idea that the work of art and entertainment does not fit into a particular genre or sub-genre, and is intended as such. Experimental art can completely forego a cohesive narrative in exchange for an emotional response or nothing at all. ",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Surrealist" , Description = "Surrealism cannot be stylistically defined, and this is the point of the sub-genre itself. The intention of surrealist art is to act as an activity to broaden horizons, either of oneself or of others. Surrealist art often uses irrational imagery to activate the subconscious mind." },
@@ -172,7 +172,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Fantasy" , Description = "The fantasy genre is defined by both circumstance and setting inside a fictional universe with an unrealistic set of natural laws. The possibilities of fantasy are nearly endless, but the movies will often be inspired by or incorporate human myths.",
+						Type = MediaType.Video , Label = "Fantasy" , Description = "The fantasy genre is defined by both circumstance and setting inside a fictional universe with an unrealistic set of natural laws. The possibilities of fantasy are nearly endless, but the movies will often be inspired by or incorporate human myths.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Contemporary" , Description = "A contemporary fantasy story introduces elements of fantasy into or around a world that closely resembles the time period when it was conceived. Urban fantasy can serve as contemporary fantasy but must take place in an urban setting whereas contemporary fantasy can be set anywhere that resembles the corresponding time period." },
@@ -184,7 +184,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Historical" , Description = "The historical genre can be split into two sections. One deals with accurate representations of historical accounts which can include biographies, autobiographies, and memoirs. The other section is made up of fictional movies that are placed inside an accurate depiction of a historical setting.\nThe accuracy of a historical story is measured against historical accounts, not fact, as there can never be a perfectly factual account of any event without first-hand experience. ",
+						Type = MediaType.Video , Label = "Historical" , Description = "The historical genre can be split into two sections. One deals with accurate representations of historical accounts which can include biographies, autobiographies, and memoirs. The other section is made up of fictional movies that are placed inside an accurate depiction of a historical setting.\nThe accuracy of a historical story is measured against historical accounts, not fact, as there can never be a perfectly factual account of any event without first-hand experience. ",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Historical Event" , Description = "The historical event genre focuses on a story that creates a dramatized depiction of an event that exists in popular accounts of history. This is different from a biography in that it focuses on an event." },
@@ -197,7 +197,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Horror" , Description = "The horror genre is centered upon depicting terrifying or macabre events for the sake of entertainment. A thriller might tease the possibility of a terrible event, whereas a horror film will deliver all throughout the film. The best horror movies are designed to get the heart pumping and to show us a glimpse of the unknown. ",
+						Type = MediaType.Video , Label = "Horror" , Description = "The horror genre is centered upon depicting terrifying or macabre events for the sake of entertainment. A thriller might tease the possibility of a terrible event, whereas a horror film will deliver all throughout the film. The best horror movies are designed to get the heart pumping and to show us a glimpse of the unknown. ",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Ghost" , Description = "A ghost movie uses the spirit or soul of a deceased creature to introduce elements of horror. These movies can take place in any time period and are only required to evoke terror through the use of ghosts." },
@@ -213,7 +213,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Romance" , Description = "The romance genre is defined by intimate relationships. Sometimes these movies can have a darker twist, but the idea is to lean on the natural conflict derived from the pursuit of intimacy and love.  ",
+						Type = MediaType.Video , Label = "Romance" , Description = "The romance genre is defined by intimate relationships. Sometimes these movies can have a darker twist, but the idea is to lean on the natural conflict derived from the pursuit of intimacy and love.  ",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Drama" , Description = "The romance-drama sub-genre is defined by the conflict generated from a  romantic relationship. What makes a romance-drama different from a romantic-thriller is both the source of the drama but also the intentions and motivations that drive each character’s perspective." },
@@ -223,7 +223,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Science Fiction" , Description = "Science fiction movies are defined by a mixture of speculation and science. While fantasy will explain through or make use of magic and mysticism, science fiction will use the changes and trajectory of technology and science. Science fiction will often incorporate space, biology, energy, time, and any other observable science.",
+						Type = MediaType.Video , Label = "Science Fiction" , Description = "Science fiction movies are defined by a mixture of speculation and science. While fantasy will explain through or make use of magic and mysticism, science fiction will use the changes and trajectory of technology and science. Science fiction will often incorporate space, biology, energy, time, and any other observable science.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Post-Apocalyptic" , Description = "Post-apocalyptic movies are based around the occurrence, effects, and struggle generated by an apocalyptic event. While a dystopian story may incorporate a large war or apocalyptic event in its narrative history, it will include a centralized government that was formed after the event. Apocalyptic movies will not have a centralized government but may feature smaller societies and tribes as part of the story." },
@@ -239,7 +239,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Thriller" , Description = "A thriller story is mostly about the emotional purpose, which is to elicit strong emotions, mostly dealing with generating suspense and anxiety. No matter what the specific plot, the best thrillers get your heart racing.",
+						Type = MediaType.Video , Label = "Thriller" , Description = "A thriller story is mostly about the emotional purpose, which is to elicit strong emotions, mostly dealing with generating suspense and anxiety. No matter what the specific plot, the best thrillers get your heart racing.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Psychological" , Description = "A psychological thriller focuses and emphasizes the unstable psychological state of the characters inside the story. Often there is a mysterious set of circumstances, and a paranoia, warranted or otherwise, that catalyzes extreme actions from the characters. " },
@@ -250,7 +250,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Western" , Description = "Westerns are defined by their setting and time period. The story needs to take place in the American West, which begins as far east as Missouri and extends to the Pacific ocean. They’re set during the 19th century, and will often feature horse riding, military expansion, violent and non-violent interaction with Native American tribes, the creation of railways, gunfights, and technology created during the industrial revolution. ",
+						Type = MediaType.Video , Label = "Western" , Description = "Westerns are defined by their setting and time period. The story needs to take place in the American West, which begins as far east as Missouri and extends to the Pacific ocean. They’re set during the 19th century, and will often feature horse riding, military expansion, violent and non-violent interaction with Native American tribes, the creation of railways, gunfights, and technology created during the industrial revolution. ",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Epic" , Description = "The idea of an epic western is to emphasize and incorporate many if not all of the western genre elements, but on a grand scale, and also use the backdrop of large scale real-life events to frame your story. " },
@@ -264,7 +264,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Video , Label = "Others" , Description = "",
+						Type = MediaType.Video , Label = "Others" , Description = "",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Musical" , Description = "Musicals originated as stage plays, but they soon became a favorite for many film directors and have even made their way into television. Musicals can incorporate any other genre, but they incorporate characters who sing songs and perform dance numbers." },
@@ -275,7 +275,7 @@ namespace mui.Context
 					//	https://strongsounds.com/blog/most-popular-genres-of-music/
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "Classical" , Description = "",
+						Type = MediaType.Audio , Label = "Classical" , Description = "",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Avant-Garde" , Description = "" },
@@ -289,7 +289,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "Avant-garde & Experimental" , Description = "",
+						Type = MediaType.Audio , Label = "Avant-garde & Experimental" , Description = "",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Instrumental" , Description = "" },
@@ -298,56 +298,56 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "Blues" , Description = "",
+						Type = MediaType.Audio , Label = "Blues" , Description = "",
 						Details = new MediaGenre.MediaStyle[]
 						{
 						}
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "Country" , Description = "Country music can be traced back to the beginning of the twentieth century. It was created mainly in the south of the USA, by working-class people. These people would use country as a means to tell stories through music, about the realities of everyday life and their perspectives.",
+						Type = MediaType.Audio , Label = "Country" , Description = "Country music can be traced back to the beginning of the twentieth century. It was created mainly in the south of the USA, by working-class people. These people would use country as a means to tell stories through music, about the realities of everyday life and their perspectives.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 						}
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "Easy Listening" , Description = "",
+						Type = MediaType.Audio , Label = "Easy Listening" , Description = "",
 						Details = new MediaGenre.MediaStyle[]
 						{
 						}
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "Electronic" , Description = "",
+						Type = MediaType.Audio , Label = "Electronic" , Description = "",
 						Details = new MediaGenre.MediaStyle[]
 						{
 						}
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "Folk" , Description = "Folk music has existed in many different parts of the world for centuries. Traditionally, this genre is essentially built upon people gathering to sing and play songs with others in their community.",
+						Type = MediaType.Audio , Label = "Folk" , Description = "Folk music has existed in many different parts of the world for centuries. Traditionally, this genre is essentially built upon people gathering to sing and play songs with others in their community.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 						}
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "Hip Hop" , Description = "In its relatively short history, hip-hop has emerged as one of the most popular and innovative genres of music. Hip-hop originated in the Bronx, a borough of New York City, in the late 1970s when DJs would use samples and breakbeats to create backing tracks for MCs to rap over.",
+						Type = MediaType.Audio , Label = "Hip Hop" , Description = "In its relatively short history, hip-hop has emerged as one of the most popular and innovative genres of music. Hip-hop originated in the Bronx, a borough of New York City, in the late 1970s when DJs would use samples and breakbeats to create backing tracks for MCs to rap over.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 						}
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "Jazz" , Description = "In the early 20th century, musicians in the city of New Orleans experimented by blending musical elements from European and African genres. This resulted in the origination of jazz, which would go on to become one of the most popular and unique musical styles in existence.",
+						Type = MediaType.Audio , Label = "Jazz" , Description = "In the early 20th century, musicians in the city of New Orleans experimented by blending musical elements from European and African genres. This resulted in the origination of jazz, which would go on to become one of the most popular and unique musical styles in existence.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 						}
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "Pop" , Description = "Pop music is perhaps the most obvious addition to this list. It could be said that pop is a compilation of other genres, which are considered to be mainstream in a certain time period.",
+						Type = MediaType.Audio , Label = "Pop" , Description = "Pop music is perhaps the most obvious addition to this list. It could be said that pop is a compilation of other genres, which are considered to be mainstream in a certain time period.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Funk" , Description = "Like the soul, funk was also the result of African Americans blending jazz and R&B. Funk has a strong rhythmic pulse, prominent bass lines, and syncopated rhythm guitar playing." },
@@ -357,14 +357,14 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "R&B & Soul" , Description = "R&B, or rhythm and blues, is rooted in African-American culture from the 1940s. In the decades that followed, record labels used the term to describe recordings that were targeted towards that community in the US, and the style eventually inspired many rock artists of the 1960s.",
+						Type = MediaType.Audio , Label = "R&B & Soul" , Description = "R&B, or rhythm and blues, is rooted in African-American culture from the 1940s. In the decades that followed, record labels used the term to describe recordings that were targeted towards that community in the US, and the style eventually inspired many rock artists of the 1960s.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 						}
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "Rock" , Description = "One of the top musical genres in existence, rock music originated in the 1940s and 50s in the form of rock & roll. However, its roots can be traced back to the rhythm and blues of the African-American culture in the 1920s, merged with country music.",
+						Type = MediaType.Audio , Label = "Rock" , Description = "One of the top musical genres in existence, rock music originated in the 1940s and 50s in the form of rock & roll. However, its roots can be traced back to the rhythm and blues of the African-American culture in the 1920s, merged with country music.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Punk Rock" , Description = "Punk rock has an aggressive sound, with fast-paced tempos and simple guitar riffs often played using only downstrokes. It was seen as a departure from the technical styles of the main music genres that had dominated the 1970s, with bands like The Ramones, The Sex Pistols, and The Clash bringing it into the public eye." },
@@ -373,14 +373,14 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "Heavy Metal" , Description = "Heavy metal music is a sub-genre of rock and is characterized by loud volumes, crashing cymbals, pounding rhythms, and distorted guitars which often use drop tunings. Black Sabbath and Motorhead are two prime examples of classic heavy metal bands.",
+						Type = MediaType.Audio , Label = "Heavy Metal" , Description = "Heavy metal music is a sub-genre of rock and is characterized by loud volumes, crashing cymbals, pounding rhythms, and distorted guitars which often use drop tunings. Black Sabbath and Motorhead are two prime examples of classic heavy metal bands.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 						}
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "EDM" , Description = "EDM is short for “electronic dance music”, which is a very broad category. In a popular music context, this genre describes songs that feature classic elements from dance music, such as four-to-the-floor drum beats, synthesizers, and repeated loops.",
+						Type = MediaType.Audio , Label = "EDM" , Description = "EDM is short for “electronic dance music”, which is a very broad category. In a popular music context, this genre describes songs that feature classic elements from dance music, such as four-to-the-floor drum beats, synthesizers, and repeated loops.",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "House" , Description = "Technically a sub-genre of EDM, house music has a huge global fanbase. Musically, it is often characterized by a tempo of between 120 to 130 BPM, with the kick drum being played on every beat." },
@@ -390,7 +390,7 @@ namespace mui.Context
 					},
 					new MediaGenre()
 					{
-						Type = MediaGenre.MediaType.Audio , Label = "Punk" , Description = "",
+						Type = MediaType.Audio , Label = "Punk" , Description = "",
 						Details = new MediaGenre.MediaStyle[]
 						{
 							new MediaGenre.MediaStyle{ Label = "Indie Rock" , Description = "In the past thirty years or so, indie has developed into one of the most popular sub-genres of rock music. With its D.I.Y ethos inspired largely by punk, indie reached its peak in popularity in the 2000s, with bands like The Strokes and Arctic Monkeys paving the way." },

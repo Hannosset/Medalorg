@@ -30,6 +30,9 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
+			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
+            "webm - 2160",
+            "2160"}, 1);
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -46,11 +49,41 @@
 			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.textBox2 = new System.Windows.Forms.TextBox();
+			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.textBox3 = new System.Windows.Forms.TextBox();
+			this.button2 = new System.Windows.Forms.Button();
+			this.groupBox4 = new System.Windows.Forms.GroupBox();
+			this.textBox4 = new System.Windows.Forms.TextBox();
+			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+			this.listView3 = new System.Windows.Forms.ListView();
+			this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.imageList2 = new System.Windows.Forms.ImageList(this.components);
+			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.listView4 = new System.Windows.Forms.ListView();
+			this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.listView5 = new System.Windows.Forms.ListView();
+			this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
 			this.toolStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
+			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
+			this.tableLayoutPanel2.SuspendLayout();
+			this.tableLayoutPanel3.SuspendLayout();
+			this.groupBox1.SuspendLayout();
+			this.groupBox3.SuspendLayout();
+			this.groupBox4.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+			this.splitContainer2.Panel1.SuspendLayout();
+			this.splitContainer2.Panel2.SuspendLayout();
+			this.splitContainer2.SuspendLayout();
+			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// toolStrip1
@@ -63,7 +96,7 @@
 			this.toolStrip1.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip1.Name = "toolStrip1";
 			this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-			this.toolStrip1.Size = new System.Drawing.Size(932, 25);
+			this.toolStrip1.Size = new System.Drawing.Size(877, 25);
 			this.toolStrip1.TabIndex = 24;
 			this.toolStrip1.Text = "toolStrip1";
 			// 
@@ -116,7 +149,7 @@
 			this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
 			this.button1.ImageIndex = 0;
 			this.button1.ImageList = this.imageList1;
-			this.button1.Location = new System.Drawing.Point(888, 39);
+			this.button1.Location = new System.Drawing.Point(833, 39);
 			this.button1.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(32, 21);
@@ -129,6 +162,7 @@
 			this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
 			this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
 			this.imageList1.Images.SetKeyName(0, "");
+			this.imageList1.Images.SetKeyName(1, "DOWNLOAD_00.gif");
 			// 
 			// clipboardMonitor1
 			// 
@@ -148,7 +182,7 @@
 			this.textBox1.Location = new System.Drawing.Point(110, 40);
 			this.textBox1.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
 			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(778, 20);
+			this.textBox1.Size = new System.Drawing.Size(723, 20);
 			this.textBox1.TabIndex = 28;
 			// 
 			// splitContainer1
@@ -156,16 +190,21 @@
 			this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+			this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
 			this.splitContainer1.Location = new System.Drawing.Point(12, 66);
 			this.splitContainer1.Name = "splitContainer1";
 			// 
 			// splitContainer1.Panel1
 			// 
 			this.splitContainer1.Panel1.Controls.Add(this.listView1);
-			this.splitContainer1.Size = new System.Drawing.Size(908, 357);
-			this.splitContainer1.SplitterDistance = 429;
+			// 
+			// splitContainer1.Panel2
+			// 
+			this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel2);
+			this.splitContainer1.Size = new System.Drawing.Size(853, 542);
+			this.splitContainer1.SplitterDistance = 337;
 			this.splitContainer1.TabIndex = 29;
+			this.splitContainer1.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.OnMainSplitterMoved);
 			// 
 			// listView1
 			// 
@@ -184,7 +223,7 @@
 			this.listView1.Name = "listView1";
 			this.listView1.ShowGroups = false;
 			this.listView1.ShowItemToolTips = true;
-			this.listView1.Size = new System.Drawing.Size(429, 357);
+			this.listView1.Size = new System.Drawing.Size(337, 542);
 			this.listView1.TabIndex = 0;
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
@@ -210,11 +249,258 @@
 			this.columnHeader5.Text = "Status";
 			this.columnHeader5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			// 
+			// tableLayoutPanel2
+			// 
+			this.tableLayoutPanel2.ColumnCount = 1;
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 0, 0);
+			this.tableLayoutPanel2.Controls.Add(this.button2, 0, 3);
+			this.tableLayoutPanel2.Controls.Add(this.groupBox4, 0, 2);
+			this.tableLayoutPanel2.Controls.Add(this.splitContainer2, 0, 1);
+			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+			this.tableLayoutPanel2.RowCount = 4;
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(512, 542);
+			this.tableLayoutPanel2.TabIndex = 21;
+			// 
+			// tableLayoutPanel3
+			// 
+			this.tableLayoutPanel3.ColumnCount = 2;
+			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel3.Controls.Add(this.groupBox1, 1, 0);
+			this.tableLayoutPanel3.Controls.Add(this.groupBox3, 0, 0);
+			this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
+			this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
+			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+			this.tableLayoutPanel3.RowCount = 1;
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel3.Size = new System.Drawing.Size(512, 50);
+			this.tableLayoutPanel3.TabIndex = 22;
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.textBox2);
+			this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
+			this.groupBox1.Location = new System.Drawing.Point(259, 3);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Padding = new System.Windows.Forms.Padding(0, 0, 3, 3);
+			this.groupBox1.Size = new System.Drawing.Size(250, 43);
+			this.groupBox1.TabIndex = 16;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Media Title";
+			// 
+			// textBox2
+			// 
+			this.textBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.textBox2.Location = new System.Drawing.Point(3, 16);
+			this.textBox2.Name = "textBox2";
+			this.textBox2.Size = new System.Drawing.Size(241, 20);
+			this.textBox2.TabIndex = 0;
+			// 
+			// groupBox3
+			// 
+			this.groupBox3.Controls.Add(this.textBox3);
+			this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
+			this.groupBox3.Location = new System.Drawing.Point(3, 3);
+			this.groupBox3.Name = "groupBox3";
+			this.groupBox3.Padding = new System.Windows.Forms.Padding(0, 0, 3, 3);
+			this.groupBox3.Size = new System.Drawing.Size(250, 43);
+			this.groupBox3.TabIndex = 16;
+			this.groupBox3.TabStop = false;
+			this.groupBox3.Text = "Author";
+			// 
+			// textBox3
+			// 
+			this.textBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.textBox3.Location = new System.Drawing.Point(3, 16);
+			this.textBox3.Name = "textBox3";
+			this.textBox3.Size = new System.Drawing.Size(241, 20);
+			this.textBox3.TabIndex = 0;
+			this.textBox3.TextChanged += new System.EventHandler(this.OnAuthorLabelChanged);
+			// 
+			// button2
+			// 
+			this.button2.Dock = System.Windows.Forms.DockStyle.Right;
+			this.button2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.button2.ImageIndex = 1;
+			this.button2.ImageList = this.imageList1;
+			this.button2.Location = new System.Drawing.Point(428, 515);
+			this.button2.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
+			this.button2.Name = "button2";
+			this.button2.Size = new System.Drawing.Size(84, 24);
+			this.button2.TabIndex = 17;
+			this.button2.Text = "Download";
+			this.button2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.button2.UseVisualStyleBackColor = true;
+			this.button2.Click += new System.EventHandler(this.OnDownload);
+			// 
+			// groupBox4
+			// 
+			this.groupBox4.Controls.Add(this.textBox4);
+			this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.groupBox4.Location = new System.Drawing.Point(3, 465);
+			this.groupBox4.Name = "groupBox4";
+			this.groupBox4.Padding = new System.Windows.Forms.Padding(0);
+			this.groupBox4.Size = new System.Drawing.Size(506, 44);
+			this.groupBox4.TabIndex = 19;
+			this.groupBox4.TabStop = false;
+			this.groupBox4.Text = "Target Pathname";
+			// 
+			// textBox4
+			// 
+			this.textBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.textBox4.Location = new System.Drawing.Point(3, 21);
+			this.textBox4.Name = "textBox4";
+			this.textBox4.Size = new System.Drawing.Size(500, 20);
+			this.textBox4.TabIndex = 0;
+			// 
+			// splitContainer2
+			// 
+			this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splitContainer2.Location = new System.Drawing.Point(0, 50);
+			this.splitContainer2.Margin = new System.Windows.Forms.Padding(0);
+			this.splitContainer2.Name = "splitContainer2";
+			this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+			// 
+			// splitContainer2.Panel1
+			// 
+			this.splitContainer2.Panel1.Controls.Add(this.listView3);
+			// 
+			// splitContainer2.Panel2
+			// 
+			this.splitContainer2.Panel2.Controls.Add(this.tableLayoutPanel1);
+			this.splitContainer2.Size = new System.Drawing.Size(512, 412);
+			this.splitContainer2.SplitterDistance = 177;
+			this.splitContainer2.TabIndex = 23;
+			this.splitContainer2.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.OnPanelSplitterMoved);
+			// 
+			// listView3
+			// 
+			this.listView3.CheckBoxes = true;
+			this.listView3.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader7,
+            this.columnHeader8});
+			this.listView3.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.listView3.FullRowSelect = true;
+			this.listView3.GridLines = true;
+			this.listView3.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.listView3.HideSelection = false;
+			listViewItem1.StateImageIndex = 0;
+			this.listView3.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1});
+			this.listView3.LargeImageList = this.imageList2;
+			this.listView3.Location = new System.Drawing.Point(0, 0);
+			this.listView3.Margin = new System.Windows.Forms.Padding(0, 0, 0, 3);
+			this.listView3.MultiSelect = false;
+			this.listView3.Name = "listView3";
+			this.listView3.ShowGroups = false;
+			this.listView3.ShowItemToolTips = true;
+			this.listView3.Size = new System.Drawing.Size(512, 177);
+			this.listView3.TabIndex = 1;
+			this.listView3.UseCompatibleStateImageBehavior = false;
+			this.listView3.SelectedIndexChanged += new System.EventHandler(this.OnUriSelected);
+			// 
+			// columnHeader7
+			// 
+			this.columnHeader7.Text = "Video Type";
+			this.columnHeader7.Width = 80;
+			// 
+			// columnHeader8
+			// 
+			this.columnHeader8.Text = "Resolution";
+			this.columnHeader8.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.columnHeader8.Width = 80;
+			// 
+			// imageList2
+			// 
+			this.imageList2.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList2.ImageStream")));
+			this.imageList2.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageList2.Images.SetKeyName(0, "video.ico");
+			this.imageList2.Images.SetKeyName(1, "AudioFile.ico");
+			// 
+			// tableLayoutPanel1
+			// 
+			this.tableLayoutPanel1.ColumnCount = 2;
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.Controls.Add(this.listView4, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this.listView5, 1, 0);
+			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+			this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
+			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+			this.tableLayoutPanel1.RowCount = 1;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(512, 231);
+			this.tableLayoutPanel1.TabIndex = 20;
+			// 
+			// listView4
+			// 
+			this.listView4.CheckBoxes = true;
+			this.listView4.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader9});
+			this.listView4.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.listView4.FullRowSelect = true;
+			this.listView4.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.listView4.HideSelection = false;
+			this.listView4.Location = new System.Drawing.Point(0, 3);
+			this.listView4.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
+			this.listView4.MultiSelect = false;
+			this.listView4.Name = "listView4";
+			this.listView4.ShowItemToolTips = true;
+			this.listView4.Size = new System.Drawing.Size(253, 228);
+			this.listView4.TabIndex = 11;
+			this.listView4.UseCompatibleStateImageBehavior = false;
+			this.listView4.View = System.Windows.Forms.View.Details;
+			this.listView4.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.OnGenreCheck);
+			this.listView4.SelectedIndexChanged += new System.EventHandler(this.OnGenreSelected);
+			// 
+			// columnHeader9
+			// 
+			this.columnHeader9.Text = "Genre";
+			this.columnHeader9.Width = 116;
+			// 
+			// listView5
+			// 
+			this.listView5.CheckBoxes = true;
+			this.listView5.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader10});
+			this.listView5.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.listView5.FullRowSelect = true;
+			this.listView5.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.listView5.HideSelection = false;
+			this.listView5.Location = new System.Drawing.Point(259, 3);
+			this.listView5.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
+			this.listView5.MultiSelect = false;
+			this.listView5.Name = "listView5";
+			this.listView5.ShowItemToolTips = true;
+			this.listView5.Size = new System.Drawing.Size(253, 228);
+			this.listView5.Sorting = System.Windows.Forms.SortOrder.Ascending;
+			this.listView5.TabIndex = 12;
+			this.listView5.UseCompatibleStateImageBehavior = false;
+			this.listView5.View = System.Windows.Forms.View.Details;
+			this.listView5.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.OnStyleCheck);
+			// 
+			// columnHeader10
+			// 
+			this.columnHeader10.Text = "Style";
+			// 
 			// MainWindow
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(932, 450);
+			this.ClientSize = new System.Drawing.Size(877, 635);
 			this.Controls.Add(this.splitContainer1);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.clipboardMonitor1);
@@ -237,8 +523,22 @@
 			this.toolStrip1.ResumeLayout(false);
 			this.toolStrip1.PerformLayout();
 			this.splitContainer1.Panel1.ResumeLayout(false);
+			this.splitContainer1.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
 			this.splitContainer1.ResumeLayout(false);
+			this.tableLayoutPanel2.ResumeLayout(false);
+			this.tableLayoutPanel3.ResumeLayout(false);
+			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
+			this.groupBox3.ResumeLayout(false);
+			this.groupBox3.PerformLayout();
+			this.groupBox4.ResumeLayout(false);
+			this.groupBox4.PerformLayout();
+			this.splitContainer2.Panel1.ResumeLayout(false);
+			this.splitContainer2.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+			this.splitContainer2.ResumeLayout(false);
+			this.tableLayoutPanel1.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -262,6 +562,25 @@
 		private System.Windows.Forms.ColumnHeader columnHeader3;
 		private System.Windows.Forms.ColumnHeader columnHeader4;
 		private System.Windows.Forms.ColumnHeader columnHeader5;
+		private System.Windows.Forms.ListView listView3;
+		private System.Windows.Forms.ColumnHeader columnHeader7;
+		private System.Windows.Forms.ColumnHeader columnHeader8;
+		private System.Windows.Forms.ListView listView4;
+		private System.Windows.Forms.ColumnHeader columnHeader9;
+		private System.Windows.Forms.ListView listView5;
+		private System.Windows.Forms.ColumnHeader columnHeader10;
+		private System.Windows.Forms.ImageList imageList2;
+		private System.Windows.Forms.GroupBox groupBox3;
+		private System.Windows.Forms.TextBox textBox3;
+		private System.Windows.Forms.Button button2;
+		private System.Windows.Forms.GroupBox groupBox4;
+		private System.Windows.Forms.TextBox textBox4;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.TextBox textBox2;
+		private System.Windows.Forms.SplitContainer splitContainer2;
 	}
 }
 

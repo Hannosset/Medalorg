@@ -57,6 +57,8 @@
       <DependentUpon>Configuration.cs</DependentUpon>
     </Compile>
     <Compile Include="Context\CountryCode.cs" />
+    <Compile Include="Context\Handle2Skip.cs" />
+    <Compile Include="Context\HandleAuthors.cs" />
     <Compile Include="Context\HandleCountryCode.cs" />
     <Compile Include="Context\HandleMediaGenre.cs" />
     <Compile Include="Context\HandleMediaInfo.cs" />

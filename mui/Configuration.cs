@@ -126,7 +126,7 @@ namespace mui
 				listView1.Items.Clear();
 
 				foreach( Context.MediaGenre mg in Context.HandleMediaGenre.Info.Details )
-					if( mg.Type == Context.MediaGenre.MediaType.Audio )
+					if( mg.Type == Context.MediaType.Audio )
 					{
 						ListViewItem lvi = new ListViewItem( mg.Label );
 						lvi.ToolTipText = mg.Description;
@@ -158,7 +158,7 @@ namespace mui
 				listView1.Items.Clear();
 
 				foreach( Context.MediaGenre mg in Context.HandleMediaGenre.Info.Details )
-					if( mg.Type == Context.MediaGenre.MediaType.Video )
+					if( mg.Type == Context.MediaType.Video )
 					{
 						ListViewItem lvi = new ListViewItem( mg.Label );
 						lvi.ToolTipText = mg.Description;

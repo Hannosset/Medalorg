@@ -16,8 +16,6 @@ namespace mui.Context
 	public class MediaGenre
 	{
 		#region TYPES
-		public enum MediaType { Audio, Video };
-
 		public class MediaStyle
 		{
 			[XmlAttribute]

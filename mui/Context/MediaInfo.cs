@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -10,11 +8,12 @@ using xnext.Diagnostics;
 
 namespace mui.Context
 {
+	public enum MediaType { Audio, Video };
+
 	public class MediaInfo
 	{
 		#region TYPES
-		public enum MediaType { Audio, Video };
-		public enum AudioModel { Any, acc, vorbis, opus };
+		public enum AudioModel { Any, aac, vorbis, opus };
 		public enum VideoFormat { mp4, webm };
 
 		public class MediaData
@@ -30,7 +29,6 @@ namespace mui.Context
 
 			[XmlText]
 			public string Uri { get; set; }
-
 		}
 		public class AudioData : MediaData
 		{
@@ -39,6 +37,8 @@ namespace mui.Context
 
 			[XmlAttribute]
 			public int BitRate { get; set; } = -1;
+
+			public override string ToString() => $"{Model} @ {BitRate}";
 		}
 		public class VideoData : AudioData
 		{
@@ -47,6 +47,11 @@ namespace mui.Context
 
 			[XmlAttribute]
 			public int Resolution { get; set; }
+
+			public override string ToString()
+				=> Model == AudioModel.Any
+				? $"{Format} - {Resolution}"
+				: $"{Format} - {Resolution} with {Model} @ {BitRate}";
 		}
 		#endregion
 
@@ -59,10 +64,10 @@ namespace mui.Context
 		public string VideoId { get; set; }
 
 		[XmlAttribute]
-		public string Title { get; set; }
+		public string Caption { get; set; }
 
 		[XmlAttribute]
-		public string Author { get; set; }
+		public string Publisher { get; set; }
 
 		[XmlAttribute]
 		public DateTime LastDownload { get; set; } = DateTime.MinValue;
@@ -80,6 +85,11 @@ namespace mui.Context
 		#endregion
 
 		#region PREDICATE
+		public string Author => SplitAuthorFromTitle( Caption )[0];
+		public string Title => SplitAuthorFromTitle( Caption )[1];
+		#endregion
+
+		#region PREDICATE
 		public bool Downloaded => Details.Where( x => x.Downloaded ).Any();
 		public int AudioCount => Details.Where( x => x.Type == MediaType.Audio ).Count();
 		public int VideoCount => Details.Where( x => x.Type == MediaType.Video ).Count();
@@ -87,11 +97,11 @@ namespace mui.Context
 
 		#region CONSTRUCTOR
 		public MediaInfo() { }
-		public MediaInfo( string videoId , string title , string author )
+		public MediaInfo( string videoId , string title , string publisher )
 		{
 			VideoId = videoId;
-			Title = title .Trim( new char[] { '\"' , ' ' , '\'' , '?' , '.' } );
-			Author = author;
+			Caption = title.Trim( new char[] { '\"' , ' ' , '\'' , '?' , '.' } );
+			Publisher = publisher;
 		}
 		#endregion
 
@@ -147,5 +157,38 @@ namespace mui.Context
 			}
 		}
 		#endregion
+
+		private string HumanString( string str )
+		{
+			string fname = str.Replace( "\t" , " " ).Replace( "\f" , "" ).Replace( "\n" , "" ).Replace( "\r" , "" )
+							.Replace( "\"" , "'" ).Replace( "|" , "-" ).Replace( "\\" , "-" ).Replace( "/" , "-" ).Replace( ":" , "-" ).Replace( "*" , "" ).Replace( "?" , "" )/*.Replace( "!" , "" )*/.Replace( "<" , "" ).Replace( ">" , "" )
+							.Replace( "HQ Audio" , "" ).Replace( "_" , " " );
+
+			int at = fname.IndexOf( '(' );
+			if( at != -1 )
+				fname = fname.Replace( fname.Substring( at - 1 , fname.IndexOf( ')' ) - at + 2 ) , "" );
+			
+			foreach( string s in Handle2Skip.Info.Details )
+				if( fname.Contains( s ) )
+					fname = fname.Replace( s , "" ).Trim();
+			
+			return fname.Trim();
+		}
+		private string[] SplitAuthorFromTitle( string astr )
+		{
+			string str = HumanString( astr );
+
+			foreach( string auth in HandleAuthors.Info.Details )
+				if( str.Substring( 0 , auth.Length ) == auth )
+					return new string[] { auth , HumanString( str.Replace( auth , "" ) ) };
+
+			foreach( string cond in new string[] { " - " , " : " , ":" } )
+			{
+				int at = str.IndexOf( cond );
+				if( at != -1 )
+					return new string[] { str.Substring( 0 , at ).Trim() , str.Substring( at + cond.Length ).Trim() };
+			}
+			return new string[] { Publisher , astr };
+		}
 	}
 }
