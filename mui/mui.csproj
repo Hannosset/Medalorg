@@ -56,6 +56,7 @@
     <Compile Include="Configuration.Designer.cs">
       <DependentUpon>Configuration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Context\AuthorInfo.cs" />
     <Compile Include="Context\CountryCode.cs" />
     <Compile Include="Context\Handle2Skip.cs" />
     <Compile Include="Context\HandleAuthors.cs" />

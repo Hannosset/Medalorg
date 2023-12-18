@@ -8,7 +8,7 @@ using xnext.Diagnostics;
 
 namespace mui.Context
 {
-	public enum MediaType { Audio, Video };
+	public enum MediaType { Unkown , Audio, Video };
 
 	public class MediaInfo
 	{
@@ -86,7 +86,7 @@ namespace mui.Context
 
 		#region PREDICATE
 		public string Author => SplitAuthorFromTitle( Caption )[0];
-		public string Title => SplitAuthorFromTitle( Caption )[1];
+		public string Title => HumanString(SplitAuthorFromTitle( Caption )[1] );
 		#endregion
 
 		#region PREDICATE
@@ -178,9 +178,9 @@ namespace mui.Context
 		{
 			string str = HumanString( astr );
 
-			foreach( string auth in HandleAuthors.Info.Details )
-				if( str.Substring( 0 , auth.Length ) == auth )
-					return new string[] { auth , HumanString( str.Replace( auth , "" ) ) };
+			foreach( AuthorInfo auth in HandleAuthors.Info.Details )
+				if( (auth.Name.Length == str.Length && auth.Name.CompareTo( str ) == 0) || (str.Length > auth.Name.Length && str.Substring( 0 , auth.Name.Length ) == auth.Name) )
+					return new string[] { auth.Name , HumanString( str.Replace( auth.Name , "" ) ).Replace( "-" , "" ).Trim() };
 
 			foreach( string cond in new string[] { " - " , " : " , ":" } )
 			{
@@ -188,7 +188,7 @@ namespace mui.Context
 				if( at != -1 )
 					return new string[] { str.Substring( 0 , at ).Trim() , str.Substring( at + cond.Length ).Trim() };
 			}
-			return new string[] { Publisher , astr };
+			return new string[] { HumanString( Publisher ).Replace( "'" , "" ) , astr };
 		}
 	}
 }

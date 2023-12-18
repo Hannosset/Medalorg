@@ -13,11 +13,22 @@ namespace mui.Context
 	{
 		#region LOCAL VARIABLE
 		/// <summary>The details of the security list for the streaming</summary>
-		private List<string> _Details = new List<string>();
+		private List<AuthorInfo> _Details = new List<AuthorInfo>();
 		#endregion LOCAL VARIABLE
 
 		#region ACCESSORS
-		internal string[] Details => _Details.ToArray();
+		internal AuthorInfo[] Details => _Details.ToArray();
+		internal AuthorInfo this[string author]
+		{
+			get
+			{
+				lock( Info )
+					foreach( AuthorInfo ai in Details )
+						if( ai.Name == author )
+							return ai;
+				return null;
+			}
+		}
 		#endregion ACCESSORS
 
 		#region SINGLETON
@@ -29,26 +40,29 @@ namespace mui.Context
 		#region PUBLIC METHODS
 		public static void LoadFromFile()
 		{
-			if( !File.Exists( Filename ) )
-			{
 				LogTrace.Label();
-				Info._Details = new List<string>( Deserialize() );
-			}
+				Info._Details = new List<AuthorInfo>( Deserialize() );
 		}
-		public static void Update( string author )
+		public static AuthorInfo Update( string author )
 		{
 			if( !string.IsNullOrEmpty( author ) )
 			{
 				lock( Info )
 				{
-					if( !Info._Details.Contains( author ) )
+					if( Info[author] == null )
 					{
-						Info._Details.Add( author );
-						Info._Details.Sort( ( a , b ) => b.CompareTo( a ) );
-						Info.Serialize();
+						Info._Details.Add( new AuthorInfo { Name = author } );
+						Info._Details.Sort( ( a , b ) => b.Name.CompareTo( a.Name ) );
 					}
+					return Info[author];
 				}
 			}
+			return null;
+		}
+		public static void Flush()
+		{
+			lock( Info )
+				Info.Serialize();
 		}
 		#endregion PUBLIC METHODS
 
@@ -79,7 +93,7 @@ namespace mui.Context
 				try
 				{
 					using( FileStream fs = new FileStream( filename , FileMode.Create , FileAccess.Write , FileShare.None ) )
-						new XmlSerializer( typeof( string[] ) ).Serialize( fs , Details );
+						new XmlSerializer( typeof( AuthorInfo[] ) ).Serialize( fs , Details );
 				}
 				catch( System.Exception ex )
 				{
@@ -89,7 +103,7 @@ namespace mui.Context
 		/// <summary>Deserializes the specified filename <param name="filename">The filename.</param></summary>
 		/// m&gt;
 		/// <returns></returns>
-		private static string[] Deserialize( string filename = null )
+		private static AuthorInfo[] Deserialize( string filename = null )
 		{
 			if( filename == null )
 				filename = Filename;
@@ -100,14 +114,14 @@ namespace mui.Context
 					LogTrace.Label( filename );
 					using( FileStream fs = new FileStream( filename , FileMode.Open , FileAccess.Read , FileShare.Read ) )
 					using( XmlReader reader = XmlReader.Create( fs , new XmlReaderSettings() { XmlResolver = null } ) )
-						return new XmlSerializer( typeof( string[] ) ).Deserialize( reader ) as string[];
+						return new XmlSerializer( typeof( AuthorInfo[] ) ).Deserialize( reader ) as AuthorInfo[];
 				}
 			}
 			catch( System.Exception ex )
 			{
 				Logger.TraceException( ex , "The new media will not be loaded" , $"Confirm the Data Path in the configuration file is correct and confirm read access to the path and the file ({filename} )" );
 			}
-			return Array.Empty<string>();
+			return Array.Empty<AuthorInfo>();
 		}
 		#endregion SERIALIZATION
 	}

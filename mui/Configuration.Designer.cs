@@ -55,22 +55,22 @@
 			this.label3 = new System.Windows.Forms.Label();
 			this.listView3 = new System.Windows.Forms.ListView();
 			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
-			this.tabPage3 = new System.Windows.Forms.TabPage();
-			this.tabPage4 = new System.Windows.Forms.TabPage();
-			this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.label5 = new System.Windows.Forms.Label();
-			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+			this.tabPage3 = new System.Windows.Forms.TabPage();
+			this.tabPage4 = new System.Windows.Forms.TabPage();
 			this.button5 = new System.Windows.Forms.Button();
-			this.textBox4 = new System.Windows.Forms.TextBox();
-			this.label6 = new System.Windows.Forms.Label();
-			this.label7 = new System.Windows.Forms.Label();
 			this.textBox5 = new System.Windows.Forms.TextBox();
+			this.textBox4 = new System.Windows.Forms.TextBox();
+			this.label7 = new System.Windows.Forms.Label();
+			this.label6 = new System.Windows.Forms.Label();
+			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
@@ -78,12 +78,12 @@
 			this.tabControl1.SuspendLayout();
 			this.tabPage1.SuspendLayout();
 			this.tabPage2.SuspendLayout();
-			this.tabPage3.SuspendLayout();
-			this.tabPage4.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
+			this.tabPage3.SuspendLayout();
+			this.tabPage4.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// button1
@@ -370,6 +370,11 @@
 			this.columnHeader3.Text = "Default Subtitle language";
 			this.columnHeader3.Width = 207;
 			// 
+			// columnHeader6
+			// 
+			this.columnHeader6.Text = "Country";
+			this.columnHeader6.Width = 149;
+			// 
 			// tableLayoutPanel2
 			// 
 			this.tableLayoutPanel2.ColumnCount = 2;
@@ -439,37 +444,6 @@
 			this.tabPage2.Text = "Media Genre";
 			this.tabPage2.UseVisualStyleBackColor = true;
 			// 
-			// tabPage3
-			// 
-			this.tabPage3.Controls.Add(this.listView3);
-			this.tabPage3.Location = new System.Drawing.Point(4, 22);
-			this.tabPage3.Name = "tabPage3";
-			this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage3.Size = new System.Drawing.Size(532, 236);
-			this.tabPage3.TabIndex = 2;
-			this.tabPage3.Text = "Subtitles";
-			this.tabPage3.UseVisualStyleBackColor = true;
-			// 
-			// tabPage4
-			// 
-			this.tabPage4.Controls.Add(this.button5);
-			this.tabPage4.Controls.Add(this.textBox5);
-			this.tabPage4.Controls.Add(this.textBox4);
-			this.tabPage4.Controls.Add(this.label7);
-			this.tabPage4.Controls.Add(this.label6);
-			this.tabPage4.Controls.Add(this.linkLabel1);
-			this.tabPage4.Location = new System.Drawing.Point(4, 22);
-			this.tabPage4.Name = "tabPage4";
-			this.tabPage4.Size = new System.Drawing.Size(532, 236);
-			this.tabPage4.TabIndex = 3;
-			this.tabPage4.Text = "Merge tool";
-			this.tabPage4.UseVisualStyleBackColor = true;
-			// 
-			// columnHeader6
-			// 
-			this.columnHeader6.Text = "Country";
-			this.columnHeader6.Width = 149;
-			// 
 			// splitContainer1
 			// 
 			this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -498,16 +472,31 @@
 			this.label5.Size = new System.Drawing.Size(205, 185);
 			this.label5.TabIndex = 0;
 			// 
-			// linkLabel1
+			// tabPage3
 			// 
-			this.linkLabel1.AutoSize = true;
-			this.linkLabel1.Location = new System.Drawing.Point(3, 12);
-			this.linkLabel1.Name = "linkLabel1";
-			this.linkLabel1.Size = new System.Drawing.Size(136, 13);
-			this.linkLabel1.TabIndex = 0;
-			this.linkLabel1.TabStop = true;
-			this.linkLabel1.Text = "Download the latest ffmpeg";
-			this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnLinkClicked);
+			this.tabPage3.Controls.Add(this.listView3);
+			this.tabPage3.Location = new System.Drawing.Point(4, 22);
+			this.tabPage3.Name = "tabPage3";
+			this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+			this.tabPage3.Size = new System.Drawing.Size(532, 236);
+			this.tabPage3.TabIndex = 2;
+			this.tabPage3.Text = "Subtitles";
+			this.tabPage3.UseVisualStyleBackColor = true;
+			// 
+			// tabPage4
+			// 
+			this.tabPage4.Controls.Add(this.button5);
+			this.tabPage4.Controls.Add(this.textBox5);
+			this.tabPage4.Controls.Add(this.textBox4);
+			this.tabPage4.Controls.Add(this.label7);
+			this.tabPage4.Controls.Add(this.label6);
+			this.tabPage4.Controls.Add(this.linkLabel1);
+			this.tabPage4.Location = new System.Drawing.Point(4, 22);
+			this.tabPage4.Name = "tabPage4";
+			this.tabPage4.Size = new System.Drawing.Size(532, 236);
+			this.tabPage4.TabIndex = 3;
+			this.tabPage4.Text = "Merge tool";
+			this.tabPage4.UseVisualStyleBackColor = true;
 			// 
 			// button5
 			// 
@@ -521,36 +510,6 @@
 			this.button5.UseVisualStyleBackColor = true;
 			this.button5.Click += new System.EventHandler(this.OnLocateffmpeg);
 			// 
-			// textBox4
-			// 
-			this.textBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.textBox4.Location = new System.Drawing.Point(6, 53);
-			this.textBox4.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
-			this.textBox4.Name = "textBox4";
-			this.textBox4.Size = new System.Drawing.Size(495, 20);
-			this.textBox4.TabIndex = 4;
-			// 
-			// label6
-			// 
-			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(3, 37);
-			this.label6.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(136, 13);
-			this.label6.TabIndex = 3;
-			this.label6.Text = "Location of the ffmpeg tool:";
-			// 
-			// label7
-			// 
-			this.label7.AutoSize = true;
-			this.label7.Location = new System.Drawing.Point(3, 79);
-			this.label7.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(109, 13);
-			this.label7.TabIndex = 3;
-			this.label7.Text = "Execution arguments:";
-			// 
 			// textBox5
 			// 
 			this.textBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -562,6 +521,47 @@
 			this.textBox5.TabIndex = 4;
 			this.textBox5.Text = "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast " +
     "\"{media-file}.mp4\"";
+			// 
+			// textBox4
+			// 
+			this.textBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.textBox4.Location = new System.Drawing.Point(6, 53);
+			this.textBox4.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
+			this.textBox4.Name = "textBox4";
+			this.textBox4.Size = new System.Drawing.Size(495, 20);
+			this.textBox4.TabIndex = 4;
+			// 
+			// label7
+			// 
+			this.label7.AutoSize = true;
+			this.label7.Location = new System.Drawing.Point(3, 79);
+			this.label7.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(109, 13);
+			this.label7.TabIndex = 3;
+			this.label7.Text = "Execution arguments:";
+			// 
+			// label6
+			// 
+			this.label6.AutoSize = true;
+			this.label6.Location = new System.Drawing.Point(3, 37);
+			this.label6.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(136, 13);
+			this.label6.TabIndex = 3;
+			this.label6.Text = "Location of the ffmpeg tool:";
+			// 
+			// linkLabel1
+			// 
+			this.linkLabel1.AutoSize = true;
+			this.linkLabel1.Location = new System.Drawing.Point(3, 12);
+			this.linkLabel1.Name = "linkLabel1";
+			this.linkLabel1.Size = new System.Drawing.Size(136, 13);
+			this.linkLabel1.TabIndex = 0;
+			this.linkLabel1.TabStop = true;
+			this.linkLabel1.Text = "Download the latest ffmpeg";
+			this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnLinkClicked);
 			// 
 			// Configuration
 			// 
@@ -593,13 +593,13 @@
 			this.tabControl1.ResumeLayout(false);
 			this.tabPage1.ResumeLayout(false);
 			this.tabPage2.ResumeLayout(false);
-			this.tabPage3.ResumeLayout(false);
-			this.tabPage4.ResumeLayout(false);
-			this.tabPage4.PerformLayout();
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
 			this.splitContainer1.ResumeLayout(false);
+			this.tabPage3.ResumeLayout(false);
+			this.tabPage4.ResumeLayout(false);
+			this.tabPage4.PerformLayout();
 			this.ResumeLayout(false);
 
 		}

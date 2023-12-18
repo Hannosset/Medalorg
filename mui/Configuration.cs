@@ -16,7 +16,6 @@ namespace mui
 		{
 			InitializeComponent();
 		}
-
 		private void OnFormLoad( object sender , EventArgs e )
 		{
 			if( !DesignMode && LicenseManager.UsageMode == LicenseUsageMode.Runtime )
@@ -39,35 +38,7 @@ namespace mui
 				textBox4.Text = CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg path" , new DirectoryInfo( "." ).FullName );
 				textBox5.Text = CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}.mp4\"" );
 
-				string subtitles = CltWinEnv.AppReadSetting.GetData( Name , "Subtitles" , "en" );
-				Cursor crs = Cursor;
-				Cursor = Cursors.WaitCursor;
-				listView3.BeginUpdate();
-				try
-				{
-					listView3.Items.Clear();
-					foreach( Context.CountryCode cc in Context.HandleCountryCode.Info.Details )
-					{
-						ListViewItem lvi = new ListViewItem( cc.Code );
-						lvi.SubItems.Add( cc.Label );
-						lvi.ToolTipText = $"Country code is '{cc.Code}'";
-						lvi.Checked = subtitles.Contains( cc.Code );
-						lvi.Tag = cc;
-						listView3.Items.Add( lvi );
-					}
-				}
-				catch( Exception ex )
-				{
-					Logger.TraceException( ex , "List of Genre not updated correctly" , "verify the 'data/MediaGenre.xml' is not corrupted and restart the application." );
-				}
-				finally
-				{
-					listView3.AutoResizeColumns( ColumnHeaderAutoResizeStyle.ColumnContent );
-					listView3.AutoResizeColumns( ColumnHeaderAutoResizeStyle.HeaderSize );
-					listView3.EndUpdate();
-					Cursor = crs;
-				}
-
+				InitSubtitles();
 			}
 		}
 
@@ -87,7 +58,36 @@ namespace mui
 		}
 		#endregion CONSTRUCTOR
 
-		#region PATHNAMES
+		private void OnApply( object sender , EventArgs e )
+		{
+			LogTrace.Label();
+			CltWinEnv.AppSetting.SetData( Name , "Audio {Root}" , textBox1.Text );
+			CltWinEnv.AppSetting.SetData( Name , "Video {Root}" , textBox2.Text );
+
+			CltWinEnv.AppSetting.SetData( Name , "Use Default Pathname" , radioButton1.Checked ? "True" : "False" );
+			CltWinEnv.AppSetting.SetData( Name , "User Pathname" , textBox3.Text );
+			CltWinEnv.AppSetting.SetData( Name , "Active Pathname" , radioButton1.Checked ? radioButton1.Text : textBox3.Text );
+
+			string subtitles = "";
+			foreach( ListViewItem lvi in listView3.CheckedItems )
+				subtitles = subtitles + (lvi.Tag as Context.CountryCode).Code + ",";
+
+			CltWinEnv.AppSetting.SetData( Name , "Subtitles" , subtitles.Trim( ',' ) );
+
+			if( textBox5.Text != CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" ) )
+				CltWinEnv.AppSetting.SetData( Name , "ffmpeg arguments" , textBox5.Text );
+
+			if( textBox4.Text != CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg path" ) )
+				CltWinEnv.AppSetting.SetData( Name , "ffmpeg path" , textBox4.Text );
+
+			Context.HandleMediaGenre.Info.Serialize();
+		}
+		private void OnCancel( object sender , EventArgs e )
+		{
+			Context.HandleMediaGenre.LoadFromFile();
+		}
+
+		#region TAB: TARGET DIRECTORY
 		private void OnSelectAudioRoot( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -118,9 +118,9 @@ namespace mui
 				}
 			}
 		}
-		#endregion CONSTRUCTOR
+		#endregion TAB: TARGET DIRECTORY
 
-		#region GENRE & STYLE EVENTS
+		#region TAB: MEDIA GENRES
 		private void OnAudioGenre( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -130,6 +130,7 @@ namespace mui
 			try
 			{
 				listView1.Items.Clear();
+				listView2.Items.Clear();
 
 				foreach( Context.MediaGenre mg in Context.HandleMediaGenre.Info.Details )
 					if( mg.Type == Context.MediaType.Audio )
@@ -152,7 +153,6 @@ namespace mui
 				Cursor = crs;
 			}
 		}
-
 		private void OnVideoGenre( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -162,6 +162,7 @@ namespace mui
 			try
 			{
 				listView1.Items.Clear();
+				listView2.Items.Clear();
 
 				foreach( Context.MediaGenre mg in Context.HandleMediaGenre.Info.Details )
 					if( mg.Type == Context.MediaType.Video )
@@ -185,7 +186,9 @@ namespace mui
 				Cursor = crs;
 			}
 		}
+		private void OnMediaSplitterMoved( object sender , SplitterEventArgs e ) => CltWinEnv.UserSetting.SetData( "Splitter" , "Genre" , splitContainer1.SplitterDistance );
 
+		#region LISTVIEW GENRE
 		private void OnAddGenre( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -219,7 +222,6 @@ namespace mui
 				}
 			}
 		}
-
 		private void OnEditGenre( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -257,7 +259,6 @@ namespace mui
 				}
 			}
 		}
-
 		private void OnDeleteGenre( object sender , KeyEventArgs e )
 		{
 			if( e.KeyCode == Keys.Delete )
@@ -334,6 +335,9 @@ namespace mui
 			else
 				label5.Text = "";
 		}
+		#endregion LISTVIEW GENRE
+
+		#region LISTVIEW STYLE
 		private void OnStyleSelected( object sender , EventArgs e )
 		{
 			string tmp = label5.Text;
@@ -381,7 +385,6 @@ namespace mui
 					}
 				}
 		}
-
 		private void OnEditStyle( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -419,7 +422,6 @@ namespace mui
 				}
 			}
 		}
-
 		private void OnDeleteStyle( object sender , KeyEventArgs e )
 		{
 			if( e.KeyCode == Keys.Delete )
@@ -458,48 +460,48 @@ namespace mui
 				}
 			}
 		}
-		#endregion
+		#endregion LISTVIEW STYLE
+		#endregion TAB: MEDIA GENRES
 
-		private void OnApply( object sender , EventArgs e )
+		#region TAB: SUBTITLES
+		private void InitSubtitles()
 		{
-			LogTrace.Label();
-			CltWinEnv.AppSetting.SetData( Name , "Audio {Root}" , textBox1.Text );
-			CltWinEnv.AppSetting.SetData( Name , "Video {Root}" , textBox2.Text );
-
-			CltWinEnv.AppSetting.SetData( Name , "Use Default Pathname" , radioButton1.Checked ? "True" : "False" );
-			CltWinEnv.AppSetting.SetData( Name , "User Pathname" , textBox3.Text );
-
-			string subtitles = "";
-			foreach( ListViewItem lvi in listView3.CheckedItems )
-				subtitles = subtitles + (lvi.Tag as Context.CountryCode).Code + ",";
-
-			CltWinEnv.AppSetting.SetData( Name , "Subtitles" , subtitles.Trim( ',' ) );
-
-			if( textBox5.Text != CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" ) )
-				CltWinEnv.AppSetting.SetData( Name , "ffmpeg arguments" , textBox5.Text );
-
-			if( textBox4.Text != CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg path" ) )
-				CltWinEnv.AppSetting.SetData( Name , "ffmpeg path" , textBox4.Text );
-
-			Context.HandleMediaGenre.Info.Serialize();
+			string subtitles = CltWinEnv.AppReadSetting.GetData( Name , "Subtitles" , "en" );
+			Cursor crs = Cursor;
+			Cursor = Cursors.WaitCursor;
+			listView3.BeginUpdate();
+			try
+			{
+				listView3.Items.Clear();
+				foreach( Context.CountryCode cc in Context.HandleCountryCode.Info.Details )
+				{
+					ListViewItem lvi = new ListViewItem( cc.Code );
+					lvi.SubItems.Add( cc.Label );
+					lvi.ToolTipText = $"Country code is '{cc.Code}'";
+					lvi.Checked = subtitles.Contains( cc.Code );
+					lvi.Tag = cc;
+					listView3.Items.Add( lvi );
+				}
+			}
+			catch( Exception ex )
+			{
+				Logger.TraceException( ex , "List of Genre not updated correctly" , "verify the 'data/MediaGenre.xml' is not corrupted and restart the application." );
+			}
+			finally
+			{
+				listView3.AutoResizeColumns( ColumnHeaderAutoResizeStyle.ColumnContent );
+				listView3.AutoResizeColumns( ColumnHeaderAutoResizeStyle.HeaderSize );
+				listView3.EndUpdate();
+				Cursor = crs;
+			}
 		}
+		#endregion TAB: SUBTITLES
 
-		private void OnCancel( object sender , EventArgs e )
-		{
-			Context.HandleMediaGenre.LoadFromFile();
-		}
-
-		#region FFMPEG
-		private void OnMediaSplitterMoved( object sender , SplitterEventArgs e )
-		{
-			CltWinEnv.UserSetting.SetData( "Splitter" , "Genre" , splitContainer1.SplitterDistance );
-		}
-
+		#region TAB: FFMPEG
 		private void OnLinkClicked( object sender , LinkLabelLinkClickedEventArgs e )
 		{
 			Process.Start( "https://ffmpeg.org/" );
 		}
-
 		private void OnLocateffmpeg( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -521,6 +523,6 @@ namespace mui
 				}
 			}
 		}
-		#endregion
+		#endregion TAB: FFMPEG
 	}
 }

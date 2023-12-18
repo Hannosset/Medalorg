@@ -65,6 +65,9 @@
 			this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.listView5 = new System.Windows.Forms.ListView();
 			this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.radioButton2 = new System.Windows.Forms.RadioButton();
+			this.radioButton1 = new System.Windows.Forms.RadioButton();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
 			this.toolStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -81,6 +84,7 @@
 			this.splitContainer2.Panel2.SuspendLayout();
 			this.splitContainer2.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
+			this.panel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// toolStrip1
@@ -428,14 +432,16 @@
 			this.tableLayoutPanel1.ColumnCount = 2;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.tableLayoutPanel1.Controls.Add(this.listView4, 0, 0);
-			this.tableLayoutPanel1.Controls.Add(this.listView5, 1, 0);
+			this.tableLayoutPanel1.Controls.Add(this.listView4, 0, 1);
+			this.tableLayoutPanel1.Controls.Add(this.listView5, 1, 1);
+			this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
 			this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 1;
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.RowCount = 2;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(512, 231);
 			this.tableLayoutPanel1.TabIndex = 20;
 			// 
@@ -448,16 +454,17 @@
 			this.listView4.FullRowSelect = true;
 			this.listView4.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
 			this.listView4.HideSelection = false;
-			this.listView4.Location = new System.Drawing.Point(0, 3);
+			this.listView4.Location = new System.Drawing.Point(0, 33);
 			this.listView4.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
 			this.listView4.MultiSelect = false;
 			this.listView4.Name = "listView4";
 			this.listView4.ShowItemToolTips = true;
-			this.listView4.Size = new System.Drawing.Size(253, 228);
+			this.listView4.Size = new System.Drawing.Size(253, 198);
 			this.listView4.TabIndex = 11;
 			this.listView4.UseCompatibleStateImageBehavior = false;
 			this.listView4.View = System.Windows.Forms.View.Details;
 			this.listView4.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.OnGenreCheck);
+			this.listView4.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.OnGenreChecked);
 			this.listView4.SelectedIndexChanged += new System.EventHandler(this.OnGenreSelected);
 			// 
 			// columnHeader9
@@ -474,21 +481,56 @@
 			this.listView5.FullRowSelect = true;
 			this.listView5.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
 			this.listView5.HideSelection = false;
-			this.listView5.Location = new System.Drawing.Point(259, 3);
+			this.listView5.Location = new System.Drawing.Point(259, 33);
 			this.listView5.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
 			this.listView5.MultiSelect = false;
 			this.listView5.Name = "listView5";
 			this.listView5.ShowItemToolTips = true;
-			this.listView5.Size = new System.Drawing.Size(253, 228);
+			this.listView5.Size = new System.Drawing.Size(253, 198);
 			this.listView5.Sorting = System.Windows.Forms.SortOrder.Ascending;
 			this.listView5.TabIndex = 12;
 			this.listView5.UseCompatibleStateImageBehavior = false;
 			this.listView5.View = System.Windows.Forms.View.Details;
 			this.listView5.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.OnStyleCheck);
+			this.listView5.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.OnStyleChecked);
 			// 
 			// columnHeader10
 			// 
 			this.columnHeader10.Text = "Style";
+			// 
+			// panel1
+			// 
+			this.panel1.Controls.Add(this.radioButton2);
+			this.panel1.Controls.Add(this.radioButton1);
+			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panel1.Location = new System.Drawing.Point(3, 3);
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(250, 24);
+			this.panel1.TabIndex = 13;
+			// 
+			// radioButton2
+			// 
+			this.radioButton2.AutoSize = true;
+			this.radioButton2.Location = new System.Drawing.Point(61, 3);
+			this.radioButton2.Name = "radioButton2";
+			this.radioButton2.Size = new System.Drawing.Size(52, 17);
+			this.radioButton2.TabIndex = 1;
+			this.radioButton2.TabStop = true;
+			this.radioButton2.Text = "Video";
+			this.radioButton2.UseVisualStyleBackColor = true;
+			this.radioButton2.CheckedChanged += new System.EventHandler(this.OnVideoGenre);
+			// 
+			// radioButton1
+			// 
+			this.radioButton1.AutoSize = true;
+			this.radioButton1.Location = new System.Drawing.Point(3, 3);
+			this.radioButton1.Name = "radioButton1";
+			this.radioButton1.Size = new System.Drawing.Size(52, 17);
+			this.radioButton1.TabIndex = 0;
+			this.radioButton1.TabStop = true;
+			this.radioButton1.Text = "Audio";
+			this.radioButton1.UseVisualStyleBackColor = true;
+			this.radioButton1.CheckedChanged += new System.EventHandler(this.OnAudioGenre);
 			// 
 			// MainWindow
 			// 
@@ -533,6 +575,8 @@
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
 			this.splitContainer2.ResumeLayout(false);
 			this.tableLayoutPanel1.ResumeLayout(false);
+			this.panel1.ResumeLayout(false);
+			this.panel1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -575,6 +619,9 @@
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.TextBox textBox2;
 		private System.Windows.Forms.SplitContainer splitContainer2;
+		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.RadioButton radioButton2;
+		private System.Windows.Forms.RadioButton radioButton1;
 	}
 }
 
