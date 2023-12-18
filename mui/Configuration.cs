@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 
 using xnext.Context;
@@ -22,9 +24,9 @@ namespace mui
 				LogTrace.Label();
 				CltWinEnv.UserReadSetting.Load( this );
 				if( CltWinEnv.AppReadSetting.GetData( Name , "Genre" , "Audio" ) == "Video" )
-					radioButton3.Checked = true;
-				else
 					radioButton4.Checked = true;
+				else
+					radioButton3.Checked = true;
 				if( CltWinEnv.AppReadSetting.GetData( Name , "Use Default Pathname" , "True" ) == "False" )
 					radioButton2.Checked = true;
 				else
@@ -33,6 +35,9 @@ namespace mui
 				textBox3.Text = CltWinEnv.AppReadSetting.GetData( Name , "User Pathname" , "{Root}" );
 				textBox1.Text = CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyMusic ) );
 				textBox2.Text = CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyVideos ) );
+
+				textBox4.Text = CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg path" , new DirectoryInfo( "." ).FullName );
+				textBox5.Text = CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}.mp4\"" );
 
 				string subtitles = CltWinEnv.AppReadSetting.GetData( Name , "Subtitles" , "en" );
 				Cursor crs = Cursor;
@@ -43,7 +48,8 @@ namespace mui
 					listView3.Items.Clear();
 					foreach( Context.CountryCode cc in Context.HandleCountryCode.Info.Details )
 					{
-						ListViewItem lvi = new ListViewItem( cc.Label );
+						ListViewItem lvi = new ListViewItem( cc.Code );
+						lvi.SubItems.Add( cc.Label );
 						lvi.ToolTipText = $"Country code is '{cc.Code}'";
 						lvi.Checked = subtitles.Contains( cc.Code );
 						lvi.Tag = cc;
@@ -302,9 +308,12 @@ namespace mui
 				{
 					listView2.Items.Clear();
 
+					label5.Text = (listView1.SelectedItems[0].Tag as Context.MediaGenre).Description + "\n\n";
+
 					foreach( Context.MediaGenre.MediaStyle ms in (listView1.SelectedItems[0].Tag as Context.MediaGenre).Details )
 					{
 						ListViewItem lvi = new ListViewItem( ms.Label );
+						lvi.SubItems.Add( ms.Description );
 						lvi.ToolTipText = ms.Description;
 						lvi.Tag = ms;
 						listView2.Items.Add( lvi );
@@ -322,8 +331,22 @@ namespace mui
 					Cursor = crs;
 				}
 			}
+			else
+				label5.Text = "";
 		}
+		private void OnStyleSelected( object sender , EventArgs e )
+		{
+			string tmp = label5.Text;
 
+			int at = tmp.IndexOf( "\n\n" );
+
+			if( at > 0 )
+				tmp = tmp.Substring( 0 , at );
+			if( listView2.SelectedItems.Count > 0 )
+				tmp = tmp + "\n\n" + (listView2.SelectedItems[0].Tag as Context.MediaGenre.MediaStyle).Description;
+
+			label5.Text = tmp;
+		}
 		private void OnAddStyle( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -452,6 +475,12 @@ namespace mui
 
 			CltWinEnv.AppSetting.SetData( Name , "Subtitles" , subtitles.Trim( ',' ) );
 
+			if( textBox5.Text != CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" ) )
+				CltWinEnv.AppSetting.SetData( Name , "ffmpeg arguments" , textBox5.Text );
+
+			if( textBox4.Text != CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg path" ) )
+				CltWinEnv.AppSetting.SetData( Name , "ffmpeg path" , textBox4.Text );
+
 			Context.HandleMediaGenre.Info.Serialize();
 		}
 
@@ -459,5 +488,39 @@ namespace mui
 		{
 			Context.HandleMediaGenre.LoadFromFile();
 		}
+
+		#region FFMPEG
+		private void OnMediaSplitterMoved( object sender , SplitterEventArgs e )
+		{
+			CltWinEnv.UserSetting.SetData( "Splitter" , "Genre" , splitContainer1.SplitterDistance );
+		}
+
+		private void OnLinkClicked( object sender , LinkLabelLinkClickedEventArgs e )
+		{
+			Process.Start( "https://ffmpeg.org/" );
+		}
+
+		private void OnLocateffmpeg( object sender , EventArgs e )
+		{
+			LogTrace.Label();
+			using( OpenFileDialog dlg = new OpenFileDialog() )
+			{
+				dlg.InitialDirectory = textBox4.Text;
+				dlg.Filter = "exe files (*.exe)|*.exe|All files (*.*)|*.*";
+				dlg.FilterIndex = 1;
+				dlg.RestoreDirectory = true;
+				dlg.CheckFileExists = true;
+				dlg.CheckPathExists = true;
+				dlg.DefaultExt = ".exe";
+				dlg.Multiselect = false;
+				dlg.ValidateNames = true;
+				if( dlg.ShowDialog() == DialogResult.OK )
+				{
+					textBox4.Text = dlg.FileName;
+					CltWinEnv.AppSetting.SetData( Name , "ffmpeg path" , textBox4.Text );
+				}
+			}
+		}
+		#endregion
 	}
 }

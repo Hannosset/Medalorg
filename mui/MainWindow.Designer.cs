@@ -30,9 +30,6 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
-            "webm - 2160",
-            "2160"}, 1);
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -396,9 +393,6 @@
 			this.listView3.GridLines = true;
 			this.listView3.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.listView3.HideSelection = false;
-			listViewItem1.StateImageIndex = 0;
-			this.listView3.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
 			this.listView3.LargeImageList = this.imageList2;
 			this.listView3.Location = new System.Drawing.Point(0, 0);
 			this.listView3.Margin = new System.Windows.Forms.Padding(0, 0, 0, 3);
