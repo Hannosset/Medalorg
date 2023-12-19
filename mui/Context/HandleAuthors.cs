@@ -9,15 +9,30 @@ using xnext.Diagnostics;
 
 namespace mui.Context
 {
+	/// <summary>
+	/// What: List of the Downloaded video authors
+	///  Why: helps recognizing the name of the author from the media caption
+	/// </summary>
 	internal class HandleAuthors
 	{
 		#region LOCAL VARIABLE
-		/// <summary>The details of the security list for the streaming</summary>
+		/// <summary>
+		/// What: List of the available author of the singleton
+		///  Why: easily adds a new author in the list
+		/// </summary>
 		private List<AuthorInfo> _Details = new List<AuthorInfo>();
 		#endregion LOCAL VARIABLE
 
 		#region ACCESSORS
+		/// <summary>
+		/// What: array of the author information
+		///  Why: easily access a read-only array
+		/// </summary>
 		internal AuthorInfo[] Details => _Details.ToArray();
+		/// <summary>
+		/// What: Access the author data from the author name
+		///  Why: simple method to determine if the author is already registered in the data set
+		/// </summary>
 		internal AuthorInfo this[string author]
 		{
 			get
@@ -32,17 +47,28 @@ namespace mui.Context
 		#endregion ACCESSORS
 
 		#region SINGLETON
-		/// <summary>Gets the information.</summary>
-		/// <value>The information.</value>
+		/// <summary>
+		/// What: Singleton instance of the object
+		///  Why: Allow all application's methods to access the singleton
+		/// </summary>
 		internal static HandleAuthors Info { get; private set; } = new HandleAuthors();
 		#endregion SINGLETON
 
 		#region PUBLIC METHODS
+		/// <summary>
+		/// What: Load the author from the xml file and initialize the author if not existing.
+		///  Why: Allow to specifically populate the singleton instance when initializing the application.
+		/// </summary>
 		public static void LoadFromFile()
 		{
 				LogTrace.Label();
 				Info._Details = new List<AuthorInfo>( Deserialize() );
 		}
+		/// <summary>
+		/// What: Adds a new author in the singleton list - inversely sort the authors 
+		///  Why: Enrich the singleton container with a new information if the author is not already registered
+		///  Return: the object instance of the newly updated/added data
+		/// </summary>
 		public static AuthorInfo Update( string author )
 		{
 			if( !string.IsNullOrEmpty( author ) )
@@ -59,6 +85,10 @@ namespace mui.Context
 			}
 			return null;
 		}
+		/// <summary>
+		/// What: Flushes the data set on the hard disk
+		///  Why: allow the changes to be committed on the support preventing any loss of information in case of crash
+		/// </summary>
 		public static void Flush()
 		{
 			lock( Info )
@@ -67,10 +97,15 @@ namespace mui.Context
 		#endregion PUBLIC METHODS
 
 		#region SERIALIZATION
-		/// <summary>The name</summary>
+		/// <summary>
+		/// What: Name of the singleton
+		///  Why: The name of the object is also identifying the object serialization on the support
+		/// </summary>
 		internal const string Name = "Authors";
-		/// <summary>Gets the filename.</summary>
-		/// <value>The filename associated with the object.</value>
+		/// <summary>
+		/// What: Filename used to load/save the content of the singleton
+		///  Why: one filename access allowing a centralization of the filename management
+		/// </summary>
 		internal static string Filename
 		{
 			get
@@ -81,8 +116,10 @@ namespace mui.Context
 				return fi.FullName;
 			}
 		}
-		/// <summary>Serializes the specified filename.</summary>
-		/// <param name="filename">The filename.</param>
+		/// <summary>
+		/// What: Serialization of the singleton
+		///  Why: allow to save on the file system the content of the singleton - allowing manual alteration or simple recovery by deleting the file.
+		/// </summary>
 		internal void Serialize( string filename = null )
 		{
 			if( filename == null )
@@ -100,9 +137,10 @@ namespace mui.Context
 					Logger.TraceException( ex , "The new media will not be saved" , $"Confirm the Data Path in the configuration file is correct and confirm read/write access to the path and the file ({filename} )" );
 				}
 		}
-		/// <summary>Deserializes the specified filename <param name="filename">The filename.</param></summary>
-		/// m&gt;
-		/// <returns></returns>
+		/// <summary>
+		/// What: Initialize the singleton with the data set from the hard disk
+		///  Why: initialize the singleton object with the updated data from the support.
+		/// </summary>
 		private static AuthorInfo[] Deserialize( string filename = null )
 		{
 			if( filename == null )

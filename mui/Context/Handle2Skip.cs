@@ -9,24 +9,41 @@ using xnext.Diagnostics;
 
 namespace mui.Context
 {
+	/// <summary>
+	/// What: List of the string to remove form the caption
+	///  Why: helps recognizing the name of the author and the title of the media from the internet caption
+	/// </summary>
 	internal class Handle2Skip
 	{
 		#region LOCAL VARIABLE
-		/// <summary>The details of the security list for the streaming</summary>
+		/// <summary>
+		/// What: List of the available author of the singleton
+		///  Why: easily adds a new string to skip in the list
+		/// </summary>
 		private List<string> _Details = new List<string>();
 		#endregion LOCAL VARIABLE
 
 		#region ACCESSORS
+		/// <summary>
+		/// What: array of the strings to skip
+		///  Why: easily access a read-only array
+		/// </summary>
 		internal string[] Details => _Details.ToArray();
 		#endregion ACCESSORS
 
 		#region SINGLETON
-		/// <summary>Gets the information.</summary>
-		/// <value>The information.</value>
+		/// <summary>
+		/// What: Singleton instance of the object
+		///  Why: Allow all application's methods to access the singleton
+		/// </summary>
 		internal static Handle2Skip Info { get; private set; } = new Handle2Skip();
 		#endregion SINGLETON
 
 		#region PUBLIC METHODS
+		/// <summary>
+		/// What: Load the author from the xml file and initialize the author if not existing.
+		///  Why: Allow to specifically populate the singleton instance when initializing the application.
+		/// </summary>
 		public static void LoadFromFile()
 		{
 			if( !File.Exists( Filename ) )
@@ -35,6 +52,10 @@ namespace mui.Context
 				Info._Details = new List<string>( Deserialize() );
 			}
 		}
+		/// <summary>
+		/// What: Adds a new string to skip in the singleton list.
+		///  Why: Enrich the singleton container with a new information if the string to skip is not already registered
+		/// </summary>
 		public static void Update( string str )
 		{
 			if( !string.IsNullOrEmpty( str ) )
@@ -53,10 +74,15 @@ namespace mui.Context
 		#endregion PUBLIC METHODS
 
 		#region SERIALIZATION
-		/// <summary>The name</summary>
+		/// <summary>
+		/// What: Name of the singleton
+		///  Why: The name of the object is also identifying the object serialization on the support
+		/// </summary>
 		internal const string Name = "2skip";
-		/// <summary>Gets the filename.</summary>
-		/// <value>The filename associated with the object.</value>
+		/// <summary>
+		/// What: Filename used to load/save the content of the singleton
+		///  Why: one filename access allowing a centralization of the filename management
+		/// </summary>
 		internal static string Filename
 		{
 			get
@@ -67,8 +93,10 @@ namespace mui.Context
 				return fi.FullName;
 			}
 		}
-		/// <summary>Serializes the specified filename.</summary>
-		/// <param name="filename">The filename.</param>
+		/// <summary>
+		/// What: Serialization of the singleton
+		///  Why: allow to save on the file system the content of the singleton - allowing manual alteration or simple recovery by deleting the file.
+		/// </summary>
 		internal void Serialize( string filename = null )
 		{
 			if( filename == null )
@@ -86,9 +114,10 @@ namespace mui.Context
 					Logger.TraceException( ex , "The new media will not be saved" , $"Confirm the Data Path in the configuration file is correct and confirm read/write access to the path and the file ({filename} )" );
 				}
 		}
-		/// <summary>Deserializes the specified filename <param name="filename">The filename.</param></summary>
-		/// m&gt;
-		/// <returns></returns>
+		/// <summary>
+		/// What: Initialize the singleton with the data set from the hard disk
+		///  Why: initialize the singleton object with the updated data from the support.
+		/// </summary>
 		private static string[] Deserialize( string filename = null )
 		{
 			if( filename == null )

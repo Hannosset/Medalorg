@@ -18,11 +18,8 @@ namespace mui.Context
 		#region TYPES
 		public class MediaStyle
 		{
-			[XmlAttribute]
-			public string Label { get; set; }
-
-			[XmlText]
-			public string Description { get; set; }
+			[XmlAttribute] public string Label { get; set; }
+			[XmlText] public string Description { get; set; }
 		}
 		#endregion
 
@@ -32,14 +29,9 @@ namespace mui.Context
 
 
 		#region PUBLIC PROPERTIES
-		[XmlAttribute]
-		public MediaType Type { get; set; }
-
-		[XmlAttribute]
-		public string Label { get; set; }
-
-		[XmlText]
-		public string Description { get; set; }
+		[XmlAttribute] public MediaType Type { get; set; }
+		[XmlAttribute] public string Label { get; set; }
+		[XmlText] public string Description { get; set; }
 
 		public MediaStyle[] Details
 		{
@@ -48,20 +40,27 @@ namespace mui.Context
 		}
 		#endregion
 
+		#region ACCESSORS
 		public MediaStyle this[string label]
 		{
 			get
 			{
-					foreach( MediaStyle ms in Details )
-						if( ms.Label == label )
-							return ms;
+				foreach( MediaStyle ms in Details )
+					if( ms.Label == label )
+						return ms;
 				return null;
 			}
 		}
+		#endregion
+
 		#region PUBLIC METHODS
+		/// <summary>
+		/// What: Add a style to a specific Genre
+		///  Why: Allow the end-user to add/modify a style and/or its description
+		/// </summary>
 		internal MediaStyle Addpdate( string style , string description )
 		{
-			LogTrace.Label($"{style},{description}");
+			LogTrace.Label( $"{style},{description}" );
 			foreach( MediaStyle ms in Details )
 				if( ms.Label == style )
 				{
@@ -71,10 +70,13 @@ namespace mui.Context
 			_Items.Add( new MediaStyle() { Label = style , Description = description } );
 			return this[style];
 		}
-
+		/// <summary>
+		/// What: Remove a style from a genre
+		///  Why: Allow the end-user to remove a specific style from a genre
+		/// </summary>
 		internal void Remove( MediaStyle mediaStyle )
 		{
-			LogTrace.Label(mediaStyle.Label);
+			LogTrace.Label( mediaStyle.Label );
 
 			_Items.Remove( mediaStyle );
 		}

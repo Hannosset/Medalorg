@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Caching;
 using System.Xml;
@@ -9,45 +8,39 @@ using xnext.Diagnostics;
 
 namespace mui.Context
 {
+	/// <summary>
+	/// What: List of the country code
+	///  Why: Need the country code mnemonic to download the subtitle
+	/// </summary>
 	internal class HandleCountryCode
 	{
-		#region LOCAL VARIABLE
-		/// <summary>The details of the security list for the streaming</summary>
-		private List<CountryCode> _Details = new List<CountryCode>();
-		#endregion LOCAL VARIABLE
-
 		#region ACCESSORS
-		internal CountryCode[] Details => _Details.ToArray();
-		/// <summary>Gets the <see cref="RateSecurityData"/> with the specified currency.</summary>
-		/// <value>The <see cref="RateSecurityData"/>.</value>
-		/// <param name="currency">The currency.</param>
-		/// <returns></returns>
-		internal CountryCode this[string code]
-		{
-			get
-			{
-				lock( Info )
-					foreach( CountryCode cc in Details )
-						if( cc.Code == code )
-							return cc;
-				return null;
-			}
-		}
+		/// <summary>
+		/// What: List of the available data of the singleton
+		///  Why: Access the country code mnemonic and the country name for the end user to chose
+		/// </summary>
+		internal CountryCode[] Details { get; private set; }
 		#endregion ACCESSORS
 
 		#region SINGLETON
-		/// <summary>Gets the information.</summary>
-		/// <value>The information.</value>
+		/// <summary>
+		/// What: Singleton instance of the object
+		///  Why: Allow all application's methods to access the singleton
+		/// </summary>
 		internal static HandleCountryCode Info { get; private set; } = new HandleCountryCode();
 		#endregion SINGLETON
 
 		#region PUBLIC METHODS
+		/// <summary>
+		/// What: Load the country code from the xml file and initialize the country code if not existing.
+		///  Why: Allow to specifically populate the singleton instance when initializing the application.
+		/// </summary>
 		public static void LoadFromFile()
 		{
 			if( !File.Exists( Filename ) )
 			{
 				LogTrace.Label();
-				Info._Details = new List<CountryCode>()
+				Info.Details = new CountryCode[]
 				{
 					new CountryCode { Code = "en" , Label = "English" } ,
 					new CountryCode { Code = "ru" , Label = "Russian" } ,
@@ -239,16 +232,20 @@ namespace mui.Context
 				};
 				Info.Serialize();
 			}
-			Info._Details = new List<CountryCode>( Deserialize() );
+			Info.Details = Deserialize();
 		}
 		#endregion PUBLIC METHODS
 
 		#region SERIALIZATION
-		/// <summary>The name</summary>
+		/// <summary>
+		/// What: Name of the singleton
+		///  Why: The name of the object is also identifying the object serialization on the support
+		/// </summary>
 		internal const string Name = "CountryCode";
-
-		/// <summary>Gets the filename.</summary>
-		/// <value>The filename associated with the object.</value>
+		/// <summary>
+		/// What: Filename used to load/save the content of the singleton
+		///  Why: one filename access allowing a centralization of the filename management
+		/// </summary>
 		internal static string Filename
 		{
 			get
@@ -259,8 +256,10 @@ namespace mui.Context
 				return fi.FullName;
 			}
 		}
-		/// <summary>Serializes the specified filename.</summary>
-		/// <param name="filename">The filename.</param>
+		/// <summary>
+		/// What: Serialization of the singleton
+		///  Why: allow to save on the file system the content of the singleton - allowing manual alteration or simple recovery by deleting the file.
+		/// </summary>
 		internal void Serialize( string filename = null )
 		{
 			if( filename == null )
@@ -279,9 +278,10 @@ namespace mui.Context
 					Logger.TraceException( ex , "The new media will not be saved" , $"Confirm the Data Path in the configuration file is correct and confirm read/write access to the path and the file ({filename} )" );
 				}
 		}
-		/// <summary>Deserializes the specified filename <param name="filename">The filename.</param></summary>
-		/// m&gt;
-		/// <returns></returns>
+		/// <summary>
+		/// What: Initialize the singleton with the data set from the hard disk
+		///  Why: initialize the singleton object with the updated data from the support.
+		/// </summary>
 		private static CountryCode[] Deserialize( string filename = null )
 		{
 			if( filename == null )

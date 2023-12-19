@@ -9,19 +9,30 @@ using xnext.Diagnostics;
 
 namespace mui.Context
 {
+	/// <summary>
+	/// What: genre and style of the audio or video media
+	///  Why: the genre and the style can be used in the pathname to store the audio and/or video media file
+	/// </summary>
 	internal sealed class HandleMediaGenre
 	{
 		#region LOCAL VARIABLE
-		/// <summary>The details of the security list for the streaming</summary>
+		/// <summary>
+		/// What: List of the available Genre/Styles of the singleton
+		///  Why: easily adds a new Genre/Styles in the list
+		/// </summary>
 		private List<MediaGenre> _Details = new List<MediaGenre>();
 		#endregion LOCAL VARIABLE
 
 		#region ACCESSORS
+		/// <summary>
+		/// What: array of the Genre/Styles information
+		///  Why: easily access a read-only array
+		/// </summary>
 		internal MediaGenre[] Details => _Details.ToArray();
-		/// <summary>Gets the <see cref="RateSecurityData"/> with the specified currency.</summary>
-		/// <value>The <see cref="RateSecurityData"/>.</value>
-		/// <param name="currency">The currency.</param>
-		/// <returns></returns>
+		/// <summary>
+		/// What: Access the available Styles from the Genre
+		///  Why: The genre is a 1 to N to the style, this allow to have an easy simple access to the style when using the style in the destination pathname
+		/// </summary>
 		internal MediaGenre this[string label]
 		{
 			get
@@ -36,12 +47,18 @@ namespace mui.Context
 		#endregion ACCESSORS
 
 		#region SINGLETON
-		/// <summary>Gets the information.</summary>
-		/// <value>The information.</value>
+		/// <summary>
+		/// What: Singleton instance of the object
+		///  Why: Allow all application's methods to access the singleton
+		/// </summary>
 		internal static HandleMediaGenre Info { get; private set; } = new HandleMediaGenre();
 		#endregion SINGLETON
 
 		#region PUBLIC METHODS
+		/// <summary>
+		/// What: Load the Genres/styles from the xml file and initialize the Genres/styles if not existing.
+		///  Why: Allow to specifically populate the singleton instance when initializing the application.
+		/// </summary>
 		public static void LoadFromFile()
 		{
 			if( !File.Exists( Filename ) )
@@ -402,6 +419,11 @@ namespace mui.Context
 			}
 			Info._Details = new List<MediaGenre>( Deserialize() );
 		}
+		/// <summary>
+		/// What: Adds a new Genres/styles in the singleton list
+		///  Why: Enrich the singleton container with a new information 
+		///  Return: the object instance of the newly updated/added data
+		/// </summary>
 		public static MediaGenre Add( string genre , string description )
 		{
 			LogTrace.Label( $"{genre} , {description}" );
@@ -412,6 +434,12 @@ namespace mui.Context
 				return Info[genre];
 			}
 		}
+		/// <summary>
+		/// What: update the genre description
+		///  Why: the end-user might want to add more details in the description or simply replace it
+		/// </summary>
+		/// <param name="genre"></param>
+		/// <param name="description"></param>
 		public static void Update( string genre , string description )
 		{
 			LogTrace.Label( $"{genre} , {description}" );
@@ -421,6 +449,12 @@ namespace mui.Context
 					Info[genre].Description = description;
 			}
 		}
+		/// <summary>
+		/// What: remove a genre from the data set
+		///  Why: the end-user want to remove a genre because never used for example.
+		/// </summary>
+		/// <param name="genre"></param>
+		/// <param name="description"></param>
 		public static void Remove( MediaGenre mg )
 		{
 			LogTrace.Label( mg.Label );
@@ -432,11 +466,15 @@ namespace mui.Context
 		#endregion PUBLIC METHODS
 
 		#region SERIALIZATION
-		/// <summary>The name</summary>
+		/// <summary>
+		/// What: Name of the singleton
+		///  Why: The name of the object is also identifying the object serialization on the support
+		/// </summary>
 		internal const string Name = "MediaGenre";
-
-		/// <summary>Gets the filename.</summary>
-		/// <value>The filename associated with the object.</value>
+		/// <summary>
+		/// What: Filename used to load/save the content of the singleton
+		///  Why: one filename access allowing a centralization of the filename management
+		/// </summary>
 		internal static string Filename
 		{
 			get
@@ -447,8 +485,10 @@ namespace mui.Context
 				return fi.FullName;
 			}
 		}
-		/// <summary>Serializes the specified filename.</summary>
-		/// <param name="filename">The filename.</param>
+		/// <summary>
+		/// What: Serialization of the singleton
+		///  Why: allow to save on the file system the content of the singleton - allowing manual alteration or simple recovery by deleting the file.
+		/// </summary>
 		internal void Serialize( string filename = null )
 		{
 			if( filename == null )
@@ -474,9 +514,10 @@ namespace mui.Context
 					Logger.TraceException( ex , "The new media will not be saved" , $"Confirm the Data Path in the configuration file is correct and confirm read/write access to the path and the file ({filename} )" );
 				}
 		}
-		/// <summary>Deserializes the specified filename <param name="filename">The filename.</param></summary>
-		/// m&gt;
-		/// <returns></returns>
+		/// <summary>
+		/// What: Initialize the singleton with the data set from the hard disk
+		///  Why: initialize the singleton object with the updated data from the support.
+		/// </summary>
 		private static MediaGenre[] Deserialize( string filename = null )
 		{
 			if( filename == null )
