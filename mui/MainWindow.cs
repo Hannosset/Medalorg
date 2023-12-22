@@ -6,8 +6,8 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Caching;
-using System.Text;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 using xnext.Context;
 using xnext.Diagnostics;
@@ -131,7 +131,7 @@ namespace mui
 								lvi.ImageIndex = md.Type == Context.MediaType.Video ? 0 : 1;
 								lvi.Tag = md;
 								listView3.Items.Add( lvi );
-//									OnItemSelected( sender , e );
+								//									OnItemSelected( sender , e );
 							}
 						}
 						else
@@ -593,60 +593,68 @@ namespace mui
 				{
 					string tmp = RelativeTargetPath();
 
-					using( FileStream fs = new FileStream( Path.Combine( MemoryCache.Default["PublishPath"] as string , mi.VideoId + ".xml" ) , FileMode.Create , FileAccess.Write , FileShare.None ) )
+					List<Context.WebDownload> lst = new List<Context.WebDownload>();
+
+					bool HasAudio = false;
+					foreach( ListViewItem lvi in listView3.CheckedItems )
+						if( (lvi.Tag as Context.MediaInfo.MediaData).Type == Context.MediaType.Audio )
+						{
+							lst.Add( new Context.DownloadLyrics
+							{
+								Lang = CltWinEnv.AppReadSetting.GetData( Name , "Subtitles" , "en" ) ,
+								Filename = tmp.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}." + "{lang}.lyric" ,
+								Id = lst.Count ,
+								VideoId = mi.VideoId
+							} );
+							HasAudio = true;
+							break;
+						}
+
+					bool VideoNeedsAudio = false;
+					foreach( ListViewItem lvi in listView3.CheckedItems )
+						if( (lvi.Tag as Context.MediaInfo.MediaData).Type == Context.MediaType.Video && (lvi.Tag as Context.MediaInfo.VideoData).Model == Context.MediaInfo.AudioModel.Any )
+						{
+							lst.Add( new Context.DownloadSubtitle
+							{
+								Lang = CltWinEnv.AppReadSetting.GetData( Name , "Subtitles" , "en" ) ,
+								Filename = tmp.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}." + "{lang}.srt" ,
+								Id = lst.Count ,
+								VideoId = mi.VideoId
+							} );
+							VideoNeedsAudio = true;
+							break;
+						}
+					if( VideoNeedsAudio && !HasAudio )
 					{
-						byte[] arr = Encoding.UTF8.GetBytes( "<?xml version=\"1.0\"?>\n<ArrayOfWebDownload xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" ); fs.Write( arr , 0 , arr.Length );
-
-						bool HasAudio = false;
-						foreach( ListViewItem lvi in listView3.CheckedItems )
-							if( (lvi.Tag as Context.MediaInfo.MediaData).Type == Context.MediaType.Audio )
-							{
-								string filename = tmp.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}." + "{lang}.lyric";
-								arr = Encoding.UTF8.GetBytes( $"<DownloadLyrics Lang=\"{CltWinEnv.AppReadSetting.GetData( Name , "Subtitles" , "en" )}\" Filename=\"{filename}\">{mi.VideoId}</DownloadLyrics>\n" ); 
-								fs.Write( arr , 0 , arr.Length );
-								HasAudio = true;
-								break;
-							}
-
-						bool VideoNeedsAudio = false;
-						foreach( ListViewItem lvi in listView3.CheckedItems )
-							if( (lvi.Tag as Context.MediaInfo.MediaData).Type == Context.MediaType.Video && (lvi.Tag as Context.MediaInfo.VideoData).Model == Context.MediaInfo.AudioModel.Any )
-							{
-								string filename = tmp.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}." + "{lang}.srt";
-								arr = Encoding.UTF8.GetBytes( $"<DownloadSubtitle Lang=\"{CltWinEnv.AppReadSetting.GetData( Name , "Subtitles" , "en" )}\" Filename=\"{filename}\">{mi.VideoId}</DownloadSubtitle>\n" );
-								fs.Write( arr , 0 , arr.Length );
-								VideoNeedsAudio = true;
-								break;
-							}
-						if( VideoNeedsAudio && !HasAudio )
-						{
-							MessageBox.Show( "Some or all the video you selected are mpeg without audio.\nYou did not download any audio file.\nPlease select at least one audio file (vorbis and opus have the best quality)" , "STOP" , MessageBoxButtons.OK , MessageBoxIcon.Stop );
-							return;
-						}
-
-						foreach( ListViewItem lvi in listView3.CheckedItems )
-						{
-							Context.MediaInfo.MediaData md = lvi.Tag as Context.MediaInfo.MediaData;
-							string filename = tmp;
-							if( md.Type == Context.MediaType.Audio )
-								filename = filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}.{(md as Context.MediaInfo.AudioData).BitRate}.{(md as Context.MediaInfo.AudioData).Model}";
-							else
-							{
-								Context.MediaInfo.VideoData vd = md as Context.MediaInfo.VideoData;
-
-								if( vd.BitRate < 1 || vd.Model == Context.MediaInfo.AudioModel.Any )
-									filename = Path.GetTempPath() + $@"{mi.Title}.{vd.Resolution}.{vd.Format}.mpeg";
-								else
-									filename = filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}.{vd.Resolution}.{vd.Format}";
-
-							}
-							arr = Encoding.UTF8.GetBytes( $"<DownloadBinary DataLength=\"{md.DataLength}\" Filename=\"{filename}\">{md.Uri}</DownloadBinary>\n" ); fs.Write( arr , 0 , arr.Length );
-						}
-
-
-
-						arr = Encoding.UTF8.GetBytes( " </ArrayOfWebDownload>\n" ); fs.Write( arr , 0 , arr.Length );
+						MessageBox.Show( "Some or all the video you selected are mpeg without audio.\nYou did not download any audio file.\nPlease select at least one audio file (vorbis and opus have the best quality)" , "STOP" , MessageBoxButtons.OK , MessageBoxIcon.Stop );
+						return;
 					}
+
+					foreach( ListViewItem lvi in listView3.CheckedItems )
+					{
+						Context.MediaInfo.MediaData md = lvi.Tag as Context.MediaInfo.MediaData;
+						string filename = tmp;
+						if( md.Type == Context.MediaType.Audio )
+							filename = filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}.{(md as Context.MediaInfo.AudioData).BitRate}.{(md as Context.MediaInfo.AudioData).Model}";
+						else
+						{
+							Context.MediaInfo.VideoData vd = md as Context.MediaInfo.VideoData;
+
+							if( vd.BitRate < 1 || vd.Model == Context.MediaInfo.AudioModel.Any )
+								filename = Path.GetTempPath() + $@"{mi.Title}.{vd.Resolution}.{vd.Format}.mpeg";
+							else
+								filename = filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}.{vd.Resolution}.{vd.Format}";
+						}
+						lst.Add( new Context.DownloadBinary
+						{
+							DataLength = md.DataLength ,
+							Filename = filename ,
+							Id = lst.Count ,
+							uri = md.Uri
+						} );
+					}
+					using( FileStream fs = new FileStream( Path.Combine( MemoryCache.Default["PublishPath"] as string , mi.VideoId + ".xml" ) , FileMode.Create , FileAccess.Write , FileShare.None ) )
+						new XmlSerializer( typeof( Context.WebDownload[] ) ).Serialize( fs , lst.ToArray() );
 				}
 			}
 			catch( Exception ex )
