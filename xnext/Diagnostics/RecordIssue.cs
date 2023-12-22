@@ -36,9 +36,6 @@ namespace xnext.Diagnostics
 		/// <summary>
 		/// Configure the default context, consequence and reaction for any incoming record step
 		/// </summary>
-		/// <param name="context"> </param>
-		/// <param name="consequence"> </param>
-		/// <param name="reaction"> </param>
 		public void PushEnv( string context , string consequence , string reaction )
 		{
 			if( !string.IsNullOrEmpty( context ) )
@@ -56,9 +53,6 @@ namespace xnext.Diagnostics
 			else
 				Reaction.Push( Reaction.Peek() );
 		}
-		/// <summary>
-		/// Pops the env.
-		/// </summary>
 		public void PopEnv()
 		{
 			Context.Pop();
@@ -68,61 +62,16 @@ namespace xnext.Diagnostics
 		/// <summary>
 		/// This specific function is used to call when the consequence and the reaction are recorded.
 		/// </summary>
-		/// <param name="message"> </param>
-		/// <param name="details"> </param>
-		/// <returns> </returns>
 		public string[] Step( string message , string details ) => Step( TraceEventType.Information , null , message , null , null , details );
-		/// <summary>
-		/// Steps the specified message.
-		/// </summary>
-		/// <param name="message"> The message. </param>
-		/// <param name="consequence"> The consequence. </param>
-		/// <param name="reaction"> The reaction. </param>
-		/// <param name="details"> The details. </param>
-		/// <returns> System.String[]. </returns>
 		public string[] Step( string message , string consequence , string reaction , string details ) => Step( TraceEventType.Information , null , message , consequence , reaction , details );
-		/// <summary>
-		/// This specific function is used to call when the consequence and the reaction are recorded.
-		/// </summary>
-		/// <param name="type"> The type. </param>
-		/// <param name="message"> The message. </param>
-		/// <param name="details"> The details. </param>
-		/// <returns> System.String[]. </returns>
 		public string[] Step( TraceEventType type , string message , string details ) => Step( type , null , message , null , null , details );
-		/// <summary>
-		/// Steps the specified message.
-		/// </summary>
-		/// <param name="type"> The type. </param>
-		/// <param name="message"> The message. </param>
-		/// <param name="consequence"> The consequence. </param>
-		/// <param name="reaction"> The reaction. </param>
-		/// <param name="details"> The details. </param>
-		/// <returns> System.String[]. </returns>
 		public string[] Step( TraceEventType type , string message , string consequence , string reaction , string details ) => Step( type , null , message , consequence , reaction , details );
-		/// <summary>
-		/// Steps the specified ex.
-		/// </summary>
-		/// <param name="ex"> The ex. </param>
-		/// <param name="consequence"> The consequence. </param>
-		/// <param name="reaction"> The reaction. </param>
-		/// <returns> System.String[]. </returns>
-		/// <exception cref="ArgumentNullException"> ex </exception>
 		public string[] Step( Exception ex , string consequence , string reaction )
 		{
 			if( ex is null )
 				throw new ArgumentNullException( nameof( ex ) );
 			return Step( TraceEventType.Critical , ex.Source , ex.Message , consequence , reaction , string.Empty );
 		}
-		/// <summary>
-		/// Steps the specified type.
-		/// </summary>
-		/// <param name="type"> The type. </param>
-		/// <param name="context"> The context. </param>
-		/// <param name="message"> The message. </param>
-		/// <param name="consequence"> The consequence. </param>
-		/// <param name="reaction"> The reaction. </param>
-		/// <param name="details"> The details. </param>
-		/// <returns> System.String. </returns>
 		public string[] Step( TraceEventType type , string context , string message , string consequence , string reaction , string details )
 		{
 			List<string> lst = new List<string>

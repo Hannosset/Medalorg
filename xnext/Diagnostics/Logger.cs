@@ -14,38 +14,16 @@ namespace xnext.Diagnostics
 		/// </summary>
 		/// <value><c>true</c> if this instance is service; otherwise, <c>false</c>.</value>
 		public static bool IsService => LogIssues.IsService;
-		/// <summary>
-		/// Gets the log file.
-		/// </summary>
-		/// <value>The log file.</value>
 		public LogIssues LogFile { get; private set; } = new LogIssues();
-		/// <summary>
-		/// Gets the record.
-		/// </summary>
-		/// <value>The record.</value>
 		public RecordIssue Record { get; private set; } = new RecordIssue();
 		#endregion PUBLIC PROPERTIES
 
 		#region SINGLETON
-		/// <summary>
-		/// Gets the instance.
-		/// </summary>
-		/// <value>The instance.</value>
 		public static Logger Instance { get; private set; } = new Logger();
 		#endregion SINGLETON
 
 		#region PUBLIC METHODS
-		/// <summary>
-		/// Traces the warning.
-		/// </summary>
-		/// <param name="message">The message.</param>
 		public static void TraceWarning( string message ) => TraceWarning( message , null , null );
-		/// <summary>
-		/// Traces the warning.
-		/// </summary>
-		/// <param name="message">The message.</param>
-		/// <param name="consequence">The consequence.</param>
-		/// <param name="reaction">The reaction.</param>
 		public static void TraceWarning( string message , string consequence , string reaction )
 		{
 			if( Instance.LogFile != null && Instance.LogFile.NewLogFile )
@@ -53,12 +31,6 @@ namespace xnext.Diagnostics
 			Instance.LogFile?.WriteLine( Instance.Record.Step( TraceEventType.Warning , message , consequence , reaction , string.Empty ) );
 			LogTrace.Label( message );
 		}
-		/// <summary>
-		/// Traces the error.
-		/// </summary>
-		/// <param name="message">The message.</param>
-		/// <param name="consequence">The consequence.</param>
-		/// <param name="reaction">The reaction.</param>
 		public static void TraceError( string message , string consequence , string reaction )
 		{
 			if( Instance.LogFile != null && Instance.LogFile.NewLogFile )
@@ -70,12 +42,6 @@ namespace xnext.Diagnostics
 		///  What: Traces the event
 		///  Why: if the caller is a service log the event in the log viewer, otherwise trace the information if the calling function is recording to be tracing data.
 		/// </summary>
-		/// <param name="ex">The ex.</param>
-		/// <param name="consequence">The consequence.</param>
-		/// <param name="reaction">The reaction.</param>
-		/// <exception cref="ArgumentNullException">ex</exception>
-		// [Obsolete("Use TraceEvent with Event Identifiers")] public void TraceEvent( TraceEventType eventType , string message ) => LogFile?.WriteLine(
-		// Record.Step( eventType , message , string.Empty ) );
 		public static void TraceException( Exception ex , string consequence , string reaction )
 		{
 			if( ex is null )

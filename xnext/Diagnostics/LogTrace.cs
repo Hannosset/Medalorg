@@ -36,11 +36,8 @@ namespace xnext.Diagnostics
 		#endregion CONSTRUCTOR
 
 		#region PUBLIC METHODS
-		/// <summary>Begins this instance.</summary>
 		public static void Begin() => Begin( string.Empty );
 		public static void Begin( int at ) => Begin( at , string.Empty );
-		/// <summary>Begins the specified message.</summary>
-		/// <param name="message">The message.</param>
 		public static void Begin( string message )
 		{
 			if( !string.IsNullOrEmpty( message ) )
@@ -53,10 +50,7 @@ namespace xnext.Diagnostics
 				Label( message );
 			Instance.IndentLevel = at;
 		}
-		/// <summary>Labels this instance.</summary>
 		public static void Label() => Label( string.Empty );
-		/// <summary>Labels the specified message.</summary>
-		/// <param name="message">The message.</param>
 		public static void Label( string message )
 		{
 			StackTrace stackTrace = new StackTrace( 1 , true );
@@ -116,10 +110,7 @@ namespace xnext.Diagnostics
 			}
 		}
 
-		/// <summary>Ends this instance.</summary>
 		public static void End() => End( string.Empty );
-		/// <summary>Ends the specified message.</summary>
-		/// <param name="message">The message.</param>
 		public static void End( string message )
 		{
 			Instance.IndentLevel -= 1;

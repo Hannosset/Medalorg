@@ -64,6 +64,7 @@
     <Compile Include="Context\HandleMediaGenre.cs" />
     <Compile Include="Context\HandleMediaInfo.cs" />
     <Compile Include="Context\MediaGenre.cs" />
+    <Compile Include="Context\PublishedMedia.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>

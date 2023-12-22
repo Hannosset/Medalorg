@@ -5,6 +5,10 @@ using System.Windows.Forms;
 
 namespace xnext.Context
 {
+	/// <summary>
+	/// What: 
+	///  Why: 
+	/// </summary>
 	internal sealed class UserProfile : ProfileFile , IUserSettingsWriter , IUserSettingsReader
 	{
 		internal UserProfile( FileInfo iniFile ) : base( iniFile ) { }

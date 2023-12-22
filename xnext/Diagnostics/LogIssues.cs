@@ -24,15 +24,10 @@ namespace xnext.Diagnostics
 
 		#region PUBLIC PROPERTIES
 		public bool NewLogFile { get; private set; }
-		/// <summary>
-		/// Gets or sets the trace level.
-		/// </summary>
-		/// <value> The trace level. </value>
 		public int TraceLevel { get; set; }
 		/// <summary>
 		/// Gets the identifier or production of the running application
 		/// </summary>
-		/// <value> The identifier. </value>
 		public string Identifier { get; set; }
 		#endregion PUBLIC PROPERTIES
 
@@ -40,7 +35,6 @@ namespace xnext.Diagnostics
 		/// <summary>
 		/// Gets or sets the enabled flag.
 		/// </summary>
-		/// <value> The enabled flag. </value>
 		public bool Enabled => TraceLevel > 0;
 		/// <summary>
 		/// Gets a value indicating whether this instance is service.
@@ -53,7 +47,6 @@ namespace xnext.Diagnostics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecordIssue"/> class.
 		/// </summary>
-		/// <param name="identifier"> The identifier. </param>
 		public LogIssues( string identifier = "" )
 		{
 			Identifier = identifier;
@@ -67,10 +60,6 @@ namespace xnext.Diagnostics
 		}
 		#endregion CONSTRUCTORS
 
-		/// <summary>
-		/// Writes the line.
-		/// </summary>
-		/// <param name="fields"> The fields. </param>
 		public void WriteLine( string[] fields )
 		{
 			if( fields != null )
@@ -92,10 +81,6 @@ namespace xnext.Diagnostics
 				}
 			}
 		}
-		/// <summary>
-		/// Writes the line.
-		/// </summary>
-		/// <param name="line"> The log. </param>
 		public void WriteLine( string line ) => WriteString( line.Replace( "\n" , " " ).Replace( "\t" , "  " ) );
 		public void WriteString( string str )
 		{
@@ -128,10 +113,6 @@ namespace xnext.Diagnostics
 			return false;
 		}
 
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"> <c> true </c> to release both managed and unmanaged resources; <c> false </c> to release only unmanaged resources. </param>
 		protected virtual void Dispose( bool disposing )
 		{
 			if( disposing )
@@ -141,9 +122,6 @@ namespace xnext.Diagnostics
 				TraceFile = null;
 			}
 		}
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
 		public void Dispose()
 		{
 			Dispose( true ); GC.SuppressFinalize( this );

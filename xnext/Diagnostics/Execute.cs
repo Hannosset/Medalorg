@@ -19,34 +19,13 @@ namespace xnext.Diagnostics
 		#endregion PRIVATE VARIABLES
 
 		#region PROPERTIES
-		/// <summary>
-		/// Gets the output.
-		/// </summary>
-		/// <value> The output. </value>
 		public string Output => executeAns.ToString();
-		/// <summary>
-		/// Gets the error.
-		/// </summary>
-		/// <value> The error. </value>
 		public string Error => ErrorAns.ToString();
-		/// <summary>
-		/// Gets the executed command.
-		/// </summary>
-		/// <value> The executed command. </value>
 		public Process ExecutedCommand => p;
 		#endregion PROPERTIES
 
 		#region PUBLIC EVENTS
-		/// <summary>
-		/// Occurs when [log event].
-		/// </summary>
 		public event EventHandler<ExecuteEventArgs> ConsoleEvent;
-		/// <summary>
-		/// Called when [log event].
-		/// </summary>
-		/// <param name="sender"> The sender. </param>
-		/// <param name="output"> The output. </param>
-		/// <param name="error">  The error. </param>
 		private void OnLogEvent( object sender , string output , string error ) => ConsoleEvent?.Invoke( sender , new ExecuteEventArgs( output , error ) );
 		#endregion PUBLIC EVENTS
 
@@ -54,9 +33,6 @@ namespace xnext.Diagnostics
 		/// <summary>
 		/// Launch an command and wait for the execution to terminates
 		/// </summary>
-		/// <param name="exeName"> Name of the executable. </param>
-		/// <param name="args">    The arguments. </param>
-		/// <returns> console output string </returns>
 		public string Run( string exeName , string args )
 		{
 			Launch( exeName , args );
@@ -66,8 +42,6 @@ namespace xnext.Diagnostics
 		/// <summary>
 		/// Launch a windows command. Redirect output and error streaming By default sends a 'Y' on the console input. This is required when the putty ask confirmation to register the id.
 		/// </summary>
-		/// <param name="exeName"> Name of the executable. </param>
-		/// <param name="args">    The arguments. </param>
 		public void Launch( string exeName , string args )
 		{
 			FileInfo fi = new FileInfo( exeName );
@@ -109,8 +83,6 @@ namespace xnext.Diagnostics
 		/// <summary>
 		/// Outputs the data received.
 		/// </summary>
-		/// <param name="sender"> The sender. </param>
-		/// <param name="drea">   The <see cref="System.Diagnostics.DataReceivedEventArgs"/> instance containing the event data. </param>
 		private void OutputDataReceived( object sender , DataReceivedEventArgs drea )
 		{
 			if( !string.IsNullOrEmpty( drea.Data ) )
@@ -187,12 +159,10 @@ namespace xnext.Diagnostics
 		/// <summary>
 		/// Gets the output.
 		/// </summary>
-		/// <value> The output. </value>
 		public string Output => _Output;
 		/// <summary>
 		/// Gets the error.
 		/// </summary>
-		/// <value> The error. </value>
 		public string Error => _Error;
 		public int ExitCode { get; private set; } = int.MinValue;
 		#endregion PUBLIC PROPERTIES
@@ -201,8 +171,6 @@ namespace xnext.Diagnostics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ExecuteEventArgs"/> class.
 		/// </summary>
-		/// <param name="output"> The output. </param>
-		/// <param name="error">  The error. </param>
 		internal ExecuteEventArgs( string output , string error )
 		{
 			_Output = output;

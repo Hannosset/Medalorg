@@ -4,7 +4,7 @@ namespace xnext.Files
 {
 	public static class Wildcard
 	{
-		#region Wilcard comparison
+		#region wildcard comparison
 
 		public static bool Match( string[] extensions , string fileName )
 		{
@@ -71,6 +71,6 @@ namespace xnext.Files
 			return ans;
 		}
 
-		#endregion Wilcard comparison
+		#endregion wildcard comparison
 	}
 }

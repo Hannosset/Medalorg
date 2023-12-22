@@ -16,11 +16,11 @@ namespace mui.Context
 	internal sealed class HandleMediaInfo
 	{
 		#region LOCAL VARIABLE
-			/// <summary>
+		/// <summary>
 		/// What: List of the available media of the singleton
 		///  Why: easily adds a new media in the list
 		/// </summary>
-	private List<MediaInfo> _Details = new List<MediaInfo>();
+		private List<MediaInfo> _Details = new List<MediaInfo>();
 		#endregion LOCAL VARIABLE
 
 		#region ACCESSORS
@@ -71,7 +71,7 @@ namespace mui.Context
 		/// What: Adds a new media in the singleton list 
 		///  Why: Enrich the singleton container with a new information if the media is not already registered
 		/// </summary>
-		public static void Update( string[] fields )
+		public static MediaInfo Update( string[] fields )
 		{
 			LogTrace.Label( string.Join( "," , fields ) );
 
@@ -81,15 +81,12 @@ namespace mui.Context
 				{
 					if( Info[fields[0]] == null )
 						Info._Details.Add( new MediaInfo( fields[0] , fields[1] , fields[2] ) );
-					else if( fields.Length > 6 )
-					{
-						foreach( MediaInfo.MediaData mdata in Info[fields[0]].Details )
-							if( mdata.Uri == fields[6] )
-								return;
-						Info[fields[0]].Add( fields );
-					}
+					else if( fields.Length > 6 && Info[fields[0]].Add( fields ) == null )
+						return null;
+					return Info[fields[0]];
 				}
 			}
+			return null;
 		}
 		#endregion PUBLIC METHODS
 

@@ -248,9 +248,9 @@
 			this.radioButton3.AutoSize = true;
 			this.radioButton3.Location = new System.Drawing.Point(2, 0);
 			this.radioButton3.Name = "radioButton3";
-			this.radioButton3.Size = new System.Drawing.Size(52, 17);
+			this.radioButton3.Size = new System.Drawing.Size(53, 17);
 			this.radioButton3.TabIndex = 6;
-			this.radioButton3.Text = "Audio";
+			this.radioButton3.Text = "Music";
 			this.radioButton3.UseVisualStyleBackColor = true;
 			this.radioButton3.CheckedChanged += new System.EventHandler(this.OnAudioGenre);
 			// 
@@ -259,9 +259,9 @@
 			this.radioButton4.AutoSize = true;
 			this.radioButton4.Location = new System.Drawing.Point(60, 0);
 			this.radioButton4.Name = "radioButton4";
-			this.radioButton4.Size = new System.Drawing.Size(52, 17);
+			this.radioButton4.Size = new System.Drawing.Size(59, 17);
 			this.radioButton4.TabIndex = 6;
-			this.radioButton4.Text = "Video";
+			this.radioButton4.Text = "Movies";
 			this.radioButton4.UseVisualStyleBackColor = true;
 			this.radioButton4.CheckedChanged += new System.EventHandler(this.OnVideoGenre);
 			// 

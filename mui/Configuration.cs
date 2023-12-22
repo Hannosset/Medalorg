@@ -16,6 +16,10 @@ namespace mui
 		{
 			InitializeComponent();
 		}
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnFormLoad( object sender , EventArgs e )
 		{
 			if( !DesignMode && LicenseManager.UsageMode == LicenseUsageMode.Runtime )
@@ -41,7 +45,10 @@ namespace mui
 				InitSubtitles();
 			}
 		}
-
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnFormClosing( object sender , FormClosingEventArgs e )
 		{
 			if( !DesignMode && LicenseManager.UsageMode == LicenseUsageMode.Runtime )
@@ -58,6 +65,10 @@ namespace mui
 		}
 		#endregion CONSTRUCTOR
 
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnApply( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -82,12 +93,20 @@ namespace mui
 
 			Context.HandleMediaGenre.Info.Serialize();
 		}
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnCancel( object sender , EventArgs e )
 		{
 			Context.HandleMediaGenre.LoadFromFile();
 		}
 
 		#region TAB: TARGET DIRECTORY
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnSelectAudioRoot( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -102,7 +121,10 @@ namespace mui
 				}
 			}
 		}
-
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnSelectVideoRoot( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -121,6 +143,10 @@ namespace mui
 		#endregion TAB: TARGET DIRECTORY
 
 		#region TAB: MEDIA GENRES
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnAudioGenre( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -153,6 +179,10 @@ namespace mui
 				Cursor = crs;
 			}
 		}
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnVideoGenre( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -186,9 +216,17 @@ namespace mui
 				Cursor = crs;
 			}
 		}
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnMediaSplitterMoved( object sender , SplitterEventArgs e ) => CltWinEnv.UserSetting.SetData( "Splitter" , "Genre" , splitContainer1.SplitterDistance );
 
 		#region LISTVIEW GENRE
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnAddGenre( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -222,6 +260,10 @@ namespace mui
 				}
 			}
 		}
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnEditGenre( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -259,6 +301,10 @@ namespace mui
 				}
 			}
 		}
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnDeleteGenre( object sender , KeyEventArgs e )
 		{
 			if( e.KeyCode == Keys.Delete )
@@ -296,7 +342,10 @@ namespace mui
 				}
 			}
 		}
-
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnGenreSelected( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -338,6 +387,10 @@ namespace mui
 		#endregion LISTVIEW GENRE
 
 		#region LISTVIEW STYLE
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnStyleSelected( object sender , EventArgs e )
 		{
 			string tmp = label5.Text;
@@ -351,6 +404,10 @@ namespace mui
 
 			label5.Text = tmp;
 		}
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnAddStyle( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -385,6 +442,10 @@ namespace mui
 					}
 				}
 		}
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnEditStyle( object sender , EventArgs e )
 		{
 			LogTrace.Label();
@@ -422,6 +483,10 @@ namespace mui
 				}
 			}
 		}
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnDeleteStyle( object sender , KeyEventArgs e )
 		{
 			if( e.KeyCode == Keys.Delete )
@@ -464,6 +529,10 @@ namespace mui
 		#endregion TAB: MEDIA GENRES
 
 		#region TAB: SUBTITLES
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void InitSubtitles()
 		{
 			string subtitles = CltWinEnv.AppReadSetting.GetData( Name , "Subtitles" , "en" );
@@ -498,10 +567,18 @@ namespace mui
 		#endregion TAB: SUBTITLES
 
 		#region TAB: FFMPEG
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnLinkClicked( object sender , LinkLabelLinkClickedEventArgs e )
 		{
 			Process.Start( "https://ffmpeg.org/" );
 		}
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		private void OnLocateffmpeg( object sender , EventArgs e )
 		{
 			LogTrace.Label();

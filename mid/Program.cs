@@ -145,7 +145,7 @@ namespace mid
 				Console.Out.WriteLine( $"{VideoId}\t\"{videos.First().Title}\"\t\"{videos.First().Info.Author}\"\t{videos.Count()}" );
 				foreach( YouTubeVideo item in videos )
 				{
-					Console.Out.WriteLine( $"{VideoId}\t{item.AdaptiveKind}\t{item.AudioFormat}\t{item.AudioBitrate}\t{item.Format}\t{item.Resolution}\t{item.Uri}" );
+					Console.Out.WriteLine( $"{VideoId}\t{item.AdaptiveKind}\t{item.AudioFormat}\t{item.AudioBitrate}\t{item.Format}\t{item.Resolution}\t{item.Uri}\t{item.ContentLength}" );
 				}
 			}
 		}

@@ -33,10 +33,6 @@ namespace xnext.Files
 		public BufferedFile( string fileName , int bufferSize ) => Open( fileName , bufferSize );
 		#endregion CONSTRUCTOR
 
-		/// <summary>
-		/// Opens the specified filename.
-		/// </summary>
-		/// <param name="fileName"> The filename. </param>
 		public BufferedFile Open( string fileName ) => Open( fileName , 4096 );
 		public BufferedFile Open( string fileName , int bufferSize )
 		{
@@ -65,14 +61,7 @@ namespace xnext.Files
 
 			return this;
 		}
-		/// <summary>
-		/// Flushes this instance.
-		/// </summary>
 		public void Flush() => Flush( 0 );
-		/// <summary>
-		/// Flushes this instance.
-		/// </summary>
-		/// <param name="sleep"> The sleep. </param>
 		public void Flush( int sleep )
 		{
 			try
@@ -115,11 +104,6 @@ namespace xnext.Files
 								Thread.Sleep( 1000 );
 					}
 		}
-		/// <summary>
-		/// Writes the line.
-		/// </summary>
-		/// <param name="data"> The data. </param>
-		/// <exception cref="ArgumentNullException"> data </exception>
 		public virtual void WriteLine( string data )
 		{
 			if( data is null )
@@ -146,10 +130,6 @@ namespace xnext.Files
 				}
 			}
 		}
-		/// <summary>
-		/// Writes the line.
-		/// </summary>
-		/// <param name="data"> The data. </param>
 		public virtual void DumpLine( string data )
 		{
 			if( data is null )
@@ -182,10 +162,6 @@ namespace xnext.Files
 					DataFileBuffer.WriteByte( value );
 		}
 
-		/// <summary>
-		/// Closes this instance.
-		/// </summary>
-		/// <returns> BufferedFile. </returns>
 		public void Close()
 		{
 			lock( MutexFlag )
@@ -239,10 +215,6 @@ namespace xnext.Files
 			}
 		}
 
-		// TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources. ~BufferedFile() { // Do not change this code. Put cleanup code in
-		// Dispose(bool disposing) above. Dispose(false); }
-
-		// This code added to correctly implement the disposable pattern.
 		public void Dispose()
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.

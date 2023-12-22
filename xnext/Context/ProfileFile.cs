@@ -24,13 +24,6 @@ namespace xnext.Context
 			get => _iniFile.DirectoryName;
 			set => _iniFile = new FileInfo( value + @"\" + _iniFile.Name );
 		}
-		/// <summary>
-		///  What: Access the data from the ini file
-		///  Why: read and return the raw string associated to the key.
-		/// </summary>
-		/// <param name="section">The section.</param>
-		/// <param name="key">The key.</param>
-		/// <returns>System.String.</returns>
 		public string GetData( string section , string key )
 		{
 			StringBuilder Ans = new StringBuilder( _inputBufferLen );
@@ -115,12 +108,6 @@ namespace xnext.Context
 		#endregion IApplicationSettingsReader Members
 
 		#region IApplicationSettingsWriter Members
-		/// <summary>Sets the data.</summary>
-		/// <param name="section">The section.</param>
-		/// <param name="key">The key.</param>
-		/// <param name="data">The data.</param>
-		/// <returns></returns>
-		/// <exception cref="System.ArgumentNullException">value</exception>
 		public bool SetData( string section , string key , string data )
 		{
 			if( data == null )
@@ -131,11 +118,6 @@ namespace xnext.Context
 			}
 			return false;
 		}
-		/// <summary>Sets the data.</summary>
-		/// <param name="section">The section.</param>
-		/// <param name="key">The key.</param>
-		/// <param name="value">The value.</param>
-		/// <returns></returns>
 		public bool SetData( string section , string key , int value ) => Native.NativeMethods.WritePrivateProfileString( section , key , value.ToString( CultureInfo.CurrentCulture ) , ConfigFile );
 		public bool SetData( string section , string key , bool value ) => Native.NativeMethods.WritePrivateProfileString( section , key , value.ToString( CultureInfo.CurrentCulture ) , ConfigFile );
 		public bool SetData( string section , string key , decimal value ) => Native.NativeMethods.WritePrivateProfileString( section , key , value.ToString( CultureInfo.CurrentCulture ) , ConfigFile );

@@ -513,10 +513,10 @@
 			this.radioButton2.AutoSize = true;
 			this.radioButton2.Location = new System.Drawing.Point(61, 3);
 			this.radioButton2.Name = "radioButton2";
-			this.radioButton2.Size = new System.Drawing.Size(52, 17);
+			this.radioButton2.Size = new System.Drawing.Size(59, 17);
 			this.radioButton2.TabIndex = 1;
 			this.radioButton2.TabStop = true;
-			this.radioButton2.Text = "Video";
+			this.radioButton2.Text = "Movies";
 			this.radioButton2.UseVisualStyleBackColor = true;
 			this.radioButton2.CheckedChanged += new System.EventHandler(this.OnVideoGenre);
 			// 
@@ -525,10 +525,10 @@
 			this.radioButton1.AutoSize = true;
 			this.radioButton1.Location = new System.Drawing.Point(3, 3);
 			this.radioButton1.Name = "radioButton1";
-			this.radioButton1.Size = new System.Drawing.Size(52, 17);
+			this.radioButton1.Size = new System.Drawing.Size(53, 17);
 			this.radioButton1.TabIndex = 0;
 			this.radioButton1.TabStop = true;
-			this.radioButton1.Text = "Audio";
+			this.radioButton1.Text = "Music";
 			this.radioButton1.UseVisualStyleBackColor = true;
 			this.radioButton1.CheckedChanged += new System.EventHandler(this.OnAudioGenre);
 			// 
@@ -543,11 +543,12 @@
 			this.Controls.Add(this.button1);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.toolStrip1);
+			this.DoubleBuffered = true;
 			this.MinimumSize = new System.Drawing.Size(600, 400);
 			this.Name = "MainWindow";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
 			this.Text = "Medalorg GUI";
-			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFornClosing);
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);
 			this.Load += new System.EventHandler(this.OnFormLoad);
 			this.Controls.SetChildIndex(this.toolStrip1, 0);
 			this.Controls.SetChildIndex(this.label1, 0);
