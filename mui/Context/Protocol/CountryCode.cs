@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace mui.Context
+namespace mui.Context.Protocol
 {
 	public sealed class CountryCode
 	{

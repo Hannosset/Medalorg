@@ -40,7 +40,7 @@ namespace mui
 				textBox2.Text = CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyVideos ) );
 
 				textBox4.Text = CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg path" , new DirectoryInfo( "." ).FullName );
-				textBox5.Text = CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}.mp4\"" );
+				textBox5.Text = CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}\"" );
 
 				InitSubtitles();
 			}
@@ -81,13 +81,15 @@ namespace mui
 
 			string subtitles = "";
 			foreach( ListViewItem lvi in listView3.CheckedItems )
-				subtitles = subtitles + (lvi.Tag as Context.CountryCode).Code + ",";
+				subtitles = subtitles + (lvi.Tag as Context.Protocol.CountryCode).Code + ",";
 
 			CltWinEnv.AppSetting.SetData( Name , "Subtitles" , subtitles.Trim( ',' ) );
 
-			if( textBox5.Text != CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" ) )
+			if( string.IsNullOrEmpty( CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" ) ) )
+			{
+				textBox5.Text = "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}\"";
 				CltWinEnv.AppSetting.SetData( Name , "ffmpeg arguments" , textBox5.Text );
-
+			}
 			if( textBox4.Text != CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg path" ) )
 				CltWinEnv.AppSetting.SetData( Name , "ffmpeg path" , textBox4.Text );
 
@@ -158,8 +160,8 @@ namespace mui
 				listView1.Items.Clear();
 				listView2.Items.Clear();
 
-				foreach( Context.MediaGenre mg in Context.HandleMediaGenre.Info.Details )
-					if( mg.Type == Context.MediaType.Audio )
+				foreach( Context.Protocol.MediaGenre mg in Context.HandleMediaGenre.Info.Details )
+					if( mg.Type == Context.Protocol.AdaptiveKind.Audio )
 					{
 						ListViewItem lvi = new ListViewItem( mg.Label );
 						lvi.ToolTipText = mg.Description;
@@ -194,8 +196,8 @@ namespace mui
 				listView1.Items.Clear();
 				listView2.Items.Clear();
 
-				foreach( Context.MediaGenre mg in Context.HandleMediaGenre.Info.Details )
-					if( mg.Type == Context.MediaType.Video )
+				foreach( Context.Protocol.MediaGenre mg in Context.HandleMediaGenre.Info.Details )
+					if( mg.Type == Context.Protocol.AdaptiveKind.Video )
 					{
 						ListViewItem lvi = new ListViewItem( mg.Label );
 						lvi.ToolTipText = mg.Description;
@@ -271,7 +273,7 @@ namespace mui
 			{
 				dlg.textBox1.ReadOnly = true;
 				dlg.textBox1.Text = listView1.SelectedItems[0].Text;
-				dlg.textBox2.Text = (listView1.SelectedItems[0].Tag as Context.MediaGenre).Description;
+				dlg.textBox2.Text = (listView1.SelectedItems[0].Tag as Context.Protocol.MediaGenre).Description;
 
 				if( dlg.ShowDialog() == DialogResult.OK )
 				{
@@ -325,7 +327,7 @@ namespace mui
 						else if( listView1.Items.Count > 1 )
 							listView1.Items[1].Selected = true;
 
-						Context.HandleMediaGenre.Remove( lvi.Tag as Context.MediaGenre );
+						Context.HandleMediaGenre.Remove( lvi.Tag as Context.Protocol.MediaGenre );
 						listView1.Items.Remove( lvi );
 					}
 					catch( Exception ex )
@@ -358,9 +360,9 @@ namespace mui
 				{
 					listView2.Items.Clear();
 
-					label5.Text = (listView1.SelectedItems[0].Tag as Context.MediaGenre).Description + "\n\n";
+					label5.Text = (listView1.SelectedItems[0].Tag as Context.Protocol.MediaGenre).Description + "\n\n";
 
-					foreach( Context.MediaGenre.MediaStyle ms in (listView1.SelectedItems[0].Tag as Context.MediaGenre).Details )
+					foreach( Context.Protocol.MediaGenre.MediaStyle ms in (listView1.SelectedItems[0].Tag as Context.Protocol.MediaGenre).Details )
 					{
 						ListViewItem lvi = new ListViewItem( ms.Label );
 						lvi.SubItems.Add( ms.Description );
@@ -400,7 +402,7 @@ namespace mui
 			if( at > 0 )
 				tmp = tmp.Substring( 0 , at );
 			if( listView2.SelectedItems.Count > 0 )
-				tmp = tmp + "\n\n" + (listView2.SelectedItems[0].Tag as Context.MediaGenre.MediaStyle).Description;
+				tmp = tmp + "\n\n" + (listView2.SelectedItems[0].Tag as Context.Protocol.MediaGenre.MediaStyle).Description;
 
 			label5.Text = tmp;
 		}
@@ -424,7 +426,7 @@ namespace mui
 						{
 							ListViewItem lvi = listView2.Items.Add( dlg.textBox1.Text );
 							lvi.ToolTipText = dlg.textBox2.Text;
-							lvi.Tag = (listView1.SelectedItems[0].Tag as Context.MediaGenre).Addpdate( dlg.textBox1.Text , dlg.textBox2.Text );
+							lvi.Tag = (listView1.SelectedItems[0].Tag as Context.Protocol.MediaGenre).Addpdate( dlg.textBox1.Text , dlg.textBox2.Text );
 							listView2.Sort();
 							lvi.Selected = true;
 						}
@@ -453,7 +455,7 @@ namespace mui
 			{
 				dlg.textBox1.ReadOnly = true;
 				dlg.textBox1.Text = listView2.SelectedItems[0].Text;
-				dlg.textBox2.Text = (listView2.SelectedItems[0].Tag as Context.MediaGenre.MediaStyle).Description;
+				dlg.textBox2.Text = (listView2.SelectedItems[0].Tag as Context.Protocol.MediaGenre.MediaStyle).Description;
 
 				if( dlg.ShowDialog() == DialogResult.OK )
 				{
@@ -507,8 +509,8 @@ namespace mui
 						else if( listView2.Items.Count > 1 )
 							listView2.Items[1].Selected = true;
 
-						Context.MediaGenre mi = listView2.SelectedItems[0].Tag as Context.MediaGenre;
-						mi.Remove( lvi.Tag as Context.MediaGenre.MediaStyle );
+						Context.Protocol.MediaGenre mi = listView2.SelectedItems[0].Tag as Context.Protocol.MediaGenre;
+						mi.Remove( lvi.Tag as Context.Protocol.MediaGenre.MediaStyle );
 						listView2.Items.Remove( lvi );
 					}
 					catch( Exception ex )
@@ -542,7 +544,7 @@ namespace mui
 			try
 			{
 				listView3.Items.Clear();
-				foreach( Context.CountryCode cc in Context.HandleCountryCode.Info.Details )
+				foreach( Context.Protocol.CountryCode cc in Context.HandleCountryCode.Info.Details )
 				{
 					ListViewItem lvi = new ListViewItem( cc.Code );
 					lvi.SubItems.Add( cc.Label );

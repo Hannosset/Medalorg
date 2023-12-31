@@ -43,9 +43,8 @@
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.listView1 = new System.Windows.Forms.ListView();
 			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -122,7 +121,7 @@
 			this.toolStripButton2.Name = "toolStripButton2";
 			this.toolStripButton2.Size = new System.Drawing.Size(66, 22);
 			this.toolStripButton2.Text = "Refresh";
-			this.toolStripButton2.Click += new System.EventHandler(this.OnRefresh);
+			this.toolStripButton2.Click += new System.EventHandler(this.OnRefreshMediaInfo);
 			// 
 			// toolStripButton3
 			// 
@@ -211,9 +210,8 @@
 			// 
 			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
-            this.columnHeader3,
-            this.columnHeader4,
-            this.columnHeader5});
+            this.columnHeader5,
+            this.columnHeader2});
 			this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.listView1.FullRowSelect = true;
 			this.listView1.GridLines = true;
@@ -235,20 +233,15 @@
 			this.columnHeader1.Text = "Title";
 			this.columnHeader1.Width = 120;
 			// 
-			// columnHeader3
-			// 
-			this.columnHeader3.Text = "# Video";
-			this.columnHeader3.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			// 
-			// columnHeader4
-			// 
-			this.columnHeader4.Text = "# Audio";
-			this.columnHeader4.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			// 
 			// columnHeader5
 			// 
 			this.columnHeader5.Text = "Status";
 			this.columnHeader5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			// 
+			// columnHeader2
+			// 
+			this.columnHeader2.Text = "Communication";
+			this.columnHeader2.Width = 130;
 			// 
 			// tableLayoutPanel2
 			// 
@@ -424,8 +417,8 @@
 			// 
 			this.imageList2.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList2.ImageStream")));
 			this.imageList2.TransparentColor = System.Drawing.Color.Transparent;
-			this.imageList2.Images.SetKeyName(0, "video.ico");
-			this.imageList2.Images.SetKeyName(1, "AudioFile.ico");
+			this.imageList2.Images.SetKeyName(0, "Video");
+			this.imageList2.Images.SetKeyName(1, "Audio");
 			// 
 			// tableLayoutPanel1
 			// 
@@ -598,8 +591,6 @@
 		private System.Windows.Forms.SplitContainer splitContainer1;
 		private System.Windows.Forms.ListView listView1;
 		private System.Windows.Forms.ColumnHeader columnHeader1;
-		private System.Windows.Forms.ColumnHeader columnHeader3;
-		private System.Windows.Forms.ColumnHeader columnHeader4;
 		private System.Windows.Forms.ColumnHeader columnHeader5;
 		private System.Windows.Forms.ListView listView3;
 		private System.Windows.Forms.ColumnHeader columnHeader7;
@@ -623,6 +614,7 @@
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.RadioButton radioButton2;
 		private System.Windows.Forms.RadioButton radioButton1;
+		private System.Windows.Forms.ColumnHeader columnHeader2;
 	}
 }
 

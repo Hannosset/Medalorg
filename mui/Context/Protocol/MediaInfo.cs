@@ -1,54 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
 
 using xnext.Diagnostics;
 
-namespace mui.Context
+namespace mui.Context.Protocol
 {
-	public enum MediaType { Unkown, Audio, Video };
+	public enum AdaptiveKind { Unkown, Audio, Video };
+	public enum AudioFormat { Unknown, Aac, Vorbis, Opus };
+	public enum VideoFormat { Mp4, WebM };
 
 	public class MediaInfo
 	{
 		#region TYPES
-		public enum AudioModel { Any, aac, vorbis, opus };
-		public enum VideoFormat { mp4, webm };
-
 		public class MediaData
 		{
-			[XmlAttribute] public MediaType Type { get; set; }
+			[XmlAttribute] public AdaptiveKind Type { get; set; }
 			[XmlAttribute] public long DataLength { get; set; }
-			[XmlText] public string Uri { get; set; }
+			[XmlText] public string Filename { get; set; } = "";
+			[XmlIgnore] public MediaInfo Parent { get; set; }
+
+			/// <summary>
+			/// What: extension of the media file
+			///  Why: the extension must be regulated and formatted as follows . [media parameter] . [media file type] as this format will be used to insert automatically lyrics and subtitles files
+			/// </summary>
+			internal virtual string Extension { get; } = string.Empty;
+
+			internal bool Downloaded => string.IsNullOrEmpty( Filename ) ? false : File.Exists( Filename );
 		}
 		public class AudioData : MediaData
 		{
-			[XmlAttribute] public AudioModel Model { get; set; } = AudioModel.Any;
+			[XmlAttribute] public AudioFormat Model { get; set; } = AudioFormat.Unknown;
 			[XmlAttribute] public int BitRate { get; set; } = -1;
 
-			public override string ToString() => $"{Model} @ {BitRate} [{DataLength/1024:#,###,###} Kb.]";
+			internal override string Extension => $".{BitRate}.{Model.ToString().ToLower()}";
+			public override string ToString() => $"{Model} @ {BitRate} [{DataLength / 1024:#,###,###} Kb.]";
 		}
 		public class VideoData : AudioData
 		{
-			[XmlAttribute] public VideoFormat Format { get; set; } = VideoFormat.mp4;
+			[XmlAttribute] public VideoFormat Format { get; set; } = VideoFormat.Mp4;
 			[XmlAttribute] public int Resolution { get; set; }
 
+			internal override string Extension => $".{Resolution}@{BitRate}.{Format.ToString().ToLower()}";
+
 			public override string ToString()
-				=> Model == AudioModel.Any
-				? $"{Format} - {Resolution} [{DataLength/1024:#,###,###} Kb.]"
-				: $"{Format} - {Resolution} with {Model} @ {BitRate} [{DataLength/1024:#,###,###} Kb.]";
+				=> Model == AudioFormat.Unknown
+				? $"{Format} - {Resolution} [{DataLength / 1024:#,###,###} Kb.]"
+				: $"{Format} - {Resolution} with {Model} @{BitRate} [{DataLength / 1024:#,###,###} Kb.]";
 		}
 		#endregion
 
 		#region LOCAL VARIABLE
-		private List<MediaData> _Items { get; set; } = new List<MediaData>();
+		private List<MediaData> _Items = new List<MediaData>();
+		private List<string> _MovieFilenames = new List<string>();
 		#endregion
 
 		#region PUBLIC PROPERTIES
 		[XmlAttribute] public string VideoId { get; set; }
 		[XmlAttribute] public string Caption { get; set; }
 		[XmlAttribute] public string Publisher { get; set; }
+		public string[] MovieFilenames
+		{
+			get => _MovieFilenames.ToArray();
+			set => _MovieFilenames.AddRange( value );
+		}
 		[
 			XmlElement( Type = typeof( MediaData ) , IsNullable = true ),
 			XmlElement( Type = typeof( AudioData ) , IsNullable = true ),
@@ -57,7 +75,12 @@ namespace mui.Context
 		public MediaData[] Details
 		{
 			get => _Items.ToArray();
-			set => _Items.AddRange( value );
+			set
+			{
+				_Items.AddRange( value );
+				foreach( MediaData md in _Items )
+					md.Parent = this;
+			}
 		}
 		#endregion
 
@@ -75,16 +98,28 @@ namespace mui.Context
 		#endregion
 
 		#region ACESSORS
+		public MediaData this[long l ]
+		{
+			get
+			{
+				foreach( MediaData md in Details)
+					if( md.DataLength== l )
+						return md;
+				return null;
+			}
+		}
+		public int DownloadedVideo => Details.Where( x => x.Downloaded && (x.Type == AdaptiveKind.Audio || (x.Type == AdaptiveKind.Video && !x.Extension.Contains( "@-1" ))) ).Count() + MovieFilenames.Length;
+		public bool Downloaded => MovieFilenames.Length > 0 || Details.Where( x => x.Downloaded && ( x.Type == AdaptiveKind.Audio || (x.Type == AdaptiveKind.Video && !x.Extension.Contains( "@-1" )))).Any();
 		/// <summary>
 		/// What: Count the number of audio files
 		///  Why: Display that information in the main list view - purely informative
 		/// </summary>
-		public int AudioCount => Details.Where( x => x.Type == MediaType.Audio ).Count();
+		public int AudioCount => Details.Where( x => x.Type == AdaptiveKind.Audio ).Count();
 		/// <summary>
 		/// What: Count the number of video files
 		///  Why: Display that information in the main list view - purely informative
 		/// </summary>
-		public int VideoCount => Details.Where( x => x.Type == MediaType.Video ).Count();
+		public int VideoCount => Details.Where( x => x.Type == AdaptiveKind.Video ).Count();
 		#endregion
 
 		#region CONSTRUCTOR
@@ -98,6 +133,7 @@ namespace mui.Context
 		#endregion
 
 		#region PUBLIC METHODS
+		internal void Add( string v ) => _MovieFilenames.Add( v );
 		/// <summary>
 		/// What: Adds a video or audio stream of the media to download
 		/// Why: need to identify the stream to allow the end-user to chose what to download
@@ -108,53 +144,54 @@ namespace mui.Context
 		/// 3 -> bit rate
 		/// 4 -> VideoFormat
 		/// 5 -> resolution
-		/// 6 -> uri
-		/// 7 -> Data length
+		/// 6 -> Data length
 		/// </summary>
 		/// <param name="fields"></param>
 		public MediaData Add( string[] fields )
 		{
 			LogTrace.Label();
-			MediaType type;
+
+			long datalength = 0;
+			if( fields.Length < 6 || long.TryParse( fields[6] , out datalength ) == false || this[datalength] != null )
+				return this[datalength];
+
+			AdaptiveKind type;
 			if( Enum.TryParse( fields[1] , true , out type ) )
 			{
-				AudioModel model = AudioModel.Any;
+				AudioFormat model;
 
-				int bitrate = -1;
+				int bitrate;
 				int.TryParse( fields[3] , out bitrate );
-
-				long datalength = 0;
-				long.TryParse( fields[7] , out datalength );
 
 				if( datalength > 0 )
 				{
 					MediaData md = null;
-					if( Enum.TryParse( fields[2] , true , out model ) && type == MediaType.Audio )
+					if( Enum.TryParse( fields[2] , true , out model ) && type == AdaptiveKind.Audio )
 					{
 						md = new AudioData
 						{
-							Type = MediaType.Audio ,
+							Parent = this,
+							Type = AdaptiveKind.Audio ,
 							Model = model ,
 							BitRate = bitrate ,
-							Uri = fields[6],
 							DataLength = datalength
 						};
 					}
-					else if( type == MediaType.Video )
+					else if( type == AdaptiveKind.Video )
 					{
 						VideoFormat format;
-						int resolution = 0;
+						int resolution;
 						int.TryParse( fields[5] , out resolution );
 						if( Enum.TryParse( fields[4] , true , out format ) && resolution > 0 )
 						{
 							md = new VideoData
 							{
-								Type = MediaType.Video ,
+								Parent = this,
+								Type = AdaptiveKind.Video ,
 								Model = model ,
 								BitRate = bitrate ,
 								Format = format ,
 								Resolution = resolution ,
-								Uri = fields[6],
 								DataLength = datalength
 							};
 						}
@@ -174,6 +211,7 @@ namespace mui.Context
 		}
 		#endregion
 
+		#region LOCAL METHODS
 		/// <summary>
 		/// What: Convert a string into a human filename
 		///  Why: strip the string from all unwanted characters to allow a decent and easy to read filename
@@ -235,5 +273,6 @@ namespace mui.Context
 			}
 			return new string[] { author , str };
 		}
+		#endregion
 	}
 }

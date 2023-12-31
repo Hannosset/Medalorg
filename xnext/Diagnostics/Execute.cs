@@ -26,6 +26,7 @@ namespace xnext.Diagnostics
 
 		#region PUBLIC EVENTS
 		public event EventHandler<ExecuteEventArgs> ConsoleEvent;
+		public event EventHandler Exit;
 		private void OnLogEvent( object sender , string output , string error ) => ConsoleEvent?.Invoke( sender , new ExecuteEventArgs( output , error ) );
 		#endregion PUBLIC EVENTS
 
@@ -59,11 +60,13 @@ namespace xnext.Diagnostics
 					RedirectStandardError = true ,
 					CreateNoWindow = true ,
 					Arguments = args ,
-					RedirectStandardInput = true,
+					RedirectStandardInput = true ,
 					StandardOutputEncoding = Encoding.UTF8
 				}
 			};
 			p.ErrorDataReceived += new DataReceivedEventHandler( ErrorDataReceived );
+			if( Exit != null )
+				p.Exited += new EventHandler( Exit );
 			p.OutputDataReceived += new DataReceivedEventHandler( OutputDataReceived );
 			try
 			{
@@ -98,12 +101,19 @@ namespace xnext.Diagnostics
 					OnLogEvent( sender , drea.Data , "" );
 				}
 			}
-			else if( p != null && p.HasExited && p.ExitCode == 0 )
+			else if( sender is Process process )
 			{
-				ConsoleEvent?.Invoke( sender , new ExecuteEventArgs( p.ExitCode ) );
-				p.Close();
-				p.Dispose();
-				p = null;
+				try
+				{
+				if( process.HasExited )
+				{
+					ConsoleEvent?.Invoke( sender , new ExecuteEventArgs( process.ExitCode ) );
+					process?.Close();
+					process?.Dispose();
+				}
+				}
+				catch( Exception ) { }
+				finally { p = null; }
 			}
 		}
 
@@ -114,12 +124,19 @@ namespace xnext.Diagnostics
 				ErrorAns.Append( drea.Data + "\n" );
 				OnLogEvent( sender , "" , drea.Data );
 			}
-			else if( p != null && p.HasExited && p.ExitCode != 0 )
+			else if( sender is Process process )
 			{
-				ConsoleEvent?.Invoke( sender , new ExecuteEventArgs( p.ExitCode ) );
-				p.Close();
-				p.Dispose();
-				p = null;
+				try
+				{
+					if( process.HasExited )
+					{
+						ConsoleEvent?.Invoke( sender , new ExecuteEventArgs( process.ExitCode ) );
+						process?.Close();
+						process?.Dispose();
+					}
+				}
+				catch( Exception ) { }
+				finally { p = null; }
 			}
 		}
 
@@ -134,6 +151,9 @@ namespace xnext.Diagnostics
 		{
 			if( p != null )
 			{
+				try { p.CancelErrorRead(); } catch( Exception ) { }
+				try { p.CancelOutputRead(); } catch( Exception ) { }
+				try { p.Kill(); } catch( Exception ) { }
 				p.Close();
 				p.Dispose();
 			}

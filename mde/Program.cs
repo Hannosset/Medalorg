@@ -1,10 +1,7 @@
 ﻿using mde.Context;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace mde
 {
@@ -17,8 +14,28 @@ namespace mde
 			foreach( string filename in args )
 			{
 				WebDownload[] Items = HandleWebDownload.LoadFromFile( filename );
+				long total = 0;
+				bool success = true;
 				foreach( WebDownload wdItem in Items )
-					wdItem.Download();
+				{
+					if( wdItem.Initialize() )
+					{
+						long rc = wdItem.Download();
+						if( rc == -1 )
+							success = false;
+						else
+							total += rc;
+						wdItem.Close();
+					}
+					else
+						success = false;
+				}
+
+				if( Items.Length > 0 )
+					if( success )
+						Console.WriteLine( $"{Items[0].VideoId}\t \t{total}\tDownload Completed" );
+					else
+						Console.WriteLine( $"{Items[0].VideoId}\t \t{total}\tDownload incomplete" );
 			}
 		}
 	}

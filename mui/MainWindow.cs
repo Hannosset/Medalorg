@@ -1,4 +1,6 @@
-﻿using System;
+﻿using mui.Context.Protocol;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -7,9 +9,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.Caching;
 using System.Windows.Forms;
-using System.Xml.Serialization;
 
-using xnext.Context;
 using xnext.Diagnostics;
 
 namespace mui
@@ -18,6 +18,7 @@ namespace mui
 	{
 		#region LOCAL VARIABLE
 		private Font ItalicFont;
+		private Font StrikeoutFont;
 		#endregion LOCAL VARIABLE
 
 		/// <summary>
@@ -46,7 +47,8 @@ namespace mui
 			if( LicenseManager.UsageMode == LicenseUsageMode.Runtime )
 			{
 				LogTrace.Label();
-				ItalicFont = new Font( listView1.Font.FontFamily , 8.25f , FontStyle.Strikeout );
+				ItalicFont = new Font( listView1.Font.FontFamily , 8.25f , FontStyle.Italic );
+				StrikeoutFont = new Font( listView1.Font.FontFamily , 8.25f , FontStyle.Strikeout );
 
 				Context.HandleMediaInfo.LoadFromFile();
 				Context.HandleMediaGenre.LoadFromFile();
@@ -57,7 +59,9 @@ namespace mui
 				splitContainer1.SplitterDistance = xnext.Context.CltWinEnv.UserSetting.GetData( "Splitter" , "Main" , splitContainer2.SplitterDistance );
 				splitContainer2.SplitterDistance = xnext.Context.CltWinEnv.UserSetting.GetData( "Splitter" , "Panel" , splitContainer2.SplitterDistance );
 
-				OnRefresh( sender , e );
+				OnRefreshMediaInfo( sender , e );
+
+				//	Initiate auto load of the incomplete sessions 
 			}
 		}
 		/// <summary>
@@ -69,6 +73,32 @@ namespace mui
 			if( LicenseManager.UsageMode == LicenseUsageMode.Runtime )
 			{
 				LogTrace.Label();
+				Cursor crs = Cursor;
+				Cursor = Cursors.WaitCursor;
+				try
+				{
+					foreach( ListViewItem lvi in listView1.Items )
+					{
+						if( lvi.SubItems[2].Tag is Execute )
+						{
+							try
+							{
+								(lvi.SubItems[2].Tag as Execute).Dispose();
+							}
+							catch( Exception )
+							{
+							}
+						}
+					}
+				}
+				catch( Exception ex )
+				{
+					Logger.TraceException( ex , "Severe error" , "Restart the application." );
+				}
+				finally
+				{
+					Cursor = crs;
+				}
 			}
 		}
 		#endregion CONSTRUCTOR
@@ -97,7 +127,7 @@ namespace mui
 			{
 				LogTrace.Label( $"Execute mid.exe {textBox1.Text}" );
 				Execute exec = new Execute();
-				exec.ConsoleEvent += Exec_ConsoleEvent;
+				exec.ConsoleEvent += ClipboardConsoleEvent;
 				exec.Launch( "mid.exe " , textBox1.Text );
 			}
 		}
@@ -105,37 +135,28 @@ namespace mui
 		/// What:
 		///  Why:
 		/// </summary>
-		private void Exec_ConsoleEvent( object sender , ExecuteEventArgs e )
+		private void ClipboardConsoleEvent( object sender , ExecuteEventArgs e )
 		{
-			LogTrace.Label();
-			if( !string.IsNullOrEmpty( e.Output ) )
-			{
-				Context.MediaInfo mi = Context.HandleMediaInfo.Update( e.Output.Split( new char[] { '\t' } , StringSplitOptions.None ) );
 #if DEBUG
 				Console.WriteLine( e.Output );
 #endif
+			LogTrace.Label();
+			if( !string.IsNullOrEmpty( e.Output ) )
+			{
+				MediaInfo mi = Context.HandleMediaInfo.Update( e.Output.Split( new char[] { '\t' } , StringSplitOptions.None ) );
 				if( mi != null )
 					Invoke( (Action)delegate
 					{
 						if( listView1.Items.ContainsKey( mi.VideoId ) )
 						{
 							ListViewItem lvi = listView1.Items[mi.VideoId];
-							lvi.SubItems[1].Text = mi.VideoCount.ToString();
-							lvi.SubItems[2].Text = mi.AudioCount.ToString();
+							lvi.SubItems[2].Text = $"{mi.AudioCount} audio and {mi.VideoCount} video";
 
 							if( lvi.Selected )
-							{
-								Context.MediaInfo.MediaData md = mi.Details[mi.Details.Length - 1];
-								lvi = new ListViewItem( md.ToString() );
-								lvi.Name = md.ToString();
-								lvi.ImageIndex = md.Type == Context.MediaType.Video ? 0 : 1;
-								lvi.Tag = md;
-								listView3.Items.Add( lvi );
-								//									OnItemSelected( sender , e );
-							}
+								OnRefreshMediaData();
 						}
 						else
-							OnRefresh( sender , e );
+							OnRefreshMediaInfo( sender , e );
 					} );
 			}
 			else if( e.ExitCode != int.MinValue )
@@ -168,7 +189,7 @@ namespace mui
 		/// What:
 		///  Why:
 		/// </summary>
-		private void OnRefresh( object sender , EventArgs e )
+		private void OnRefreshMediaInfo( object sender , EventArgs e )
 		{
 			LogTrace.Label();
 			Cursor crs = Cursor;
@@ -176,30 +197,100 @@ namespace mui
 			listView1.BeginUpdate();
 			try
 			{
+				Dictionary<string , Context.HandleWebDownload> cur = new Dictionary<string , Context.HandleWebDownload>();
+				foreach( ListViewItem item in listView1.Items )
+					if( item.SubItems[1].Tag != null )
+						cur.Add( item.Name , item.SubItems[1].Tag as Context.HandleWebDownload );
+				
+				string selectedItem = null;
+				if( listView1.SelectedItems.Count > 0 )
+					selectedItem = listView1.SelectedItems[0].Name;
+
+				string topItem = null;
+				if( listView1.TopItem != null )	
+					topItem = listView1.TopItem.Name;
+
 				listView1.Items.Clear();
-				foreach( Context.MediaInfo item in Context.HandleMediaInfo.Info.Details )
+				foreach( MediaInfo item in Context.HandleMediaInfo.Info.Details )
 				{
 					ListViewItem lvi = new ListViewItem( item.Caption );
 					lvi.Name = item.VideoId;
-					lvi.SubItems.Add( item.VideoCount.ToString() );
-					lvi.SubItems.Add( item.AudioCount.ToString() );
-
+					lvi.ToolTipText = $"{item.VideoId}\n{item.Title}\n    {item.Publisher}";
 					lvi.SubItems.Add( "-" );
 
+					if( item.Downloaded )
+					{
+						lvi.Font = ItalicFont;
+						lvi.SubItems.Add( $"{item.DownloadedVideo} Video & {item.AudioCount} Audio files" );
+					}
+					else
+						lvi.SubItems.Add( "" );
 					lvi.Tag = item;
 
 					listView1.Items.Add( lvi );
 				}
+				if( listView1.Items.ContainsKey( selectedItem ) )
+					listView1.Items[selectedItem].Selected = true;
+				if( listView1.Items.ContainsKey( topItem ) )
+					listView1.TopItem = listView1.Items[topItem];
 			}
 			catch( Exception ex )
 			{
-				Logger.TraceException( ex , "List of media to download incomplete" , "verify the 'data/MediaInfo.xml' is not corrupted and after correcttion restart the application." );
+				Logger.TraceException( ex , "List of media to download incomplete" , "verify the 'data/MediaInfo.xml' is not corrupted and after correction restart the application." );
 			}
 			finally
 			{
 				listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.ColumnContent );
 				listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.HeaderSize );
 				listView1.EndUpdate();
+				Cursor = crs;
+			}
+		}
+		/// <summary>
+		/// What:
+		///  Why:
+		/// </summary>
+		private void OnRefreshMediaData()
+		{
+			Cursor crs = Cursor;
+			Cursor = Cursors.WaitCursor;
+			listView3.BeginUpdate();
+			try
+			{
+				listView3.Items.Clear();
+
+				MediaInfo mi = listView1.SelectedItems[0].Tag as MediaInfo;
+				Context.HandleWebDownload HandleDownload = listView1.SelectedItems[0].SubItems[1].Tag as Context.HandleWebDownload;
+
+				foreach( MediaInfo.MediaData md in mi.Details )
+				{
+					ListViewItem lvi = new ListViewItem( md.ToString() );
+					lvi.Name = md.ToString();
+					lvi.ImageIndex = md.Type == AdaptiveKind.Video ? 0 : 1;
+					lvi.Tag = md;
+					if( md.Downloaded )
+					{
+						lvi.ForeColor = Color.Gray;
+						lvi.Font = StrikeoutFont;
+					}
+
+					if( HandleDownload != null && HandleDownload[md.DataLength] != null )
+						lvi.Checked = true;
+
+					listView3.Items.Add( lvi );
+				}
+
+				textBox3.Text = mi.Author;
+				textBox2.Text = mi.Title;
+				textBox2.Tag = mi;
+			}
+			catch( Exception ex )
+			{
+				Logger.TraceException( ex , "List of Genre not updated correctly" , "verify the 'data/MediaGenre.xml' is not corrupted and restart the application." );
+			}
+			finally
+			{
+				listView3.EndUpdate();
 				Cursor = crs;
 			}
 		}
@@ -215,45 +306,7 @@ namespace mui
 			if( listView1.SelectedItems.Count > 0 )
 			{
 				LogTrace.Label();
-				Cursor crs = Cursor;
-				Cursor = Cursors.WaitCursor;
-				listView3.BeginUpdate();
-				try
-				{
-					List<string> checkedItems = new List<string>();
-					foreach( ListViewItem lvi in listView3.CheckedItems )
-						checkedItems.Add( lvi.Name );
-
-					listView3.Items.Clear();
-
-					Context.MediaInfo mi = listView1.SelectedItems[0].Tag as Context.MediaInfo;
-
-					foreach( Context.MediaInfo.MediaData md in mi.Details )
-					{
-						ListViewItem lvi = new ListViewItem( md.ToString() );
-						lvi.Name = md.ToString();
-						lvi.ImageIndex = md.Type == Context.MediaType.Video ? 0 : 1;
-						lvi.Tag = md;
-
-						if( checkedItems.Contains( lvi.Name ) )
-							lvi.Checked = true;
-
-						listView3.Items.Add( lvi );
-					}
-
-					textBox3.Text = mi.Author;
-					textBox2.Text = mi.Title;
-					textBox2.Tag = mi;
-				}
-				catch( Exception ex )
-				{
-					Logger.TraceException( ex , "List of Genre not updated correctly" , "verify the 'data/MediaGenre.xml' is not corrupted and restart the application." );
-				}
-				finally
-				{
-					listView3.EndUpdate();
-					Cursor = crs;
-				}
+				OnRefreshMediaData();
 			}
 		}
 		/// <summary>
@@ -276,10 +329,10 @@ namespace mui
 		private void OnAuthorLabelChanged( object sender , EventArgs e )
 		{
 			textBox4.Text = string.Empty;
-			Context.AuthorInfo ai = Context.HandleAuthors.Info[textBox3.Text];
+			AuthorInfo ai = Context.HandleAuthors.Info[textBox3.Text];
 			if( ai != null )
 			{
-				if( ai.Type == Context.MediaType.Unkown )
+				if( ai.Type == AdaptiveKind.Unkown )
 				{
 					radioButton1.Checked = radioButton2.Checked = false;
 					listView4.Items.Clear();
@@ -287,15 +340,15 @@ namespace mui
 				}
 				else
 				{
-					if( ai.Type == Context.MediaType.Audio )
+					if( ai.Type == AdaptiveKind.Audio )
 						radioButton1.Checked = true;
-					else if( ai.Type == Context.MediaType.Video )
+					else if( ai.Type == AdaptiveKind.Video )
 						radioButton2.Checked = true;
 
 					if( !string.IsNullOrEmpty( ai.Genre ) )
 					{
 						listView4.Items[ai.Genre].Checked = true;
-						if( !string.IsNullOrEmpty( ai.Style ) )
+						if( !string.IsNullOrEmpty( ai.Style ) && listView5.Items.ContainsKey( ai.Style ) )
 							listView5.Items[ai.Style].Checked = true;
 						else
 							listView5.Items.Clear();
@@ -339,8 +392,8 @@ namespace mui
 				listView4.Items.Clear();
 				listView5.Items.Clear();
 
-				foreach( Context.MediaGenre mg in Context.HandleMediaGenre.Info.Details )
-					if( mg.Type == Context.MediaType.Audio )
+				foreach( MediaGenre mg in Context.HandleMediaGenre.Info.Details )
+					if( mg.Type == AdaptiveKind.Audio )
 					{
 						ListViewItem lvi = new ListViewItem( mg.Label );
 						lvi.Name = mg.Label;
@@ -376,8 +429,8 @@ namespace mui
 				listView4.Items.Clear();
 				listView5.Items.Clear();
 
-				foreach( Context.MediaGenre mg in Context.HandleMediaGenre.Info.Details )
-					if( mg.Type == Context.MediaType.Video )
+				foreach( MediaGenre mg in Context.HandleMediaGenre.Info.Details )
+					if( mg.Type == AdaptiveKind.Video )
 					{
 						ListViewItem lvi = new ListViewItem( mg.Label );
 						lvi.Name = mg.Label;
@@ -414,7 +467,7 @@ namespace mui
 				{
 					listView5.Items.Clear();
 
-					foreach( Context.MediaGenre.MediaStyle ms in (listView4.SelectedItems[0].Tag as Context.MediaGenre).Details )
+					foreach( MediaGenre.MediaStyle ms in (listView4.SelectedItems[0].Tag as MediaGenre).Details )
 					{
 						ListViewItem lvi = new ListViewItem( ms.Label );
 						lvi.Name = ms.Label;
@@ -547,7 +600,7 @@ namespace mui
 			string tmp = RelativeTargetPath();
 
 			if( listView3.SelectedItems.Count > 0 )
-				if( (listView3.SelectedItems[0].Tag as Context.MediaInfo.MediaData).Type == Context.MediaType.Audio )
+				if( (listView3.SelectedItems[0].ImageIndex & 0x01) == 0x01 )
 					tmp = tmp.Replace( "{ROOT}" , xnext.Context.CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyMusic ) ) );
 				else
 					tmp = tmp.Replace( "{ROOT}" , xnext.Context.CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyVideos ) ) );
@@ -564,106 +617,235 @@ namespace mui
 		/// </summary>
 		private void OnDownload( object sender , EventArgs e )
 		{
+			if( listView1.SelectedItems.Count > 0 && listView3.CheckedItems.Count == 0 )
+				return;
+
 			LogTrace.Label();
 			Cursor crs = Cursor;
 			Cursor = Cursors.WaitCursor;
+
+			MediaInfo mi = textBox2.Tag as MediaInfo;
+
 			try
 			{
-				Context.MediaInfo mi = textBox2.Tag as Context.MediaInfo;
-				Context.Handle2Skip.Update( mi.Title.Replace( textBox2.Text , "" ).Trim() );
-
-				Context.AuthorInfo ai = Context.HandleAuthors.Update( textBox3.Text.Trim() );
-
+				//	Set the author's name the best we can
+				AuthorInfo ai = Context.HandleAuthors.Update( textBox3.Text.Trim() );
 				if( listView4.CheckedItems.Count > 0 )
 					ai.Genre = listView4.CheckedItems[0].Text;
 				if( listView5.CheckedItems.Count > 0 )
 					ai.Style = listView5.CheckedItems[0].Text;
 				if( radioButton1.Checked )
-					ai.Type = Context.MediaType.Audio;
+					ai.Type = AdaptiveKind.Audio;
 				else if( radioButton2.Checked )
-					ai.Type = Context.MediaType.Video;
-
+					ai.Type = AdaptiveKind.Video;
 				Context.HandleAuthors.Flush();
 
+				//	All the word in the interface title and author that are not in our record are to be recorded as to skip
+				Context.Handle2Skip.Update( mi.Title.Replace( textBox2.Text , "" ).Trim() );
 				Context.Handle2Skip.Update( mi.Author.Replace( textBox3.Text , "" ).Trim() );
 
-				if( File.Exists( Path.Combine( MemoryCache.Default["PublishPath"] as string , mi.VideoId + ".xml" ) ) )
-					MessageBox.Show( $"Filename '{Path.Combine( MemoryCache.Default["PublishPath"] as string , mi.VideoId + ".xml" )}\nalready exists" , "Warning" , MessageBoxButtons.OK , MessageBoxIcon.Warning );
-				else
+				//	Create a handle web download object to attach to the left panel list view item
+				Context.HandleWebDownload HandleDownload = new Context.HandleWebDownload();
+				//	set the relative path for the genre/style/author
+				string filename = RelativeTargetPath();
+				foreach( ListViewItem lvi in listView3.CheckedItems )
 				{
-					string tmp = RelativeTargetPath();
-
-					List<Context.WebDownload> lst = new List<Context.WebDownload>();
-
-					bool HasAudio = false;
-					foreach( ListViewItem lvi in listView3.CheckedItems )
-						if( (lvi.Tag as Context.MediaInfo.MediaData).Type == Context.MediaType.Audio )
-						{
-							lst.Add( new Context.DownloadLyrics
-							{
-								Lang = CltWinEnv.AppReadSetting.GetData( Name , "Subtitles" , "en" ) ,
-								Filename = tmp.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}." + "{lang}.lyric" ,
-								Id = lst.Count ,
-								VideoId = mi.VideoId
-							} );
-							HasAudio = true;
-							break;
-						}
-
-					bool VideoNeedsAudio = false;
-					foreach( ListViewItem lvi in listView3.CheckedItems )
-						if( (lvi.Tag as Context.MediaInfo.MediaData).Type == Context.MediaType.Video && (lvi.Tag as Context.MediaInfo.VideoData).Model == Context.MediaInfo.AudioModel.Any )
-						{
-							lst.Add( new Context.DownloadSubtitle
-							{
-								Lang = CltWinEnv.AppReadSetting.GetData( Name , "Subtitles" , "en" ) ,
-								Filename = tmp.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}." + "{lang}.srt" ,
-								Id = lst.Count ,
-								VideoId = mi.VideoId
-							} );
-							VideoNeedsAudio = true;
-							break;
-						}
-					if( VideoNeedsAudio && !HasAudio )
+					if( lvi.Tag is MediaInfo.MediaData md && md.Type == AdaptiveKind.Audio )
 					{
-						MessageBox.Show( "Some or all the video you selected are mpeg without audio.\nYou did not download any audio file.\nPlease select at least one audio file (vorbis and opus have the best quality)" , "STOP" , MessageBoxButtons.OK , MessageBoxIcon.Stop );
-						return;
-					}
-
-					foreach( ListViewItem lvi in listView3.CheckedItems )
-					{
-						Context.MediaInfo.MediaData md = lvi.Tag as Context.MediaInfo.MediaData;
-						string filename = tmp;
-						if( md.Type == Context.MediaType.Audio )
-							filename = filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}.{(md as Context.MediaInfo.AudioData).BitRate}.{(md as Context.MediaInfo.AudioData).Model}";
-						else
+						HandleDownload.UpdateWith( new DownloadAudio
 						{
-							Context.MediaInfo.VideoData vd = md as Context.MediaInfo.VideoData;
-
-							if( vd.BitRate < 1 || vd.Model == Context.MediaInfo.AudioModel.Any )
-								filename = Path.GetTempPath() + $@"{mi.Title}.{vd.Resolution}.{vd.Format}.mpeg";
-							else
-								filename = filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}.{vd.Resolution}.{vd.Format}";
-						}
-						lst.Add( new Context.DownloadBinary
-						{
+							VideoId = mi.VideoId ,
 							DataLength = md.DataLength ,
-							Filename = filename ,
-							Id = lst.Count ,
-							uri = md.Uri
+							Filename = filename.Replace( "{ROOT}" , xnext.Context.CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{md.Extension}" ,
+							BitRate = (md as MediaInfo.AudioData).BitRate ,
+							Format = (md as MediaInfo.AudioData).Model ,
+							Downloaded = File.Exists( filename.Replace( "{ROOT}" , xnext.Context.CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{md.Extension}" ) ,
+							MediaData = md
 						} );
 					}
-					using( FileStream fs = new FileStream( Path.Combine( MemoryCache.Default["PublishPath"] as string , mi.VideoId + ".xml" ) , FileMode.Create , FileAccess.Write , FileShare.None ) )
-						new XmlSerializer( typeof( Context.WebDownload[] ) ).Serialize( fs , lst.ToArray() );
+					else if( lvi.Tag is MediaInfo.VideoData vd )
+					{
+						HandleDownload.UpdateWith( new DownloadVideo
+						{
+							VideoId = mi.VideoId ,
+							DataLength = vd.DataLength ,
+							Filename = filename.Replace( "{ROOT}" , xnext.Context.CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{vd.Extension}" ,
+							Format = vd.Format ,
+							Resolution = vd.Resolution ,
+							Downloaded = File.Exists( filename.Replace( "{ROOT}" , xnext.Context.CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{vd.Extension}" ) ,
+							MediaData = vd
+						} );
+					}
 				}
+				if( HandleDownload.VideoNeedsAudio && !HandleDownload.HasAudio )
+				{
+					MessageBox.Show( "Some or all the video you selected are mpeg without audio.\nYou did not download any audio file.\nPlease select at least one audio file (vorbis and opus have the best quality)" , "STOP" , MessageBoxButtons.OK , MessageBoxIcon.Stop );
+					return;
+				}
+
+				HandleDownload.Serialize();
+
+				listView1.SelectedItems[0].SubItems[1].Tag = HandleDownload;
+				listView1.SelectedItems[0].ForeColor = Color.Gray;
+				LogTrace.Label( $"Execute mde.exe {HandleDownload.Filename}" );
+				Execute exec = new Execute();
+				exec.ConsoleEvent += MDEConsoleEvent;
+				exec.Exit += ( s , ev ) => MDEConsoleExited( exec , HandleDownload );
+				exec.Launch( "mde.exe " , HandleDownload.Filename );
+				listView1.SelectedItems[0].SubItems[2].Tag = exec;
 			}
 			catch( Exception ex )
 			{
+				File.Delete( Path.Combine( MemoryCache.Default["PublishPath"] as string , mi.VideoId + ".xml" ) );
 				Logger.TraceException( ex , "Severe error" , "Restart the application." );
 			}
 			finally
 			{
 				Cursor = crs;
+			}
+		}
+		/// <summary>
+		/// What: Shows the progress and communicate the status of the progress on the UI
+		///  Why: the end user keeps informed of the progress of the download,
+		/// </summary>
+		private void MDEConsoleEvent( object sender , ExecuteEventArgs e )
+		{
+			LogTrace.Label( e.Output );
+			if( !string.IsNullOrEmpty( e.Output ) )
+			{
+				string[] str = e.Output.Split( new char[] { '\t' } );
+				if( str.Length > 3 )
+				{
+					Invoke( (Action)delegate
+					{
+						try
+						{
+							if( listView1.Items.ContainsKey( str[0] ) )
+							{
+								ListViewItem lvi = listView1.Items[str[0]];
+								if( lvi.SubItems.Count > 2 && lvi.SubItems[1].Tag is Context.HandleWebDownload )
+								{
+									listView1.BeginUpdate();
+
+									Context.HandleWebDownload cd = lvi.SubItems[1].Tag as Context.HandleWebDownload;
+									//	Update only when we have a media data id and a download value (can be 0)
+									if( decimal.TryParse( str[2] , out decimal downloaded ) && int.TryParse( str[1] , out int id ) )
+									{
+										cd.Update( id , downloaded );
+										lvi.SubItems[2].Text = $"{str[3]} {downloaded:#,###,###} bytes";
+									}
+									else
+										lvi.SubItems[2].Text = str[3];
+
+									lvi.SubItems[1].Text = $"{cd.Progress:##0.00} %";
+									listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.ColumnContent );
+									listView1.EndUpdate();
+								}
+								else if( lvi.SubItems[1].Tag is Context.HandleWebDownload )
+									Console.WriteLine( $"lvi.SubItems.Count = {lvi.SubItems.Count} - expect > 2" );
+								else
+									Console.WriteLine( $"lvi.SubItems[1].Tag = {(lvi.SubItems[1].Tag == null ? "null" : $"not null but is {lvi.SubItems[1].Tag.GetType().ToString()}")}" );
+							}
+							else
+								Console.Write( $"Unable to find {str[0]} in the list" );
+						}
+						catch( Exception ) { }
+					} );
+				}
+			}
+		}
+		/// <summary>
+		/// What:
+		///  Why:
+		/// </summary>
+		private void MDEConsoleExited( object sender , EventArgs e )
+		{
+			LogTrace.Label();
+			Context.HandleWebDownload cd = e as Context.HandleWebDownload;
+
+			//	Record the downloaded data.
+			foreach( WebDownload wd in cd.Details )
+				if( File.Exists( wd.Filename ) )
+				{
+					wd.MediaData.Filename = wd.Filename;
+					wd.Downloaded = true;
+				}
+
+			Context.HandleMediaInfo.Info.Serialize();
+
+			//	Update the UI: the list of audio and video of the selected media
+			Invoke( (Action)delegate
+			{
+				if( listView1.Items.ContainsKey( cd.VideoId ) )
+				{
+					ListViewItem lvi = listView1.Items[cd.VideoId];
+					lvi.ForeColor = listView1.ForeColor;
+
+					OnRefreshMediaData();
+				}
+			} );
+
+			//	Check if merge needs to be invoked
+			if( cd.VideoNeedsAudio && cd.HasAudio && !string.IsNullOrEmpty( xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) ) )
+			{
+				bool needserialization = false;
+				foreach( WebDownload wd in cd.Details )
+				{
+					if( wd.Downloaded && wd is DownloadVideo downloadvideo && (wd.MediaData as MediaInfo.VideoData).BitRate < 1 )
+					{
+						MediaInfo.VideoData vd = wd.MediaData as MediaInfo.VideoData;
+						downloadvideo.TargetFilename = downloadvideo.TargetFilename.Replace( "@-1." , $"@{cd.BestAudio.BitRate}." );
+
+						if( !File.Exists( downloadvideo.TargetFilename ) )
+						{
+							string args = xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}\"" );
+							args = args.Replace( "{audio-file}" , cd.BestAudio.Filename );
+							args = args.Replace( "{video-file}" , wd.Filename );
+							args = args.Replace( "{media-file}" , downloadvideo.TargetFilename );
+
+							//	User interface update
+							Invoke( (Action)delegate
+							{
+								if( listView1.Items.ContainsKey( cd.VideoId ) )
+								{
+									listView1.BeginUpdate();
+									ListViewItem lvi = listView1.Items[cd.VideoId];
+									lvi.SubItems[2].Text = "Merging audio and video";
+									listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.ColumnContent );
+									listView1.EndUpdate();
+								}
+							} );
+
+							Execute exec = new Execute();
+							exec.Run( xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) , args );
+						}
+						if( File.Exists( downloadvideo.TargetFilename ) )
+							needserialization = true;
+						//	User interface update
+						Invoke( (Action)delegate
+						{
+							if( listView1.Items.ContainsKey( cd.VideoId ) )
+							{
+								ListViewItem lvi = listView1.Items[cd.VideoId];
+								listView1.BeginUpdate();
+								if( File.Exists( downloadvideo.TargetFilename ) )
+								{
+									lvi.SubItems[2].Text = "Merging Successful";
+									vd.Parent.Add( downloadvideo.TargetFilename );
+								}
+								else
+									lvi.SubItems[2].Text = "Merging failed";
+								listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.ColumnContent );
+								listView1.EndUpdate();
+							}
+							OnRefreshMediaInfo( sender , e );
+						} );
+					}
+				}
+				if( needserialization )
+				{
+					Context.HandleMediaInfo.Info.Serialize();
+				}
 			}
 		}
 	}

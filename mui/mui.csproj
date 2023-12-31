@@ -56,23 +56,23 @@
     <Compile Include="Configuration.Designer.cs">
       <DependentUpon>Configuration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Context\AuthorInfo.cs" />
-    <Compile Include="Context\CountryCode.cs" />
+    <Compile Include="Context\Protocol\AuthorInfo.cs" />
+    <Compile Include="Context\Protocol\CountryCode.cs" />
     <Compile Include="Context\Handle2Skip.cs" />
     <Compile Include="Context\HandleAuthors.cs" />
     <Compile Include="Context\HandleCountryCode.cs" />
     <Compile Include="Context\HandleMediaGenre.cs" />
     <Compile Include="Context\HandleMediaInfo.cs" />
-    <Compile Include="Context\MediaGenre.cs" />
-    <Compile Include="Context\PublishedMedia.cs" />
-    <Compile Include="Context\WebDownload.cs" />
+    <Compile Include="Context\HandleWebDownload.cs" />
+    <Compile Include="Context\Protocol\MediaGenre.cs" />
+    <Compile Include="Context\Protocol\WebDownload.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Context\MediaInfo.cs" />
+    <Compile Include="Context\Protocol\MediaInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AddItem.resx">
@@ -108,6 +108,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\mde\mde.csproj">
+      <Project>{c5a8bb0b-f824-4728-95a4-7f9e2a2d6c85}</Project>
+      <Name>mde</Name>
+    </ProjectReference>
     <ProjectReference Include="..\mid\mid.csproj">
       <Project>{fe6717e5-1978-4c58-89a0-402ef44f814c}</Project>
       <Name>mid</Name>

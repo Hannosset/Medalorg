@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 
 using xnext.Diagnostics;
 
-namespace mui.Context
+namespace mui.Context.Protocol
 {
 	/// <summary>
 	/// Movies: https://www.studiobinder.com/blog/movie-genres-list/
@@ -29,7 +29,7 @@ namespace mui.Context
 
 
 		#region PUBLIC PROPERTIES
-		[XmlAttribute] public MediaType Type { get; set; }
+		[XmlAttribute] public AdaptiveKind Type { get; set; }
 		[XmlAttribute] public string Label { get; set; }
 		[XmlText] public string Description { get; set; }
 

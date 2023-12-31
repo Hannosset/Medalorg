@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Web;
 
 using VideoLibrary;
@@ -53,9 +54,6 @@ namespace mid
 
 			HttpWebRequest w_request = null;
 			WebResponse w_response = null;
-			w_request.ServicePoint.MaxIdleTime = 1000;
-			w_request.KeepAlive = false;
-			w_request.Timeout = 300000;
 
 			for( int attempt = 0 ; attempt < 10 ; attempt++ )
 				try
@@ -63,6 +61,9 @@ namespace mid
 					w_request = (HttpWebRequest)WebRequest.Create( uri );
 					if( w_request != null )
 					{
+						w_request.ServicePoint.MaxIdleTime = 1000;
+						w_request.KeepAlive = false;
+						w_request.Timeout = 300000;
 						w_response = w_request.GetResponse();
 						if( w_response != null )
 						{
@@ -145,7 +146,8 @@ namespace mid
 				Console.Out.WriteLine( $"{VideoId}\t\"{videos.First().Title}\"\t\"{videos.First().Info.Author}\"\t{videos.Count()}" );
 				foreach( YouTubeVideo item in videos )
 				{
-					Console.Out.WriteLine( $"{VideoId}\t{item.AdaptiveKind}\t{item.AudioFormat}\t{item.AudioBitrate}\t{item.Format}\t{item.Resolution}\t{item.Uri}\t{item.ContentLength}" );
+					if( item.ContentLength > 0 )
+						Console.Out.WriteLine( $"{VideoId}\t{item.AdaptiveKind}\t{item.AudioFormat}\t{item.AudioBitrate}\t{item.Format}\t{item.Resolution}\t{item.ContentLength}" );
 				}
 			}
 		}
@@ -153,6 +155,8 @@ namespace mid
 		static void Main( string[] args )
 		{
 			Console.OutputEncoding = Encoding.UTF8;
+			
+			Thread.Sleep( 1000 );
 
 			foreach( string url in args )
 				if( url.ToLower().IndexOf( "http" ) == 0 )
