@@ -211,10 +211,14 @@ namespace mui
 			try
 			{
 				Dictionary<string , Context.HandleWebDownload> cur = new Dictionary<string , Context.HandleWebDownload>();
+				Dictionary<string , Execute> curex = new Dictionary<string , Execute>();
 				foreach( ListViewItem item in listView1.Items )
+				{
 					if( item.SubItems[1].Tag != null )
 						cur.Add( item.Name , item.SubItems[1].Tag as Context.HandleWebDownload );
-
+					if( item.SubItems[2].Tag != null )
+						curex.Add( item.Name , item.SubItems[2].Tag as Execute );
+				}
 				string selectedItem = null;
 				if( listView1.SelectedItems.Count > 0 )
 					selectedItem = listView1.SelectedItems[0].Name;
@@ -239,6 +243,15 @@ namespace mui
 					else
 						lvi.SubItems.Add( "" );
 					lvi.Tag = item;
+
+					if( cur.ContainsKey( lvi.Name ) || curex.ContainsKey( lvi.Name ) )
+					{
+						lvi.ForeColor = Color.Gray;
+						if( cur.ContainsKey( lvi.Name ) )
+							lvi.SubItems[1].Tag = cur[lvi.Name];
+						if( curex.ContainsKey( lvi.Name ) )
+							lvi.SubItems[2].Tag = curex[lvi.Name];
+					}
 
 					listView1.Items.Add( lvi );
 				}
@@ -862,7 +875,11 @@ namespace mui
 									vd.Parent.Add( downloadvideo.TargetFilename );
 								}
 								else
+								{
+									lvi.UseItemStyleForSubItems = false;
+									lvi.SubItems[2].ForeColor = Color.Red;
 									lvi.SubItems[2].Text = "Merging failed";
+								}
 								listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.ColumnContent );
 								listView1.EndUpdate();
 							}
