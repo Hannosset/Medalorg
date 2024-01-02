@@ -14,7 +14,7 @@ namespace mui.Context
 	/// What: List of the country code
 	///  Why: Need the country code mnemonic to download the subtitle
 	/// </summary>
-	internal class HandleCountryCode
+	internal sealed class HandleCountryCode
 	{
 		#region ACCESSORS
 		/// <summary>
@@ -37,7 +37,7 @@ namespace mui.Context
 		/// What: Load the country code from the xml file and initialize the country code if not existing.
 		///  Why: Allow to specifically populate the singleton instance when initializing the application.
 		/// </summary>
-		public static void LoadFromFile()
+		internal static void LoadFromFile()
 		{
 			if( !File.Exists( Filename ) )
 			{
@@ -243,12 +243,12 @@ namespace mui.Context
 		/// What: Name of the singleton
 		///  Why: The name of the object is also identifying the object serialization on the support
 		/// </summary>
-		internal const string Name = "CountryCode";
+		private const string Name = "CountryCode";
 		/// <summary>
 		/// What: Filename used to load/save the content of the singleton
 		///  Why: one filename access allowing a centralization of the filename management
 		/// </summary>
-		internal static string Filename
+		private static string Filename
 		{
 			get
 			{
@@ -262,7 +262,7 @@ namespace mui.Context
 		/// What: Serialization of the singleton
 		///  Why: allow to save on the file system the content of the singleton - allowing manual alteration or simple recovery by deleting the file.
 		/// </summary>
-		internal void Serialize( string filename = null )
+		private void Serialize( string filename = null )
 		{
 			if( filename == null )
 				filename = Filename;

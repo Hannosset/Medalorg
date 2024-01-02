@@ -93,14 +93,14 @@ namespace mui.Context
 
 			_Totalsize += (request as DownloadBinary).DataLength;
 
-			if( request is DownloadAudio )
+			if( request is DownloadAudio audio )
 			{
 				if( BestAudio == null || (request as DownloadAudio).BitRate > BestAudio.BitRate )
 					BestAudio = request as DownloadAudio;
 				if( !HasAudio )
 				{
 					string ext = request.Filename.Substring( request.Filename.LastIndexOf( '\\' ) + 1 );
-					ext = ext.Substring( ext.IndexOf( '.' , ext.IndexOf( '.' ) - 1 ) );
+					ext = ext.Substring( ext.IndexOf( $".{audio.BitRate}" ) );
 
 					_Details.Add( new DownloadLyrics
 					{
@@ -114,18 +114,22 @@ namespace mui.Context
 					HasAudio = true;
 				}
 			}
-			else if( request is DownloadVideo )
+			else if( request is DownloadVideo video)
 			{
 				(request as DownloadVideo).TargetFilename = request.Filename;
-				request.Filename = request.Filename + ".mpeg";
 
-				if( !VideoNeedsAudio )
-					VideoNeedsAudio = request.Filename.IndexOf( "@-1" ) > 0;
+				//	Append an .mpeg extension only if the video has no sound
+				if( request.Filename.IndexOf( "@-1" ) > 0  )
+				{
+					if( !VideoNeedsAudio )
+						VideoNeedsAudio = true;
+					request.Filename = request.Filename + ".mpeg";
+				}
 
 				if( !HasVideo )
 				{
 					string ext = request.Filename.Substring( request.Filename.LastIndexOf( '\\' ) + 1 );
-					ext = ext.Substring( ext.IndexOf( '.' , ext.IndexOf( '.' ) - 1 ) );
+					ext = ext.Substring( ext.IndexOf( $".{video.Resolution}@" ) );
 
 					_Details.Add( new DownloadSubtitle
 					{

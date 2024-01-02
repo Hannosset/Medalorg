@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Runtime.Caching;
 using System.Windows.Forms;
 
+using xnext.Context;
 using xnext.Diagnostics;
 
 namespace mui
@@ -31,11 +32,22 @@ namespace mui
 		public MainWindow()
 		{
 			InitializeComponent();
+
 			if( LicenseManager.UsageMode == LicenseUsageMode.Runtime )
 			{
 				LogTrace.Label();
 				_ = typeof( Control ).InvokeMember( "DoubleBuffered" , BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic , null , listView1 , new object[] { true } , CultureInfo.CurrentCulture );
 				_ = typeof( Control ).InvokeMember( "DoubleBuffered" , BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic , null , listView3 , new object[] { true } , CultureInfo.CurrentCulture );
+				_ = typeof( Control ).InvokeMember( "DoubleBuffered" , BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic , null , listView4 , new object[] { true } , CultureInfo.CurrentCulture );
+				_ = typeof( Control ).InvokeMember( "DoubleBuffered" , BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic , null , listView5 , new object[] { true } , CultureInfo.CurrentCulture );
+
+				//	Create default parameter values
+				CltWinEnv.AppReadSetting.GetData( "Configuration" , "User Pathname" , "{Root}" );
+				CltWinEnv.AppReadSetting.GetData( "Configuration" , "Audio {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyMusic ) );
+				CltWinEnv.AppReadSetting.GetData( "Configuration" , "Video {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyVideos ) );
+				CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg path" , new DirectoryInfo( "." ).FullName );
+				CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}\"" );
+				CltWinEnv.AppReadSetting.GetData( Name , "Use Default Pathname" , "True" );
 			}
 		}
 		/// <summary>
@@ -56,8 +68,8 @@ namespace mui
 				Context.HandleAuthors.LoadFromFile();
 				Context.Handle2Skip.LoadFromFile();
 
-				splitContainer1.SplitterDistance = xnext.Context.CltWinEnv.UserSetting.GetData( "Splitter" , "Main" , splitContainer2.SplitterDistance );
-				splitContainer2.SplitterDistance = xnext.Context.CltWinEnv.UserSetting.GetData( "Splitter" , "Panel" , splitContainer2.SplitterDistance );
+				splitContainer1.SplitterDistance = CltWinEnv.UserSetting.GetData( "Splitter" , "Main" , splitContainer2.SplitterDistance );
+				splitContainer2.SplitterDistance = CltWinEnv.UserSetting.GetData( "Splitter" , "Panel" , splitContainer2.SplitterDistance );
 
 				OnRefreshMediaInfo( sender , e );
 
@@ -138,7 +150,7 @@ namespace mui
 		private void ClipboardConsoleEvent( object sender , ExecuteEventArgs e )
 		{
 #if DEBUG
-				Console.WriteLine( e.Output );
+			Console.WriteLine( e.Output );
 #endif
 			LogTrace.Label();
 			if( !string.IsNullOrEmpty( e.Output ) )
@@ -182,6 +194,7 @@ namespace mui
 				if( dlg.ShowDialog( this ) == DialogResult.OK )
 				{
 					//	Refresh right panel
+					OnRefreshMediaInfo( sender , e );
 				}
 			}
 		}
@@ -201,13 +214,13 @@ namespace mui
 				foreach( ListViewItem item in listView1.Items )
 					if( item.SubItems[1].Tag != null )
 						cur.Add( item.Name , item.SubItems[1].Tag as Context.HandleWebDownload );
-				
+
 				string selectedItem = null;
 				if( listView1.SelectedItems.Count > 0 )
 					selectedItem = listView1.SelectedItems[0].Name;
 
 				string topItem = null;
-				if( listView1.TopItem != null )	
+				if( listView1.TopItem != null )
 					topItem = listView1.TopItem.Name;
 
 				listView1.Items.Clear();
@@ -279,8 +292,10 @@ namespace mui
 
 					listView3.Items.Add( lvi );
 				}
-
-				textBox3.Text = mi.Author;
+				if( textBox3.Text.CompareTo( mi.Author ) == 0 )
+					UpdateTargetPath();
+				else
+					textBox3.Text = mi.Author;
 				textBox2.Text = mi.Title;
 				textBox2.Tag = mi;
 			}
@@ -313,7 +328,7 @@ namespace mui
 		/// What:
 		///  Why:
 		/// </summary>
-		private void OnMainSplitterMoved( object sender , SplitterEventArgs e ) => xnext.Context.CltWinEnv.UserSetting.SetData( "Splitter" , "Main" , splitContainer1.SplitterDistance );
+		private void OnMainSplitterMoved( object sender , SplitterEventArgs e ) => CltWinEnv.UserSetting.SetData( "Splitter" , "Main" , splitContainer1.SplitterDistance );
 		#endregion LISTVIEW EVENTS
 
 		#region RIGHT PANEL EVENTS
@@ -321,7 +336,7 @@ namespace mui
 		/// What:
 		///  Why:
 		/// </summary>
-		private void OnPanelSplitterMoved( object sender , SplitterEventArgs e ) => xnext.Context.CltWinEnv.UserSetting.SetData( "Splitter" , "Panel" , splitContainer2.SplitterDistance );
+		private void OnPanelSplitterMoved( object sender , SplitterEventArgs e ) => CltWinEnv.UserSetting.SetData( "Splitter" , "Panel" , splitContainer2.SplitterDistance );
 		/// <summary>
 		/// What:
 		///  Why:
@@ -347,11 +362,15 @@ namespace mui
 
 					if( !string.IsNullOrEmpty( ai.Genre ) )
 					{
-						listView4.Items[ai.Genre].Checked = true;
-						if( !string.IsNullOrEmpty( ai.Style ) && listView5.Items.ContainsKey( ai.Style ) )
-							listView5.Items[ai.Style].Checked = true;
-						else
-							listView5.Items.Clear();
+						if( listView4.Items.ContainsKey( ai.Genre ) )
+						{
+							listView4.Items[ai.Genre].Selected = true;
+							listView4.Items[ai.Genre].Checked = true;
+							if( !string.IsNullOrEmpty( ai.Style ) && listView5.Items.ContainsKey( ai.Style ) )
+								listView5.Items[ai.Style].Checked = true;
+						}
+						else if( listView4.CheckedItems.Count > 0 )
+							listView4.CheckedItems[0].Checked = false;
 					}
 					else
 					{
@@ -572,7 +591,7 @@ namespace mui
 		/// </summary>
 		private string RelativeTargetPath()
 		{
-			string tmp = xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "Active Pathname" , "{Root}\\{Genre}\\{Style}\\{Author}" ).ToUpper();
+			string tmp = CltWinEnv.AppReadSetting.GetData( "Configuration" , "Active Pathname" , "{Root}\\{Genre}\\{Style}\\{Author}" ).ToUpper();
 
 			if( listView4.CheckedItems.Count > 0 )
 				tmp = tmp.Replace( "{GENRE}" , listView4.CheckedItems[0].Text );
@@ -601,9 +620,9 @@ namespace mui
 
 			if( listView3.SelectedItems.Count > 0 )
 				if( (listView3.SelectedItems[0].ImageIndex & 0x01) == 0x01 )
-					tmp = tmp.Replace( "{ROOT}" , xnext.Context.CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyMusic ) ) );
+					tmp = tmp.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyMusic ) ) );
 				else
-					tmp = tmp.Replace( "{ROOT}" , xnext.Context.CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyVideos ) ) );
+					tmp = tmp.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyVideos ) ) );
 
 			textBox4.Text = tmp.Replace( @"\\" , @"\" );
 		}
@@ -656,10 +675,10 @@ namespace mui
 						{
 							VideoId = mi.VideoId ,
 							DataLength = md.DataLength ,
-							Filename = filename.Replace( "{ROOT}" , xnext.Context.CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{md.Extension}" ,
+							Filename = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{md.Extension}").Replace( @"\\" , @"\" ) ,
 							BitRate = (md as MediaInfo.AudioData).BitRate ,
 							Format = (md as MediaInfo.AudioData).Model ,
-							Downloaded = File.Exists( filename.Replace( "{ROOT}" , xnext.Context.CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{md.Extension}" ) ,
+							Downloaded = File.Exists( (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{md.Extension}").Replace( @"\\" , @"\" ) ) ,
 							MediaData = md
 						} );
 					}
@@ -669,10 +688,10 @@ namespace mui
 						{
 							VideoId = mi.VideoId ,
 							DataLength = vd.DataLength ,
-							Filename = filename.Replace( "{ROOT}" , xnext.Context.CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{vd.Extension}" ,
+							Filename = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{vd.Extension}").Replace( @"\\" , @"\" ) ,
 							Format = vd.Format ,
 							Resolution = vd.Resolution ,
-							Downloaded = File.Exists( filename.Replace( "{ROOT}" , xnext.Context.CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{vd.Extension}" ) ,
+							Downloaded = File.Exists( (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{vd.Extension}").Replace( @"\\" , @"\" ) ) ,
 							MediaData = vd
 						} );
 					}
@@ -693,11 +712,18 @@ namespace mui
 				exec.Exit += ( s , ev ) => MDEConsoleExited( exec , HandleDownload );
 				exec.Launch( "mde.exe " , HandleDownload.Filename );
 				listView1.SelectedItems[0].SubItems[2].Tag = exec;
+				listView1.SelectedItems[0].SubItems[2].Text = "Launching mde to download";
+				listView1.SelectedItems[0].SubItems[1].Text = "0.0%";
 			}
 			catch( Exception ex )
 			{
-				File.Delete( Path.Combine( MemoryCache.Default["PublishPath"] as string , mi.VideoId + ".xml" ) );
 				Logger.TraceException( ex , "Severe error" , "Restart the application." );
+				try
+				{
+					if( File.Exists( Path.Combine( MemoryCache.Default["PublishPath"] as string , mi.VideoId + ".xml" ) ) )
+						File.Delete( Path.Combine( MemoryCache.Default["PublishPath"] as string , mi.VideoId + ".xml" ) );
+				}
+				catch( Exception ) { }
 			}
 			finally
 			{
@@ -720,14 +746,13 @@ namespace mui
 					{
 						try
 						{
-							if( listView1.Items.ContainsKey( str[0] ) )
+							if( listView1.Items.ContainsKey( str[0] ) && str.Length > 3 )
 							{
 								ListViewItem lvi = listView1.Items[str[0]];
-								if( lvi.SubItems.Count > 2 && lvi.SubItems[1].Tag is Context.HandleWebDownload )
+								if( lvi.SubItems.Count > 2 && lvi.SubItems[1].Tag is Context.HandleWebDownload cd )
 								{
 									listView1.BeginUpdate();
 
-									Context.HandleWebDownload cd = lvi.SubItems[1].Tag as Context.HandleWebDownload;
 									//	Update only when we have a media data id and a download value (can be 0)
 									if( decimal.TryParse( str[2] , out decimal downloaded ) && int.TryParse( str[1] , out int id ) )
 									{
@@ -749,7 +774,10 @@ namespace mui
 							else
 								Console.Write( $"Unable to find {str[0]} in the list" );
 						}
-						catch( Exception ) { }
+						catch( Exception ex )
+						{
+							Logger.TraceException( ex , "Severe error" , "Restart the application." );
+						}
 					} );
 				}
 			}
@@ -786,7 +814,7 @@ namespace mui
 			} );
 
 			//	Check if merge needs to be invoked
-			if( cd.VideoNeedsAudio && cd.HasAudio && !string.IsNullOrEmpty( xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) ) )
+			if( cd.VideoNeedsAudio && cd.HasAudio && !string.IsNullOrEmpty( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) ) )
 			{
 				bool needserialization = false;
 				foreach( WebDownload wd in cd.Details )
@@ -798,7 +826,7 @@ namespace mui
 
 						if( !File.Exists( downloadvideo.TargetFilename ) )
 						{
-							string args = xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}\"" );
+							string args = CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}\"" );
 							args = args.Replace( "{audio-file}" , cd.BestAudio.Filename );
 							args = args.Replace( "{video-file}" , wd.Filename );
 							args = args.Replace( "{media-file}" , downloadvideo.TargetFilename );
@@ -817,7 +845,7 @@ namespace mui
 							} );
 
 							Execute exec = new Execute();
-							exec.Run( xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) , args );
+							exec.Run( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) , args );
 						}
 						if( File.Exists( downloadvideo.TargetFilename ) )
 							needserialization = true;

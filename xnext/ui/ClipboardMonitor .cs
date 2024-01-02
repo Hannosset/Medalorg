@@ -99,8 +99,9 @@ namespace xnext.ui
 			{
 				if( DataObject.GetData( "System.String" , false ) != null )
 					return DataObject.GetData( "System.String" , false ).ToString();
-				else
+				else if( DataObject.GetData( "System.String" , true ) != null )
 					return DataObject.GetData( "System.String" , true ).ToString();
+				return string.Empty;
 			}
 		}
 

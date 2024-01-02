@@ -71,6 +71,7 @@
 			this.label7 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+			this.linkLabel2 = new System.Windows.Forms.LinkLabel();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
@@ -456,6 +457,7 @@
 			// 
 			// splitContainer1.Panel2
 			// 
+			this.splitContainer1.Panel2.Controls.Add(this.linkLabel2);
 			this.splitContainer1.Panel2.Controls.Add(this.label5);
 			this.splitContainer1.Size = new System.Drawing.Size(526, 230);
 			this.splitContainer1.SplitterDistance = 311;
@@ -563,6 +565,19 @@
 			this.linkLabel1.Text = "Download the latest ffmpeg";
 			this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnLinkClicked);
 			// 
+			// linkLabel2
+			// 
+			this.linkLabel2.Dock = System.Windows.Forms.DockStyle.Top;
+			this.linkLabel2.Location = new System.Drawing.Point(0, 0);
+			this.linkLabel2.Name = "linkLabel2";
+			this.linkLabel2.Size = new System.Drawing.Size(211, 45);
+			this.linkLabel2.TabIndex = 1;
+			this.linkLabel2.TabStop = true;
+			this.linkLabel2.Text = "Thanks to musician wave & Jazzfuel website for the audio classification and Studi" +
+    "o Binder for the video classification";
+			this.linkLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnGoToLink);
+			// 
 			// Configuration
 			// 
 			this.AcceptButton = this.button2;
@@ -647,5 +662,6 @@
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.TextBox textBox5;
 		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.LinkLabel linkLabel2;
 	}
 }

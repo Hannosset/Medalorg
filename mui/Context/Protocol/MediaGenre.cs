@@ -58,7 +58,7 @@ namespace mui.Context.Protocol
 		/// What: Add a style to a specific Genre
 		///  Why: Allow the end-user to add/modify a style and/or its description
 		/// </summary>
-		internal MediaStyle Addpdate( string style , string description )
+		internal MediaStyle AddUpdate( string style , string description )
 		{
 			LogTrace.Label( $"{style},{description}" );
 			foreach( MediaStyle ms in Details )

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 
+using xnext.Context;
 using xnext.Native;
 
 namespace mui

@@ -108,7 +108,7 @@ namespace mui.Context.Protocol
 				return null;
 			}
 		}
-		public int DownloadedVideo => Details.Where( x => x.Downloaded && (x.Type == AdaptiveKind.Audio || (x.Type == AdaptiveKind.Video && !x.Extension.Contains( "@-1" ))) ).Count() + MovieFilenames.Length;
+		public int DownloadedVideo => Details.Where( x => x.Downloaded && ((x.Type == AdaptiveKind.Video && !x.Extension.Contains( "@-1" ))) ).Count() + MovieFilenames.Length;
 		public bool Downloaded => MovieFilenames.Length > 0 || Details.Where( x => x.Downloaded && ( x.Type == AdaptiveKind.Audio || (x.Type == AdaptiveKind.Video && !x.Extension.Contains( "@-1" )))).Any();
 		/// <summary>
 		/// What: Count the number of audio files
@@ -133,7 +133,11 @@ namespace mui.Context.Protocol
 		#endregion
 
 		#region PUBLIC METHODS
-		internal void Add( string v ) => _MovieFilenames.Add( v );
+		internal void Add( string v )
+		{
+			if( !_MovieFilenames.Contains( v ) )
+				_MovieFilenames.Add( v );
+		}
 		/// <summary>
 		/// What: Adds a video or audio stream of the media to download
 		/// Why: need to identify the stream to allow the end-user to chose what to download

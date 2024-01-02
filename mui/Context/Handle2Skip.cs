@@ -13,7 +13,7 @@ namespace mui.Context
 	/// What: List of the string to remove form the caption
 	///  Why: helps recognizing the name of the author and the title of the media from the internet caption
 	/// </summary>
-	internal class Handle2Skip
+	internal sealed class Handle2Skip
 	{
 		#region LOCAL VARIABLE
 		/// <summary>
@@ -44,7 +44,7 @@ namespace mui.Context
 		/// What: Load the author from the xml file and initialize the author if not existing.
 		///  Why: Allow to specifically populate the singleton instance when initializing the application.
 		/// </summary>
-		public static void LoadFromFile()
+		internal static void LoadFromFile()
 		{
 			if( !File.Exists( Filename ) )
 			{
@@ -56,7 +56,7 @@ namespace mui.Context
 		/// What: Adds a new string to skip in the singleton list.
 		///  Why: Enrich the singleton container with a new information if the string to skip is not already registered
 		/// </summary>
-		public static void Update( string str )
+		internal static void Update( string str )
 		{
 			if( !string.IsNullOrEmpty( str ) )
 			{
@@ -78,12 +78,12 @@ namespace mui.Context
 		/// What: Name of the singleton
 		///  Why: The name of the object is also identifying the object serialization on the support
 		/// </summary>
-		internal const string Name = "2skip";
+		private const string Name = "2skip";
 		/// <summary>
 		/// What: Filename used to load/save the content of the singleton
 		///  Why: one filename access allowing a centralization of the filename management
 		/// </summary>
-		internal static string Filename
+		private static string Filename
 		{
 			get
 			{
@@ -97,7 +97,7 @@ namespace mui.Context
 		/// What: Serialization of the singleton
 		///  Why: allow to save on the file system the content of the singleton - allowing manual alteration or simple recovery by deleting the file.
 		/// </summary>
-		internal void Serialize( string filename = null )
+		private void Serialize( string filename = null )
 		{
 			if( filename == null )
 				filename = Filename;

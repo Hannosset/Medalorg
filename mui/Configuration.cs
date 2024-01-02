@@ -1,7 +1,8 @@
-﻿using System;
+﻿using mui.Context.Protocol;
+
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Windows.Forms;
 
 using xnext.Context;
@@ -17,8 +18,8 @@ namespace mui
 			InitializeComponent();
 		}
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Initialize the configuration dialog
+		///  Why: Initialize the default or saved parameter values.
 		/// </summary>
 		private void OnFormLoad( object sender , EventArgs e )
 		{
@@ -30,24 +31,24 @@ namespace mui
 					radioButton4.Checked = true;
 				else
 					radioButton3.Checked = true;
-				if( CltWinEnv.AppReadSetting.GetData( Name , "Use Default Pathname" , "True" ) == "False" )
+				if( CltWinEnv.AppReadSetting.GetData( Name , "Use Default Pathname" ) == "False" )
 					radioButton2.Checked = true;
 				else
 					radioButton1.Checked = true;
 
-				textBox3.Text = CltWinEnv.AppReadSetting.GetData( Name , "User Pathname" , "{Root}" );
-				textBox1.Text = CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyMusic ) );
-				textBox2.Text = CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyVideos ) );
+				textBox3.Text = CltWinEnv.AppReadSetting.GetData( Name , "User Pathname" );
+				textBox1.Text = CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" );
+				textBox2.Text = CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" );
 
-				textBox4.Text = CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg path" , new DirectoryInfo( "." ).FullName );
-				textBox5.Text = CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}\"" );
+				textBox4.Text = CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg path" );
+				textBox5.Text = CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" );
 
 				InitSubtitles();
 			}
 		}
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Saves the dialog position and size and the genre radio button
+		///  Why: restore the screen and its selection as it was when closing
 		/// </summary>
 		private void OnFormClosing( object sender , FormClosingEventArgs e )
 		{
@@ -66,8 +67,8 @@ namespace mui
 		#endregion CONSTRUCTOR
 
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Saves all parameters in the .ini file
+		///  Why: Allow these parameters to impacts the results of the application.
 		/// </summary>
 		private void OnApply( object sender , EventArgs e )
 		{
@@ -81,7 +82,7 @@ namespace mui
 
 			string subtitles = "";
 			foreach( ListViewItem lvi in listView3.CheckedItems )
-				subtitles = subtitles + (lvi.Tag as Context.Protocol.CountryCode).Code + ",";
+				subtitles = subtitles + (lvi.Tag as CountryCode).Code + ",";
 
 			CltWinEnv.AppSetting.SetData( Name , "Subtitles" , subtitles.Trim( ',' ) );
 
@@ -96,8 +97,8 @@ namespace mui
 			Context.HandleMediaGenre.Info.Serialize();
 		}
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Do not save all changes and restore the genre data set
+		///  Why: Restore the genre data set from the hard disk
 		/// </summary>
 		private void OnCancel( object sender , EventArgs e )
 		{
@@ -106,8 +107,8 @@ namespace mui
 
 		#region TAB: TARGET DIRECTORY
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: pops the Folder browsing dialog
+		///  Why: Specify the root folder for the audio
 		/// </summary>
 		private void OnSelectAudioRoot( object sender , EventArgs e )
 		{
@@ -124,8 +125,8 @@ namespace mui
 			}
 		}
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: pops the Folder browsing dialog
+		///  Why: Specify the root folder for the video
 		/// </summary>
 		private void OnSelectVideoRoot( object sender , EventArgs e )
 		{
@@ -145,9 +146,18 @@ namespace mui
 		#endregion TAB: TARGET DIRECTORY
 
 		#region TAB: MEDIA GENRES
+		private void OnGoToLink( object sender , LinkLabelLinkClickedEventArgs e )
+		{
+			if( radioButton4.Checked )
+				Process.Start( "https://www.studiobinder.com/blog/movie-genres-list" );
+			else if( listView1.SelectedItems.Count > 0 && listView1.SelectedItems[0].Name == "Blues" )
+				Process.Start( "https://jazzfuel.com/types-of-blues-styles/" );
+			else
+				Process.Start( "https://www.musicianwave.com" );
+		}
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Select a genre for the the audio display
+		///  Why: Fills the genre listview with the audio genres
 		/// </summary>
 		private void OnAudioGenre( object sender , EventArgs e )
 		{
@@ -158,12 +168,12 @@ namespace mui
 			try
 			{
 				listView1.Items.Clear();
-				listView2.Items.Clear();
 
-				foreach( Context.Protocol.MediaGenre mg in Context.HandleMediaGenre.Info.Details )
-					if( mg.Type == Context.Protocol.AdaptiveKind.Audio )
+				foreach( MediaGenre mg in Context.HandleMediaGenre.Info.Details )
+					if( mg.Type == AdaptiveKind.Audio )
 					{
 						ListViewItem lvi = new ListViewItem( mg.Label );
+						lvi.Name = mg.Label;
 						lvi.ToolTipText = mg.Description;
 						lvi.Tag = mg;
 						listView1.Items.Add( lvi );
@@ -177,13 +187,15 @@ namespace mui
 			{
 				listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.ColumnContent );
 				listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.HeaderSize );
+				if( listView1.Items.Count > 0 )
+					listView1.Items[0].Selected = true;
 				listView1.EndUpdate();
 				Cursor = crs;
 			}
 		}
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Select a genre for the video display
+		///  Why: Fills the genre list view with the video genres
 		/// </summary>
 		private void OnVideoGenre( object sender , EventArgs e )
 		{
@@ -194,12 +206,12 @@ namespace mui
 			try
 			{
 				listView1.Items.Clear();
-				listView2.Items.Clear();
 
-				foreach( Context.Protocol.MediaGenre mg in Context.HandleMediaGenre.Info.Details )
-					if( mg.Type == Context.Protocol.AdaptiveKind.Video )
+				foreach( MediaGenre mg in Context.HandleMediaGenre.Info.Details )
+					if( mg.Type == AdaptiveKind.Video )
 					{
 						ListViewItem lvi = new ListViewItem( mg.Label );
+						lvi.Name = mg.Label;
 						lvi.ToolTipText = mg.Description;
 						lvi.Tag = mg;
 						listView1.Items.Add( lvi );
@@ -212,6 +224,8 @@ namespace mui
 			}
 			finally
 			{
+				if( listView1.Items.Count > 0 )
+					listView1.Items[0].Selected = true;
 				listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.ColumnContent );
 				listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.HeaderSize );
 				listView1.EndUpdate();
@@ -226,8 +240,8 @@ namespace mui
 
 		#region LISTVIEW GENRE
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Add a new genre int he list - maintain the list sorted
+		///  Why: Allow the end-user to manage its genres according to its choices
 		/// </summary>
 		private void OnAddGenre( object sender , EventArgs e )
 		{
@@ -243,8 +257,9 @@ namespace mui
 					try
 					{
 						ListViewItem lvi = listView1.Items.Add( dlg.textBox1.Text );
+						lvi.Name = dlg.textBox1.Text;
 						lvi.ToolTipText = dlg.textBox2.Text;
-						lvi.Tag = Context.HandleMediaGenre.Add( dlg.textBox1.Text , dlg.textBox2.Text );
+						lvi.Tag = Context.HandleMediaGenre.Add( radioButton3.Checked ? AdaptiveKind.Audio : AdaptiveKind.Video , dlg.textBox1.Text , dlg.textBox2.Text );
 						listView1.Sort();
 						lvi.Selected = true;
 					}
@@ -263,8 +278,8 @@ namespace mui
 			}
 		}
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Modify the description of the genre
+		///  Why: All the end-user to specify his/her own description and comment
 		/// </summary>
 		private void OnEditGenre( object sender , EventArgs e )
 		{
@@ -273,7 +288,7 @@ namespace mui
 			{
 				dlg.textBox1.ReadOnly = true;
 				dlg.textBox1.Text = listView1.SelectedItems[0].Text;
-				dlg.textBox2.Text = (listView1.SelectedItems[0].Tag as Context.Protocol.MediaGenre).Description;
+				dlg.textBox2.Text = (listView1.SelectedItems[0].Tag as MediaGenre).Description;
 
 				if( dlg.ShowDialog() == DialogResult.OK )
 				{
@@ -284,8 +299,9 @@ namespace mui
 					try
 					{
 						ListViewItem lvi = listView1.SelectedItems[0];
+						lvi.Name = dlg.textBox1.Text;
 						lvi.ToolTipText = dlg.textBox2.Text;
-						lvi.Tag = Context.HandleMediaGenre.Add( dlg.textBox1.Text , dlg.textBox2.Text );
+						lvi.Tag = Context.HandleMediaGenre.Add( radioButton3.Checked ? AdaptiveKind.Audio : AdaptiveKind.Video , dlg.textBox1.Text , dlg.textBox2.Text );
 						listView1.Sort();
 						lvi.Selected = true;
 					}
@@ -304,8 +320,8 @@ namespace mui
 			}
 		}
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Removes a genre from the genre list and select either the next or the previous one.
+		///  Why: If the user can add, the user should be allowed to delete
 		/// </summary>
 		private void OnDeleteGenre( object sender , KeyEventArgs e )
 		{
@@ -327,7 +343,7 @@ namespace mui
 						else if( listView1.Items.Count > 1 )
 							listView1.Items[1].Selected = true;
 
-						Context.HandleMediaGenre.Remove( lvi.Tag as Context.Protocol.MediaGenre );
+						Context.HandleMediaGenre.Remove( lvi.Tag as MediaGenre );
 						listView1.Items.Remove( lvi );
 					}
 					catch( Exception ex )
@@ -345,8 +361,8 @@ namespace mui
 			}
 		}
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Handles the selection of a genre
+		///  Why: Populate the styles of the selected genre
 		/// </summary>
 		private void OnGenreSelected( object sender , EventArgs e )
 		{
@@ -360,11 +376,10 @@ namespace mui
 				{
 					listView2.Items.Clear();
 
-					label5.Text = (listView1.SelectedItems[0].Tag as Context.Protocol.MediaGenre).Description + "\n\n";
-
-					foreach( Context.Protocol.MediaGenre.MediaStyle ms in (listView1.SelectedItems[0].Tag as Context.Protocol.MediaGenre).Details )
+					foreach( MediaGenre.MediaStyle ms in (listView1.SelectedItems[0].Tag as MediaGenre).Details )
 					{
 						ListViewItem lvi = new ListViewItem( ms.Label );
+						lvi.Name = ms.Label;
 						lvi.SubItems.Add( ms.Description );
 						lvi.ToolTipText = ms.Description;
 						lvi.Tag = ms;
@@ -377,6 +392,11 @@ namespace mui
 				}
 				finally
 				{
+					if( listView2.Items.Count > 0 )
+						listView2.Items[0].Selected = true;
+
+					label5.Text = (listView1.SelectedItems[0].Tag as MediaGenre).Description + "\n\n";
+
 					listView2.AutoResizeColumns( ColumnHeaderAutoResizeStyle.ColumnContent );
 					listView2.AutoResizeColumns( ColumnHeaderAutoResizeStyle.HeaderSize );
 					listView2.EndUpdate();
@@ -390,25 +410,17 @@ namespace mui
 
 		#region LISTVIEW STYLE
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: A genre and a style are selected
+		///  Why: Display the combined description of bot the genre and the style
 		/// </summary>
 		private void OnStyleSelected( object sender , EventArgs e )
 		{
-			string tmp = label5.Text;
-
-			int at = tmp.IndexOf( "\n\n" );
-
-			if( at > 0 )
-				tmp = tmp.Substring( 0 , at );
-			if( listView2.SelectedItems.Count > 0 )
-				tmp = tmp + "\n\n" + (listView2.SelectedItems[0].Tag as Context.Protocol.MediaGenre.MediaStyle).Description;
-
-			label5.Text = tmp;
+			try { label5.Text = $"{(listView1.SelectedItems[0].Tag as MediaGenre).Description}\n\n{(listView2.SelectedItems[0].Tag as MediaGenre.MediaStyle).Description}"; }
+			catch( Exception ) { }
 		}
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Add a style to the currently selected genre
+		///  Why: Gives the end-user the possibility to specify styles of the genre
 		/// </summary>
 		private void OnAddStyle( object sender , EventArgs e )
 		{
@@ -426,7 +438,7 @@ namespace mui
 						{
 							ListViewItem lvi = listView2.Items.Add( dlg.textBox1.Text );
 							lvi.ToolTipText = dlg.textBox2.Text;
-							lvi.Tag = (listView1.SelectedItems[0].Tag as Context.Protocol.MediaGenre).Addpdate( dlg.textBox1.Text , dlg.textBox2.Text );
+							lvi.Tag = (listView1.SelectedItems[0].Tag as MediaGenre).AddUpdate( dlg.textBox1.Text , dlg.textBox2.Text );
 							listView2.Sort();
 							lvi.Selected = true;
 						}
@@ -445,8 +457,8 @@ namespace mui
 				}
 		}
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: changes the style description of the currently selected genre
+		///  Why: Gives the end-user the possibility to specify styles of the genre
 		/// </summary>
 		private void OnEditStyle( object sender , EventArgs e )
 		{
@@ -455,7 +467,7 @@ namespace mui
 			{
 				dlg.textBox1.ReadOnly = true;
 				dlg.textBox1.Text = listView2.SelectedItems[0].Text;
-				dlg.textBox2.Text = (listView2.SelectedItems[0].Tag as Context.Protocol.MediaGenre.MediaStyle).Description;
+				dlg.textBox2.Text = (listView2.SelectedItems[0].Tag as MediaGenre.MediaStyle).Description;
 
 				if( dlg.ShowDialog() == DialogResult.OK )
 				{
@@ -465,11 +477,9 @@ namespace mui
 					listView2.BeginUpdate();
 					try
 					{
-						ListViewItem lvi = listView2.Items.Add( dlg.textBox1.Text );
+						ListViewItem lvi = listView2.SelectedItems[0];
 						lvi.ToolTipText = dlg.textBox2.Text;
-						lvi.Tag = Context.HandleMediaGenre.Add( dlg.textBox1.Text , dlg.textBox2.Text );
-						listView2.Sort();
-						lvi.Selected = true;
+						(listView2.SelectedItems[0].Tag as MediaGenre.MediaStyle).Description = dlg.textBox2.Text;
 					}
 					catch( Exception ex )
 					{
@@ -481,13 +491,15 @@ namespace mui
 						listView2.AutoResizeColumns( ColumnHeaderAutoResizeStyle.HeaderSize );
 						listView2.EndUpdate();
 						Cursor = crs;
+						
+						OnStyleSelected( sender , e );
 					}
 				}
 			}
 		}
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Delete a style
+		///  Why: Gives full control on the genre-style to the end-user
 		/// </summary>
 		private void OnDeleteStyle( object sender , KeyEventArgs e )
 		{
@@ -509,8 +521,8 @@ namespace mui
 						else if( listView2.Items.Count > 1 )
 							listView2.Items[1].Selected = true;
 
-						Context.Protocol.MediaGenre mi = listView2.SelectedItems[0].Tag as Context.Protocol.MediaGenre;
-						mi.Remove( lvi.Tag as Context.Protocol.MediaGenre.MediaStyle );
+						MediaGenre mi = listView1.SelectedItems[0].Tag as MediaGenre;
+						mi.Remove( lvi.Tag as MediaGenre.MediaStyle );
 						listView2.Items.Remove( lvi );
 					}
 					catch( Exception ex )
@@ -532,8 +544,8 @@ namespace mui
 
 		#region TAB: SUBTITLES
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Initialize the language subtitles tab page
+		///  Why: Lighten up the OnFormLoad() function
 		/// </summary>
 		private void InitSubtitles()
 		{
@@ -544,7 +556,7 @@ namespace mui
 			try
 			{
 				listView3.Items.Clear();
-				foreach( Context.Protocol.CountryCode cc in Context.HandleCountryCode.Info.Details )
+				foreach( CountryCode cc in Context.HandleCountryCode.Info.Details )
 				{
 					ListViewItem lvi = new ListViewItem( cc.Code );
 					lvi.SubItems.Add( cc.Label );
@@ -570,16 +582,16 @@ namespace mui
 
 		#region TAB: FFMPEG
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Hyper link to the merging tool page
+		///  Why: Provide the end user with a quick way to access the merge tool
 		/// </summary>
 		private void OnLinkClicked( object sender , LinkLabelLinkClickedEventArgs e )
 		{
 			Process.Start( "https://ffmpeg.org/" );
 		}
 		/// <summary>
-		/// What: 
-		///  Why: 
+		/// What: Locate the ffmpeg tool
+		///  Why: The end-user may have installed the tool in a specific directory and this will prevent use to scan the drives to find the tool
 		/// </summary>
 		private void OnLocateffmpeg( object sender , EventArgs e )
 		{

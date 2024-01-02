@@ -15,7 +15,7 @@ namespace mui.Context
 	/// What: List of the Downloaded video authors
 	///  Why: helps recognizing the name of the author from the media caption
 	/// </summary>
-	internal class HandleAuthors
+	internal sealed class HandleAuthors
 	{
 		#region LOCAL VARIABLE
 		/// <summary>
@@ -41,7 +41,7 @@ namespace mui.Context
 			{
 				lock( Info )
 					foreach( AuthorInfo ai in Details )
-						if( ai.Name == author )
+						if( ai.Name.ToLower().CompareTo( author.ToLower() ) == 0 )
 							return ai;
 				return null;
 			}
@@ -61,7 +61,7 @@ namespace mui.Context
 		/// What: Load the author from the xml file and initialize the author if not existing.
 		///  Why: Allow to specifically populate the singleton instance when initializing the application.
 		/// </summary>
-		public static void LoadFromFile()
+		internal static void LoadFromFile()
 		{
 				LogTrace.Label();
 				Info._Details = new List<AuthorInfo>( Deserialize() );
@@ -71,12 +71,13 @@ namespace mui.Context
 		///  Why: Enrich the singleton container with a new information if the author is not already registered
 		///  Return: the object instance of the newly updated/added data
 		/// </summary>
-		public static AuthorInfo Update( string author )
+		internal static AuthorInfo Update( string author )
 		{
 			if( !string.IsNullOrEmpty( author ) )
 			{
 				lock( Info )
 				{
+					//	Add and sort the array in decreasing order
 					if( Info[author] == null )
 					{
 						Info._Details.Add( new AuthorInfo { Name = author } );
@@ -91,7 +92,7 @@ namespace mui.Context
 		/// What: Flushes the data set on the hard disk
 		///  Why: allow the changes to be committed on the support preventing any loss of information in case of crash
 		/// </summary>
-		public static void Flush()
+		internal static void Flush()
 		{
 			lock( Info )
 				Info.Serialize();
@@ -103,12 +104,12 @@ namespace mui.Context
 		/// What: Name of the singleton
 		///  Why: The name of the object is also identifying the object serialization on the support
 		/// </summary>
-		internal const string Name = "Authors";
+		private const string Name = "Authors";
 		/// <summary>
 		/// What: Filename used to load/save the content of the singleton
 		///  Why: one filename access allowing a centralization of the filename management
 		/// </summary>
-		internal static string Filename
+		private static string Filename
 		{
 			get
 			{
@@ -122,7 +123,7 @@ namespace mui.Context
 		/// What: Serialization of the singleton
 		///  Why: allow to save on the file system the content of the singleton - allowing manual alteration or simple recovery by deleting the file.
 		/// </summary>
-		internal void Serialize( string filename = null )
+		private void Serialize( string filename = null )
 		{
 			if( filename == null )
 				filename = Filename;

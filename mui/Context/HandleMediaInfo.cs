@@ -61,7 +61,7 @@ namespace mui.Context
 		/// What: Load the author from the xml file.
 		///  Why: Allow to specifically populate the singleton instance when initializing the application.
 		/// </summary>
-		public static void LoadFromFile()
+		internal static void LoadFromFile()
 		{
 			if( !File.Exists( Filename ) )
 				using( FileStream fs = new FileStream( Filename , FileMode.Create , FileAccess.Write , FileShare.Read ) )
@@ -73,7 +73,7 @@ namespace mui.Context
 		/// What: Adds a new media in the singleton list 
 		///  Why: Enrich the singleton container with a new information if the media is not already registered
 		/// </summary>
-		public static MediaInfo Update( string[] fields )
+		internal static MediaInfo Update( string[] fields )
 		{
 			LogTrace.Label( string.Join( "," , fields ) );
 
@@ -97,12 +97,12 @@ namespace mui.Context
 		/// What: Name of the singleton
 		///  Why: The name of the object is also identifying the object serialization on the support
 		/// </summary>
-		internal const string Name = "MediaInfo";
+		private const string Name = "MediaInfo";
 		/// <summary>
 		/// What: Filename used to load/save the content of the singleton
 		///  Why: one filename access allowing a centralization of the filename management
 		/// </summary>
-		internal static string Filename
+		private static string Filename
 		{
 			get
 			{
