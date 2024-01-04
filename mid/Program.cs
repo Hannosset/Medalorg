@@ -135,27 +135,39 @@ namespace mid
 				return;
 
 			string VideoId = url.Substring( url.IndexOf( "?v=" ) + 3 );
-			at = VideoId.IndexOf( "/" );
+			at = VideoId.IndexOf( "\\u0026list" );
 			if( at > 0 )
 				VideoId = VideoId.Substring( 0 , at );
 
-			IEnumerable<YouTubeVideo> videos = YouTube.Default.GetAllVideos( url );
-
-			if( videos.Count() > 0 )
+			try
 			{
-				Console.Out.WriteLine( $"{VideoId}\t\"{videos.First().Title}\"\t\"{videos.First().Info.Author}\"\t{videos.Count()}" );
-				foreach( YouTubeVideo item in videos )
+				IEnumerable<YouTubeVideo> videos = YouTube.Default.GetAllVideos( url );
+
+				if( videos.Count() > 0 )
 				{
-					if( item.ContentLength > 0 )
-						Console.Out.WriteLine( $"{VideoId}\t{item.AdaptiveKind}\t{item.AudioFormat}\t{item.AudioBitrate}\t{item.Format}\t{item.Resolution}\t{item.ContentLength}" );
+					Console.Out.WriteLine( $"{VideoId}\t\"{videos.First().Title}\"\t\"{videos.First().Info.Author}\"\t{videos.Count()}" );
+					foreach( YouTubeVideo item in videos )
+					{
+						try
+						{
+							if( item.ContentLength > 0 )
+								Console.Out.WriteLine( $"{VideoId}\t{item.AdaptiveKind}\t{item.AudioFormat}\t{item.AudioBitrate}\t{item.Format}\t{item.Resolution}\t{item.ContentLength}" );
+						}
+						catch( Exception )
+						{
+						}
+					}
 				}
+			}
+			catch( Exception )
+			{
 			}
 		}
 
 		static void Main( string[] args )
 		{
 			Console.OutputEncoding = Encoding.UTF8;
-			
+
 			Thread.Sleep( 1000 );
 
 			foreach( string url in args )

@@ -31,10 +31,7 @@
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-			this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
 			this.label1 = new System.Windows.Forms.Label();
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
 			this.clipboardMonitor1 = new xnext.ui.ClipboardMonitor();
@@ -45,18 +42,13 @@
 			this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.gotoAudioFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.gotoVideoFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.filterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.downloadingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.textBox2 = new System.Windows.Forms.TextBox();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.textBox3 = new System.Windows.Forms.TextBox();
-			this.button2 = new System.Windows.Forms.Button();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
 			this.textBox4 = new System.Windows.Forms.TextBox();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -72,7 +64,17 @@
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.radioButton2 = new System.Windows.Forms.RadioButton();
 			this.radioButton1 = new System.Windows.Forms.RadioButton();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.gotoAudioFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.gotoVideoFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.filterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.downloadingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.forgetCheckedVideoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.button2 = new System.Windows.Forms.Button();
 			this.button1 = new System.Windows.Forms.Button();
+			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
 			this.toolStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -107,38 +109,10 @@
 			this.toolStrip1.TabIndex = 24;
 			this.toolStrip1.Text = "toolStrip1";
 			// 
-			// toolStripButton1
-			// 
-			this.toolStripButton1.Image = global::mui.Properties.Resources.Settings;
-			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton1.Name = "toolStripButton1";
-			this.toolStripButton1.Size = new System.Drawing.Size(101, 22);
-			this.toolStripButton1.Text = "Configuration";
-			this.toolStripButton1.Click += new System.EventHandler(this.OnConfigure);
-			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
-			// toolStripButton2
-			// 
-			this.toolStripButton2.Image = global::mui.Properties.Resources.RefreshDocViewHS;
-			this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton2.Name = "toolStripButton2";
-			this.toolStripButton2.Size = new System.Drawing.Size(66, 22);
-			this.toolStripButton2.Text = "Refresh";
-			this.toolStripButton2.Click += new System.EventHandler(this.OnRefreshMediaInfo);
-			// 
-			// toolStripButton3
-			// 
-			this.toolStripButton3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripButton3.Image = global::mui.Properties.Resources.help;
-			this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton3.Name = "toolStripButton3";
-			this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButton3.Text = "toolStripButton3";
 			// 
 			// label1
 			// 
@@ -201,6 +175,7 @@
 			// 
 			// listView1
 			// 
+			this.listView1.CheckBoxes = true;
 			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader5,
@@ -244,51 +219,17 @@
             this.gotoVideoFileToolStripMenuItem,
             this.toolStripSeparator2,
             this.filterToolStripMenuItem,
-            this.downloadingToolStripMenuItem});
+            this.downloadingToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.forgetCheckedVideoToolStripMenuItem});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(181, 120);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(194, 148);
 			this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpenPopup);
-			// 
-			// gotoAudioFileToolStripMenuItem
-			// 
-			this.gotoAudioFileToolStripMenuItem.Image = global::mui.Properties.Resources.AudioFile;
-			this.gotoAudioFileToolStripMenuItem.Name = "gotoAudioFileToolStripMenuItem";
-			this.gotoAudioFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.gotoAudioFileToolStripMenuItem.Text = "Goto Audio File";
-			this.gotoAudioFileToolStripMenuItem.ToolTipText = "Opens the file explorer to the audio directory \r\nwhere the media is located.";
-			this.gotoAudioFileToolStripMenuItem.Click += new System.EventHandler(this.gotoAudioFile);
-			// 
-			// gotoVideoFileToolStripMenuItem
-			// 
-			this.gotoVideoFileToolStripMenuItem.Image = global::mui.Properties.Resources.VideoCamera;
-			this.gotoVideoFileToolStripMenuItem.Name = "gotoVideoFileToolStripMenuItem";
-			this.gotoVideoFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.gotoVideoFileToolStripMenuItem.Text = "Goto Video file";
-			this.gotoVideoFileToolStripMenuItem.ToolTipText = "Opens the file explorer to the video directory \r\nwhere the media is located.\r\n";
-			this.gotoVideoFileToolStripMenuItem.Click += new System.EventHandler(this.GotoVideoFile);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
-			// 
-			// filterToolStripMenuItem
-			// 
-			this.filterToolStripMenuItem.Image = global::mui.Properties.Resources.Filter2HS;
-			this.filterToolStripMenuItem.Name = "filterToolStripMenuItem";
-			this.filterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.filterToolStripMenuItem.Text = "Filter";
-			this.filterToolStripMenuItem.ToolTipText = "Display only the media that haven\'t been downloaded.";
-			this.filterToolStripMenuItem.Click += new System.EventHandler(this.OnFilterListview);
-			// 
-			// downloadingToolStripMenuItem
-			// 
-			this.downloadingToolStripMenuItem.Image = global::mui.Properties.Resources.Network_ConnectTo;
-			this.downloadingToolStripMenuItem.Name = "downloadingToolStripMenuItem";
-			this.downloadingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.downloadingToolStripMenuItem.Text = "Downloading";
-			this.downloadingToolStripMenuItem.ToolTipText = "Display the media that are currently being downloaded";
-			this.downloadingToolStripMenuItem.Click += new System.EventHandler(this.OnDisplayDownloading);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(186, 6);
 			// 
 			// tableLayoutPanel2
 			// 
@@ -368,22 +309,6 @@
 			this.textBox3.Size = new System.Drawing.Size(241, 20);
 			this.textBox3.TabIndex = 0;
 			this.textBox3.TextChanged += new System.EventHandler(this.OnAuthorLabelChanged);
-			// 
-			// button2
-			// 
-			this.button2.Dock = System.Windows.Forms.DockStyle.Right;
-			this.button2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.button2.ImageIndex = 1;
-			this.button2.ImageList = this.imageList1;
-			this.button2.Location = new System.Drawing.Point(428, 515);
-			this.button2.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
-			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(84, 24);
-			this.button2.TabIndex = 17;
-			this.button2.Text = "Download";
-			this.button2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.button2.UseVisualStyleBackColor = true;
-			this.button2.Click += new System.EventHandler(this.OnDownload);
 			// 
 			// groupBox4
 			// 
@@ -572,6 +497,72 @@
 			this.radioButton1.UseVisualStyleBackColor = true;
 			this.radioButton1.CheckedChanged += new System.EventHandler(this.OnAudioGenre);
 			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(186, 6);
+			// 
+			// gotoAudioFileToolStripMenuItem
+			// 
+			this.gotoAudioFileToolStripMenuItem.Image = global::mui.Properties.Resources.AudioFile;
+			this.gotoAudioFileToolStripMenuItem.Name = "gotoAudioFileToolStripMenuItem";
+			this.gotoAudioFileToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+			this.gotoAudioFileToolStripMenuItem.Text = "Goto Audio File";
+			this.gotoAudioFileToolStripMenuItem.ToolTipText = "Opens the file explorer to the audio directory \r\nwhere the media is located.";
+			this.gotoAudioFileToolStripMenuItem.Click += new System.EventHandler(this.gotoAudioFile);
+			// 
+			// gotoVideoFileToolStripMenuItem
+			// 
+			this.gotoVideoFileToolStripMenuItem.Image = global::mui.Properties.Resources.VideoCamera;
+			this.gotoVideoFileToolStripMenuItem.Name = "gotoVideoFileToolStripMenuItem";
+			this.gotoVideoFileToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+			this.gotoVideoFileToolStripMenuItem.Text = "Goto Video file";
+			this.gotoVideoFileToolStripMenuItem.ToolTipText = "Opens the file explorer to the video directory \r\nwhere the media is located.\r\n";
+			this.gotoVideoFileToolStripMenuItem.Click += new System.EventHandler(this.GotoVideoFile);
+			// 
+			// filterToolStripMenuItem
+			// 
+			this.filterToolStripMenuItem.Image = global::mui.Properties.Resources.Filter2HS;
+			this.filterToolStripMenuItem.Name = "filterToolStripMenuItem";
+			this.filterToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+			this.filterToolStripMenuItem.Text = "Filter";
+			this.filterToolStripMenuItem.ToolTipText = "Display only the media that haven\'t been downloaded.";
+			this.filterToolStripMenuItem.Click += new System.EventHandler(this.OnFilterListview);
+			// 
+			// downloadingToolStripMenuItem
+			// 
+			this.downloadingToolStripMenuItem.Image = global::mui.Properties.Resources.Network_ConnectTo;
+			this.downloadingToolStripMenuItem.Name = "downloadingToolStripMenuItem";
+			this.downloadingToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+			this.downloadingToolStripMenuItem.Text = "Downloading";
+			this.downloadingToolStripMenuItem.ToolTipText = "Display the media that are currently being downloaded";
+			this.downloadingToolStripMenuItem.Click += new System.EventHandler(this.OnDisplayDownloading);
+			// 
+			// forgetCheckedVideoToolStripMenuItem
+			// 
+			this.forgetCheckedVideoToolStripMenuItem.Image = global::mui.Properties.Resources.delete;
+			this.forgetCheckedVideoToolStripMenuItem.Name = "forgetCheckedVideoToolStripMenuItem";
+			this.forgetCheckedVideoToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+			this.forgetCheckedVideoToolStripMenuItem.Text = "Forget Checked Media";
+			this.forgetCheckedVideoToolStripMenuItem.ToolTipText = "Remove the check items from the list.\r\nKeep the downloaded media.";
+			this.forgetCheckedVideoToolStripMenuItem.Click += new System.EventHandler(this.OnForgetMedia);
+			// 
+			// button2
+			// 
+			this.button2.Dock = System.Windows.Forms.DockStyle.Right;
+			this.button2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.button2.ImageIndex = 1;
+			this.button2.ImageList = this.imageList1;
+			this.button2.Location = new System.Drawing.Point(428, 515);
+			this.button2.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
+			this.button2.Name = "button2";
+			this.button2.Size = new System.Drawing.Size(84, 24);
+			this.button2.TabIndex = 17;
+			this.button2.Text = "Download";
+			this.button2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.button2.UseVisualStyleBackColor = true;
+			this.button2.Click += new System.EventHandler(this.OnDownload);
+			// 
 			// button1
 			// 
 			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -586,6 +577,34 @@
 			this.button1.UseVisualStyleBackColor = true;
 			this.button1.Click += new System.EventHandler(this.OnAddWebVideo);
 			// 
+			// toolStripButton1
+			// 
+			this.toolStripButton1.Image = global::mui.Properties.Resources.Settings;
+			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton1.Name = "toolStripButton1";
+			this.toolStripButton1.Size = new System.Drawing.Size(101, 22);
+			this.toolStripButton1.Text = "Configuration";
+			this.toolStripButton1.Click += new System.EventHandler(this.OnConfigure);
+			// 
+			// toolStripButton2
+			// 
+			this.toolStripButton2.Image = global::mui.Properties.Resources.RefreshDocViewHS;
+			this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton2.Name = "toolStripButton2";
+			this.toolStripButton2.Size = new System.Drawing.Size(66, 22);
+			this.toolStripButton2.Text = "Refresh";
+			this.toolStripButton2.Click += new System.EventHandler(this.OnRefreshMediaInfo);
+			// 
+			// toolStripButton3
+			// 
+			this.toolStripButton3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripButton3.Image = global::mui.Properties.Resources.help;
+			this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton3.Name = "toolStripButton3";
+			this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
+			this.toolStripButton3.Text = "toolStripButton3";
+			// 
 			// MainWindow
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -598,6 +617,7 @@
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.toolStrip1);
 			this.DoubleBuffered = true;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MinimumSize = new System.Drawing.Size(600, 400);
 			this.Name = "MainWindow";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
@@ -683,6 +703,8 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem filterToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem downloadingToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+		private System.Windows.Forms.ToolStripMenuItem forgetCheckedVideoToolStripMenuItem;
 	}
 }
 

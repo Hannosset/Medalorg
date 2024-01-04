@@ -85,9 +85,12 @@ namespace mui.Context.Protocol
 			get => _Items.ToArray();
 			set
 			{
-				_Items.AddRange( value );
-				foreach( MediaData md in _Items )
-					md.Parent = this;
+				if( value != null )
+				{
+					_Items.AddRange( value );
+					foreach( MediaData md in _Items )
+						md.Parent = this;
+				}
 			}
 		}
 		[XmlIgnore]
@@ -162,11 +165,13 @@ namespace mui.Context.Protocol
 
 			if( mi.Downloaded )
 			{
+				lvi.SubItems[1].Text = "";
 				lvi.ForeColor = Color.Gray;
 				lvi.SubItems[2].Text = $"{mi.DownloadedVideo} Video & {mi.AudioCount} Audio files";
 			}
 			else if( mi.ListItem.PDownloading == null)
 			{
+				lvi.SubItems[2].Text = mi.ListItem.Communication;
 				lvi.ForeColor = Color.DarkBlue;
 			}
 			else

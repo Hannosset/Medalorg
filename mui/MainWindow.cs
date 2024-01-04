@@ -158,7 +158,8 @@ namespace mui
 			if( !string.IsNullOrEmpty( e.Output ) )
 			{
 				MediaInfo mi = Context.HandleMediaInfo.Update( e.Output.Split( new char[] { '\t' } , StringSplitOptions.None ) );
-				Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
+				if( mi != null )
+					Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
 			}
 			else if( e.ExitCode != int.MinValue )
 			{
@@ -751,7 +752,7 @@ namespace mui
 							if( mi.ListItem.webdownload.Attempt( id ) > 1 )
 							{
 								if( mi.ListItem.webdownload.Attempt( id ) > 3 )
-								mi.ListItem.Communication = $"{mi.ListItem.webdownload.Attempt( id )}th attempt - {str[3]} packet of {downloaded:#,###,###} bytes";
+									mi.ListItem.Communication = $"{mi.ListItem.webdownload.Attempt( id )}th attempt - {str[3]} packet of {downloaded:#,###,###} bytes";
 								else if( mi.ListItem.webdownload.Attempt( id ) > 2 )
 									mi.ListItem.Communication = $"{mi.ListItem.webdownload.Attempt( id )}rd attempt - {str[3]} packet of {downloaded:#,###,###} bytes";
 								else
@@ -775,6 +776,8 @@ namespace mui
 		{
 			LogTrace.Label();
 			MediaInfo mi = e as MediaInfo;
+
+			mi.ListItem.PDownloading = null;
 
 			//	Record the downloaded data.
 			foreach( WebDownload wd in mi.ListItem.webdownload.Details )
@@ -837,7 +840,7 @@ namespace mui
 		}
 		private void gotoAudioFile( object sender , EventArgs e )
 		{
-			if( listView1.SelectedItems.Count > 0 && Directory.Exists( RelativeTargetPath().Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) )  )
+			if( listView1.SelectedItems.Count > 0 && Directory.Exists( RelativeTargetPath().Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) ) )
 				Process.Start( RelativeTargetPath().Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) );
 		}
 		private void GotoVideoFile( object sender , EventArgs e )
@@ -859,7 +862,49 @@ namespace mui
 				FilterToDownload = false;
 			OnRefreshMediaInfo( sender , e );
 		}
-		#endregion
+		private void OnForgetMedia( object sender , EventArgs e )
+		{
+			LogTrace.Label();
+			Cursor crs = Cursor;
+			Cursor = Cursors.WaitCursor;
+			listView1.BeginUpdate();
+			try
+			{
+				string selectedItem = string.Empty;
+				for( int i = listView1.SelectedIndices[0] ; i >= 0 && string.IsNullOrEmpty( selectedItem ) ; i-- )
+					if( !listView1.Items[i].Checked )
+						selectedItem = listView1.SelectedItems[0].Name;
+				for( int i = listView1.SelectedIndices[0] ; i < listView1.Items.Count && string.IsNullOrEmpty( selectedItem ) ; i++ )
+					if( !listView1.Items[i].Checked )
+						selectedItem = listView1.SelectedItems[0].Name;
 
+				string topItem = listView1.TopItem != null ? listView1.TopItem.Name : string.Empty;
+				for( int i = listView1.SelectedIndices[0] ; i >= 0 && string.IsNullOrEmpty( selectedItem ) ; i-- )
+					if( !listView1.Items[i].Checked )
+						topItem = listView1.SelectedItems[0].Name;
+				for( int i = listView1.SelectedIndices[0] ; i < listView1.Items.Count && string.IsNullOrEmpty( selectedItem ) ; i++ )
+					if( !listView1.Items[i].Checked )
+						topItem = listView1.SelectedItems[0].Name;
+
+				while( listView1.CheckedItems.Count > 0 )
+				{
+					Context.HandleMediaInfo.Info.Remove( listView1.CheckedItems[0].Name );
+					listView1.Items.Remove( listView1.CheckedItems[0] );
+				}
+				Context.HandleMediaInfo.Info.Serialize();
+			}
+			catch( Exception ex )
+			{
+				Logger.TraceException( ex , "Error removing a media from the list" , "Kindly try again, if the issue persist contact support." );
+			}
+			finally
+			{
+				listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.ColumnContent );
+				listView1.AutoResizeColumns( ColumnHeaderAutoResizeStyle.HeaderSize );
+				listView1.EndUpdate();
+				Cursor = crs;
+			}
+		}
+		#endregion
 	}
 }

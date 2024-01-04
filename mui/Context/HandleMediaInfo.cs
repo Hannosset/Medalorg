@@ -67,7 +67,15 @@ namespace mui.Context
 				using( FileStream fs = new FileStream( Filename , FileMode.Create , FileAccess.Write , FileShare.Read ) )
 					new XmlSerializer( typeof( MediaInfo[] ) ).Serialize( fs , Array.Empty<MediaInfo>() );
 
-			Info._Details = new List<MediaInfo>( Deserialize() );
+			MediaInfo[] mil = Deserialize();
+			for( int i = 0 ; i < mil.Length ; i++ )
+			{
+				int at = mil[i].VideoId.IndexOf( "\\u0026list" );
+				if( at > 0 )
+					mil[i].VideoId = mil[i].VideoId.Substring( 0 , at );
+				if( mil[i].Details.Length > 0 )
+					Info._Details.Add( mil[i] );
+			}
 		}
 		/// <summary>
 		/// What: Adds a new media in the singleton list 
@@ -153,6 +161,16 @@ namespace mui.Context
 				Logger.TraceException( ex , "The new media will not be loaded" , $"Confirm the Data Path in the configuration file is correct and confirm read access to the path and the file ({filename} )" );
 			}
 			return Array.Empty<MediaInfo>();
+		}
+
+		internal void Remove( string name )
+		{
+			MediaInfo mi = this[name];
+			
+			if( mi != null )
+			{
+				_Details.Remove( mi );
+			}
 		}
 		#endregion SERIALIZATION
 	}
