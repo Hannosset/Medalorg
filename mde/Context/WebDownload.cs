@@ -205,7 +205,7 @@ namespace mde.Context
 						}
 						else
 						{
-							Console.WriteLine( $"{VideoId}\t{Id}\t0\t{ex.Status}: {ex.Message}" );
+							Console.WriteLine( $"{VideoId}\t{Id}\t0\tError: {ex.Status}: {ex.Message}" );
 							if( ex.Status == WebExceptionStatus.Timeout )
 								_request.Timeout += 100000;
 							else if( ex.Status == WebExceptionStatus.Pending )
@@ -219,20 +219,20 @@ namespace mde.Context
 					{
 						if( ex.HResult == -2146232800 )  //	Received an unexpected EOF or 0 bytes from the transport stream.
 						{
-							Console.WriteLine( $"{VideoId}\t{Id}\t0\tEOF: {ex.Message}" );
+							Console.WriteLine( $"{VideoId}\t{Id}\t0\tError: EOF - {ex.Message}" );
 							Thread.Sleep( timeout );
 							Initialize();
 						}
 						else
 						{
-							Console.WriteLine( $"{VideoId}\t{Id}\t0\t{ex.Message}" );
+							Console.WriteLine( $"{VideoId}\t{Id}\t0\tError: {ex.Message}" );
 							break;
 						}
 					}
 					catch( Exception ex )
 					{
 						//	Log the error for investigation
-						Console.WriteLine( $"{VideoId}\t{Id}\t0\t{ex.Message}" );
+						Console.WriteLine( $"{VideoId}\t{Id}\t0\tError: {ex.Message}" );
 						break;
 					}
 					finally

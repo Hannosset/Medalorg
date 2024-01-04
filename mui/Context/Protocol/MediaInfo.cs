@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -13,9 +15,15 @@ namespace mui.Context.Protocol
 	public enum AudioFormat { Unknown, Aac, Vorbis, Opus };
 	public enum VideoFormat { Mp4, WebM };
 
-	public class MediaInfo
+	public class MediaInfo : EventArgs
 	{
 		#region TYPES
+		internal sealed class MediaListItem
+		{
+			internal HandleWebDownload webdownload { get; set; } = new HandleWebDownload();
+			internal Execute PDownloading { get; set; } = null;
+			internal string Communication { get; set; } = string.Empty;
+		};
 		public class MediaData
 		{
 			[XmlAttribute] public AdaptiveKind Type { get; set; }
@@ -82,6 +90,8 @@ namespace mui.Context.Protocol
 					md.Parent = this;
 			}
 		}
+		[XmlIgnore]
+		internal MediaListItem ListItem { get; private set; } = new MediaListItem();
 		#endregion
 
 		#region PREDICATE
@@ -98,18 +108,18 @@ namespace mui.Context.Protocol
 		#endregion
 
 		#region ACESSORS
-		public MediaData this[long l ]
+		public MediaData this[long l]
 		{
 			get
 			{
-				foreach( MediaData md in Details)
-					if( md.DataLength== l )
+				foreach( MediaData md in Details )
+					if( md.DataLength == l )
 						return md;
 				return null;
 			}
 		}
 		public int DownloadedVideo => Details.Where( x => x.Downloaded && ((x.Type == AdaptiveKind.Video && !x.Extension.Contains( "@-1" ))) ).Count() + MovieFilenames.Length;
-		public bool Downloaded => MovieFilenames.Length > 0 || Details.Where( x => x.Downloaded && ( x.Type == AdaptiveKind.Audio || (x.Type == AdaptiveKind.Video && !x.Extension.Contains( "@-1" )))).Any();
+		public bool Downloaded => MovieFilenames.Length > 0 || Details.Where( x => x.Downloaded && (x.Type == AdaptiveKind.Audio || (x.Type == AdaptiveKind.Video && !x.Extension.Contains( "@-1" ))) ).Any();
 		/// <summary>
 		/// What: Count the number of audio files
 		///  Why: Display that information in the main list view - purely informative
@@ -133,6 +143,48 @@ namespace mui.Context.Protocol
 		#endregion
 
 		#region PUBLIC METHODS
+		public static implicit operator ListViewItem( MediaInfo mi )
+		{
+			ListViewItem lvi = new ListViewItem( mi.Caption );
+			lvi.Name = mi.VideoId;
+			lvi.ToolTipText = $"{mi.VideoId}\n{mi.Title}\n    {mi.Publisher}";
+			lvi.SubItems.Add( "" );
+			lvi.SubItems.Add( "" );
+			lvi.Tag = mi;
+			
+			mi.UpdateListItem( lvi );
+
+			return lvi;
+		}
+		public void UpdateListItem( ListViewItem lvi )
+		{
+			MediaInfo mi = lvi.Tag as MediaInfo;
+
+			if( mi.Downloaded )
+			{
+				lvi.ForeColor = Color.Gray;
+				lvi.SubItems[2].Text = $"{mi.DownloadedVideo} Video & {mi.AudioCount} Audio files";
+			}
+			else if( mi.ListItem.PDownloading == null)
+			{
+				lvi.ForeColor = Color.DarkBlue;
+			}
+			else
+			{
+				lvi.SubItems[2].Text = mi.ListItem.Communication;
+
+				if( mi.ListItem.webdownload != null )
+					lvi.SubItems[1].Text = $"{mi.ListItem.webdownload.Progress:##0.00} %";
+				else
+					lvi.SubItems[1].Text = "-";
+				
+				if( mi.ListItem.Communication.ToLower().Contains( "error") )
+				{
+					lvi.UseItemStyleForSubItems = false;
+					lvi.SubItems[2].ForeColor = Color.Red;
+				}
+			}
+		}
 		internal void Add( string v )
 		{
 			if( !_MovieFilenames.Contains( v ) )
@@ -174,7 +226,7 @@ namespace mui.Context.Protocol
 					{
 						md = new AudioData
 						{
-							Parent = this,
+							Parent = this ,
 							Type = AdaptiveKind.Audio ,
 							Model = model ,
 							BitRate = bitrate ,
@@ -190,7 +242,7 @@ namespace mui.Context.Protocol
 						{
 							md = new VideoData
 							{
-								Parent = this,
+								Parent = this ,
 								Type = AdaptiveKind.Video ,
 								Model = model ,
 								BitRate = bitrate ,

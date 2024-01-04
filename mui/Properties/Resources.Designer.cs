@@ -63,9 +63,39 @@ namespace mui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap AudioFile {
+            get {
+                object obj = ResourceManager.GetObject("AudioFile", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Filter2HS {
+            get {
+                object obj = ResourceManager.GetObject("Filter2HS", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap help {
             get {
                 object obj = ResourceManager.GetObject("help", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Network_ConnectTo {
+            get {
+                object obj = ResourceManager.GetObject("Network_ConnectTo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -86,6 +116,16 @@ namespace mui.Properties {
         internal static System.Drawing.Bitmap Settings {
             get {
                 object obj = ResourceManager.GetObject("Settings", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap VideoCamera {
+            get {
+                object obj = ResourceManager.GetObject("VideoCamera", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

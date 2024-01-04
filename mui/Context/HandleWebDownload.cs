@@ -11,7 +11,7 @@ using xnext.Diagnostics;
 
 namespace mui.Context
 {
-	internal class HandleWebDownload : EventArgs
+	internal class HandleWebDownload
 	{
 		#region LOCAL VARIABLE
 		/// <summary>
@@ -24,6 +24,11 @@ namespace mui.Context
 		///  Why: being able to create percentage progress and in case of one media restart allow to maintain a correct downloaded percentage
 		/// </summary>
 		private List<decimal> _Downloads = new List<decimal>();
+		/// <summary>
+		/// What: number of attempt to download the media
+		///  Why: provide end-user with that information.
+		/// </summary>
+		private List<int> _Attempts = new List<int>();
 		bool HasVideo = false;
 		/// <summary>
 		/// What: Total size to download
@@ -44,8 +49,6 @@ namespace mui.Context
 		/// What:
 		///  Why:
 		/// </summary>
-		/// <param name="l"></param>
-		/// <returns></returns>
 		public WebDownload this[long l]
 		{
 			get
@@ -56,6 +59,7 @@ namespace mui.Context
 				return null;
 			}
 		}
+		public int Attempt( int id  ) => id < _Attempts.Count ? _Attempts[id] : 0;
 		public decimal Progress => Math.Round( (_Downloaded / _Totalsize) * 100 , 2 , MidpointRounding.AwayFromZero );
 		internal string VideoId => _Details.Count > 0 ? _Details[0].VideoId : string.Empty;
 		/// <summary>
@@ -70,6 +74,9 @@ namespace mui.Context
 		{
 			if( downloaded > 0 )
 			{
+				if( _Downloads[id] == 0 )
+					_Attempts[id] += 1;
+
 				_Downloads[id] = Math.Min( _Totalsize , downloaded + _Downloads[id] );
 				_Downloaded = Math.Min( _Totalsize , downloaded + _Downloaded );
 			}
@@ -87,6 +94,7 @@ namespace mui.Context
 		{
 			request.Id = _Details.Count;
 			_Downloads.Add( 0 );
+			_Attempts.Add( 0 );
 
 			LogTrace.Label();
 			_Details.Add( request );
@@ -111,6 +119,7 @@ namespace mui.Context
 						MediaData = request.MediaData
 					} );
 					_Downloads.Add( 0 );
+					_Attempts.Add( 0 );
 					HasAudio = true;
 				}
 			}
@@ -140,6 +149,7 @@ namespace mui.Context
 						MediaData = request.MediaData
 					} );
 					_Downloads.Add( 0 );
+					_Attempts.Add( 0 );
 					HasVideo = true;
 				}
 			}

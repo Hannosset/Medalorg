@@ -36,7 +36,6 @@
 			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
 			this.label1 = new System.Windows.Forms.Label();
-			this.button1 = new System.Windows.Forms.Button();
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
 			this.clipboardMonitor1 = new xnext.ui.ClipboardMonitor();
 			this.textBox1 = new System.Windows.Forms.TextBox();
@@ -45,6 +44,12 @@
 			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.gotoAudioFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.gotoVideoFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.filterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.downloadingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -67,12 +72,14 @@
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.radioButton2 = new System.Windows.Forms.RadioButton();
 			this.radioButton1 = new System.Windows.Forms.RadioButton();
+			this.button1 = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
 			this.toolStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
+			this.contextMenuStrip1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			this.tableLayoutPanel3.SuspendLayout();
 			this.groupBox1.SuspendLayout();
@@ -143,20 +150,6 @@
 			this.label1.TabIndex = 25;
 			this.label1.Text = "Web address:";
 			// 
-			// button1
-			// 
-			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.button1.ImageIndex = 0;
-			this.button1.ImageList = this.imageList1;
-			this.button1.Location = new System.Drawing.Point(833, 39);
-			this.button1.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(32, 21);
-			this.button1.TabIndex = 26;
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.OnAddWebVideo);
-			// 
 			// imageList1
 			// 
 			this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
@@ -212,6 +205,7 @@
             this.columnHeader1,
             this.columnHeader5,
             this.columnHeader2});
+			this.listView1.ContextMenuStrip = this.contextMenuStrip1;
 			this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.listView1.FullRowSelect = true;
 			this.listView1.GridLines = true;
@@ -242,6 +236,59 @@
 			// 
 			this.columnHeader2.Text = "Communication";
 			this.columnHeader2.Width = 130;
+			// 
+			// contextMenuStrip1
+			// 
+			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.gotoAudioFileToolStripMenuItem,
+            this.gotoVideoFileToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.filterToolStripMenuItem,
+            this.downloadingToolStripMenuItem});
+			this.contextMenuStrip1.Name = "contextMenuStrip1";
+			this.contextMenuStrip1.Size = new System.Drawing.Size(181, 120);
+			this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpenPopup);
+			// 
+			// gotoAudioFileToolStripMenuItem
+			// 
+			this.gotoAudioFileToolStripMenuItem.Image = global::mui.Properties.Resources.AudioFile;
+			this.gotoAudioFileToolStripMenuItem.Name = "gotoAudioFileToolStripMenuItem";
+			this.gotoAudioFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.gotoAudioFileToolStripMenuItem.Text = "Goto Audio File";
+			this.gotoAudioFileToolStripMenuItem.ToolTipText = "Opens the file explorer to the audio directory \r\nwhere the media is located.";
+			this.gotoAudioFileToolStripMenuItem.Click += new System.EventHandler(this.gotoAudioFile);
+			// 
+			// gotoVideoFileToolStripMenuItem
+			// 
+			this.gotoVideoFileToolStripMenuItem.Image = global::mui.Properties.Resources.VideoCamera;
+			this.gotoVideoFileToolStripMenuItem.Name = "gotoVideoFileToolStripMenuItem";
+			this.gotoVideoFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.gotoVideoFileToolStripMenuItem.Text = "Goto Video file";
+			this.gotoVideoFileToolStripMenuItem.ToolTipText = "Opens the file explorer to the video directory \r\nwhere the media is located.\r\n";
+			this.gotoVideoFileToolStripMenuItem.Click += new System.EventHandler(this.GotoVideoFile);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+			// 
+			// filterToolStripMenuItem
+			// 
+			this.filterToolStripMenuItem.Image = global::mui.Properties.Resources.Filter2HS;
+			this.filterToolStripMenuItem.Name = "filterToolStripMenuItem";
+			this.filterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.filterToolStripMenuItem.Text = "Filter";
+			this.filterToolStripMenuItem.ToolTipText = "Display only the media that haven\'t been downloaded.";
+			this.filterToolStripMenuItem.Click += new System.EventHandler(this.OnFilterListview);
+			// 
+			// downloadingToolStripMenuItem
+			// 
+			this.downloadingToolStripMenuItem.Image = global::mui.Properties.Resources.Network_ConnectTo;
+			this.downloadingToolStripMenuItem.Name = "downloadingToolStripMenuItem";
+			this.downloadingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.downloadingToolStripMenuItem.Text = "Downloading";
+			this.downloadingToolStripMenuItem.ToolTipText = "Display the media that are currently being downloaded";
+			this.downloadingToolStripMenuItem.Click += new System.EventHandler(this.OnDisplayDownloading);
 			// 
 			// tableLayoutPanel2
 			// 
@@ -525,6 +572,20 @@
 			this.radioButton1.UseVisualStyleBackColor = true;
 			this.radioButton1.CheckedChanged += new System.EventHandler(this.OnAudioGenre);
 			// 
+			// button1
+			// 
+			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+			this.button1.ImageIndex = 0;
+			this.button1.ImageList = this.imageList1;
+			this.button1.Location = new System.Drawing.Point(833, 39);
+			this.button1.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(32, 21);
+			this.button1.TabIndex = 26;
+			this.button1.UseVisualStyleBackColor = true;
+			this.button1.Click += new System.EventHandler(this.OnAddWebVideo);
+			// 
 			// MainWindow
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -556,6 +617,7 @@
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
 			this.splitContainer1.ResumeLayout(false);
+			this.contextMenuStrip1.ResumeLayout(false);
 			this.tableLayoutPanel2.ResumeLayout(false);
 			this.tableLayoutPanel3.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
@@ -615,6 +677,12 @@
 		private System.Windows.Forms.RadioButton radioButton2;
 		private System.Windows.Forms.RadioButton radioButton1;
 		private System.Windows.Forms.ColumnHeader columnHeader2;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+		private System.Windows.Forms.ToolStripMenuItem gotoAudioFileToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem gotoVideoFileToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.ToolStripMenuItem filterToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem downloadingToolStripMenuItem;
 	}
 }
 

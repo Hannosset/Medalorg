@@ -130,5 +130,17 @@
   <ItemGroup>
     <None Include="Resources\help.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AudioFile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\VideoCamera.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Filter2HS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Network_ConnectTo.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
