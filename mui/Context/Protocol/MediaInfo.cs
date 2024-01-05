@@ -121,7 +121,8 @@ namespace mui.Context.Protocol
 				return null;
 			}
 		}
-		public int DownloadedVideo => Details.Where( x => x.Downloaded && ((x.Type == AdaptiveKind.Video && !x.Extension.Contains( "@-1" ))) ).Count() + MovieFilenames.Length;
+		public int DownloadedVideo => Details.Where( x => x.Downloaded && (x.Type == AdaptiveKind.Video && !x.Extension.Contains( "@-1" )) ).Count() + MovieFilenames.Length;
+		public int DownloadedAudio => Details.Where( x => x.Downloaded && x.Type == AdaptiveKind.Audio  ).Count() + MovieFilenames.Length;
 		public bool Downloaded => MovieFilenames.Length > 0 || Details.Where( x => x.Downloaded && (x.Type == AdaptiveKind.Audio || (x.Type == AdaptiveKind.Video && !x.Extension.Contains( "@-1" ))) ).Any();
 		/// <summary>
 		/// What: Count the number of audio files
@@ -182,7 +183,7 @@ namespace mui.Context.Protocol
 			{
 				lvi.SubItems[1].Text = "";
 				lvi.ForeColor = Color.Gray;
-				lvi.SubItems[2].Text = $"{mi.DownloadedVideo} Video & {mi.AudioCount} Audio files";
+				lvi.SubItems[2].Text = $"{mi.DownloadedVideo} Video & {mi.DownloadedAudio} Audio files";
 			}
 			else
 			{

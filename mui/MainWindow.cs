@@ -906,5 +906,22 @@ namespace mui
 			}
 		}
 		#endregion
+
+		private void OnSwapAuthor_Title( object sender , ToolStripItemClickedEventArgs e )
+		{
+		}
+
+		private void OnSwapAuthor_Title( object sender , EventArgs e )
+		{
+			if( listView1.SelectedItems.Count > 0 )
+			{
+				MediaInfo mi = listView1.SelectedItems[0].Tag as MediaInfo;
+				mi.Caption = $"{mi.Title} - {mi.Author}";
+				Context.HandleMediaInfo.Info.Serialize();
+				textBox2.Text = mi.Title;
+				textBox3.Text = mi.Author;
+				RefreshView( mi.VideoId );
+			}
+		}
 	}
 }

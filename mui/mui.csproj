@@ -147,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\delete.png" />
+    <None Include="Resources\page_swap_12968.png" />
     <Content Include="wolf-48_46777.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
