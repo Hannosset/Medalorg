@@ -172,7 +172,7 @@ namespace mde.Context
 			else if( fi.Exists )
 				if( fi.Length == DataLength )
 				{
-					Console.WriteLine( $"{VideoId}\t{Id}\t{DataLength}\tMedia downloaded" );
+					Console.WriteLine( $"{VideoId}\t \t \tMedia downloaded" );
 					return DataLength;
 				}
 				else
@@ -275,7 +275,8 @@ namespace mde.Context
 							fileStream.Write( _buffer , 0 , bytesRead );
 
 						total += bytesRead;
-						Console.Write( $"\r{VideoId}\t{Id}\t{bytesRead}\tDownloading" );
+						if( bytesRead > 0 )
+							Console.Write( $"\r{VideoId}\t{Id}\t{bytesRead}\tDownloading" );
 
 					} while( bytesRead > 0 );
 				}
@@ -297,7 +298,7 @@ namespace mde.Context
 				foreach( YouTubeVideo item in _videos )
 					if( item.AdaptiveKind == AdaptiveKind.Audio && item.AudioBitrate == BitRate && item.AudioFormat == Format )
 					{
-						Console.WriteLine( $"{VideoId}\t{Id}\t \tGet the media uri" );
+						Console.WriteLine( $"{VideoId}\t \t \tGet the media uri" );
 						_uri = item.Uri;
 						return base.Initialize();
 					}
@@ -320,7 +321,7 @@ namespace mde.Context
 				foreach( YouTubeVideo item in _videos )
 					if( item.AdaptiveKind == AdaptiveKind.Video && item.Resolution == Resolution && item.Format == Format )
 					{
-						Console.WriteLine( $"{VideoId}\t{Id}\t \tGet the media uri" );
+						Console.WriteLine( $"{VideoId}\t \t \tGet the media uri" );
 						_uri = item.Uri;
 						return base.Initialize();
 					}

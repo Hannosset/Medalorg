@@ -215,7 +215,7 @@ namespace mui
 					}
 					else if( FilterToDownload )
 					{
-						if( mi.Downloaded )
+						if( !mi.Downloaded )
 							listView1.Items.Add( mi ).Font = ItalicFont;
 					}
 					else
