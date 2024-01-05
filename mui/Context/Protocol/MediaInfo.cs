@@ -163,18 +163,7 @@ namespace mui.Context.Protocol
 		{
 			MediaInfo mi = lvi.Tag as MediaInfo;
 
-			if( mi.Downloaded )
-			{
-				lvi.SubItems[1].Text = "";
-				lvi.ForeColor = Color.Gray;
-				lvi.SubItems[2].Text = $"{mi.DownloadedVideo} Video & {mi.AudioCount} Audio files";
-			}
-			else if( mi.ListItem.PDownloading == null)
-			{
-				lvi.SubItems[2].Text = mi.ListItem.Communication;
-				lvi.ForeColor = Color.DarkBlue;
-			}
-			else
+			if( mi.ListItem.PDownloading != null )
 			{
 				lvi.SubItems[2].Text = mi.ListItem.Communication;
 
@@ -188,6 +177,17 @@ namespace mui.Context.Protocol
 					lvi.UseItemStyleForSubItems = false;
 					lvi.SubItems[2].ForeColor = Color.Red;
 				}
+			}
+			else if( mi.Downloaded )
+			{
+				lvi.SubItems[1].Text = "";
+				lvi.ForeColor = Color.Gray;
+				lvi.SubItems[2].Text = $"{mi.DownloadedVideo} Video & {mi.AudioCount} Audio files";
+			}
+			else
+			{
+				lvi.SubItems[2].Text = mi.ListItem.Communication;
+				lvi.ForeColor = Color.DarkBlue;
 			}
 		}
 		internal void Add( string v )
