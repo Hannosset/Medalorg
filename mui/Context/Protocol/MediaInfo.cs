@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
 
+using xnext.Context;
 using xnext.Diagnostics;
 
 namespace mui.Context.Protocol
@@ -122,7 +123,7 @@ namespace mui.Context.Protocol
 			}
 		}
 		public int DownloadedVideo => Details.Where( x => x.Downloaded && (x.Type == AdaptiveKind.Video && !x.Extension.Contains( "@-1" )) ).Count() + MovieFilenames.Length;
-		public int DownloadedAudio => Details.Where( x => x.Downloaded && x.Type == AdaptiveKind.Audio  ).Count() + MovieFilenames.Length;
+		public int DownloadedAudio => Details.Where( x => x.Downloaded && x.Type == AdaptiveKind.Audio ).Count() + MovieFilenames.Length;
 		public bool Downloaded => MovieFilenames.Length > 0 || Details.Where( x => x.Downloaded && (x.Type == AdaptiveKind.Audio || (x.Type == AdaptiveKind.Video && !x.Extension.Contains( "@-1" ))) ).Any();
 		/// <summary>
 		/// What: Count the number of audio files
@@ -155,7 +156,7 @@ namespace mui.Context.Protocol
 			lvi.SubItems.Add( "" );
 			lvi.SubItems.Add( "" );
 			lvi.Tag = mi;
-			
+
 			mi.UpdateListItem( lvi );
 
 			return lvi;
@@ -172,8 +173,8 @@ namespace mui.Context.Protocol
 					lvi.SubItems[1].Text = $"{mi.ListItem.webdownload.Progress:##0.00} %";
 				else
 					lvi.SubItems[1].Text = "-";
-				
-				if( mi.ListItem.Communication.ToLower().Contains( "error") )
+
+				if( mi.ListItem.Communication.ToLower().Contains( "error" ) )
 				{
 					lvi.UseItemStyleForSubItems = false;
 					lvi.SubItems[2].ForeColor = Color.Red;
@@ -270,6 +271,67 @@ namespace mui.Context.Protocol
 				}
 			}
 			return null;
+		}
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
+		/// <param name="best"></param>
+		/// <returns></returns>
+		public VideoData BestVideo( int maxres = 0, int minres = 0 )
+		{
+			VideoData BestVideo = null;
+
+			foreach( MediaData md in Details )
+			{
+				VideoData vd = md as VideoData;
+				if( md.Type == AdaptiveKind.Video )
+				{
+					if( BestVideo == null && maxres == 0 )
+						return vd;
+					else if( maxres >= vd.Resolution && vd.Resolution <= minres  )
+						if( BestVideo == null || BestVideo.Resolution < vd.Resolution )
+							BestVideo = vd;
+				}
+			}
+			return BestVideo;
+		}
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
+		/// <param name="best"></param>
+		/// <returns></returns>
+		public AudioData BestAudio( bool best = true )
+		{
+			AudioData BestAudio = null;
+
+			foreach( MediaData md in Details )
+			{
+				if( md.Type == AdaptiveKind.Audio && md is AudioData ad )
+				{
+					if( BestAudio == null )
+						return ad;
+					else if( best )
+					{
+						if( BestAudio.BitRate < ad.BitRate )
+							BestAudio = ad;
+						else if( BestAudio.BitRate == ad.BitRate )
+						{
+							if( BestAudio.Model == AudioFormat.Aac && ad.Model != AudioFormat.Aac )
+								BestAudio = ad;
+							else if( BestAudio.Model == AudioFormat.Vorbis && ad.Model != AudioFormat.Opus )
+								BestAudio = ad;
+						}
+					}
+					else if( BestAudio.BitRate < ad.BitRate )
+					{
+						BestAudio = ad;
+						break;
+					}
+				}
+			}
+			return BestAudio;
 		}
 		#endregion
 

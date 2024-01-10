@@ -95,7 +95,7 @@
 			// sbStatus
 			// 
 			this.sbStatus.Name = "sbStatus";
-			this.sbStatus.Size = new System.Drawing.Size(470, 19);
+			this.sbStatus.Size = new System.Drawing.Size(438, 19);
 			this.sbStatus.Spring = true;
 			this.sbStatus.Text = "toolStripStatusLabel1";
 			this.sbStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -124,7 +124,7 @@
 			this.sbMode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.sbMode.ForeColor = System.Drawing.SystemColors.WindowText;
 			this.sbMode.Name = "sbMode";
-			this.sbMode.Size = new System.Drawing.Size(50, 19);
+			this.sbMode.Size = new System.Drawing.Size(82, 19);
 			this.sbMode.Text = "Development";
 			// 
 			// tsNetworkStatus

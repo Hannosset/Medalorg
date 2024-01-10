@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
+using System.Xml;
 using System.Xml.Serialization;
 
 using xnext.Diagnostics;
@@ -69,7 +70,42 @@ namespace mui.Context
 		internal WebDownload[] Details => _Details.ToArray();
 		#endregion ACCESSORS
 
+		public HandleWebDownload() { }
+		public HandleWebDownload( WebDownload[] webDownloads )
+		{
+			_Details.AddRange( webDownloads );
+			foreach( WebDownload wd in webDownloads )
+			{
+				if( wd is DownloadBinary db )
+					_Totalsize = _Totalsize + db.DataLength;
+
+				_Downloads.Add( 0 );
+				_Attempts.Add( 0 );
+				if( wd is DownloadVideo video )
+				{
+					HasVideo = true;
+					if( wd.Filename.IndexOf( "@-1" ) > 0 )
+					{
+						VideoNeedsAudio = true;
+						video.TargetFilename = wd.Filename;
+					}
+					else
+						video.TargetFilename = wd.Filename;
+				}
+				else if( wd is DownloadAudio audio )
+				{
+					HasAudio = true;
+					if( BestAudio == null || audio.BitRate > BestAudio.BitRate )
+						BestAudio = audio;
+				}
+			}
+		}
+
 		#region PUBLIC METHODS
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
 		public void Update( int id , decimal downloaded )
 		{
 			if( downloaded > 0 )
@@ -155,7 +191,39 @@ namespace mui.Context
 			}
 			return request;
 		}
-#endregion PUBLIC METHODS
+		/// <summary>
+		/// What: 
+		///  Why: 
+		/// </summary>
+		internal void Bind( MediaInfo mi )
+		{
+			MediaInfo.MediaData prev = null;
+			foreach( WebDownload wd in Details )
+			{
+				if( wd is DownloadAudio audio )
+				{
+					foreach( MediaInfo.MediaData md in mi.Details )
+						if( md.Type == AdaptiveKind.Audio && audio.DataLength == md.DataLength )
+						{
+							prev = wd.MediaData = md;
+							break;
+						}
+				}
+
+				else if( wd is DownloadVideo video )
+				{
+					foreach( MediaInfo.MediaData md in mi.Details )
+						if( md.Type == AdaptiveKind.Video && video.DataLength == video.DataLength )
+						{
+							prev = wd.MediaData = md;
+							break;
+						}
+				}
+				else
+					wd.MediaData = prev;
+			}
+		}
+		#endregion PUBLIC METHODS
 
 		#region SERIALIZATION
 		/// <summary>
@@ -183,7 +251,7 @@ namespace mui.Context
 		/// </summary>
 		internal void Serialize( string filename = null )
 		{
-			if( filename == null )
+			if( string.IsNullOrEmpty( filename ) )
 				filename = Filename;
 			try
 			{
@@ -195,6 +263,26 @@ namespace mui.Context
 			{
 				Logger.TraceException( ex , "The new requests will not be saved" , $"Confirm the Data Path in the configuration file is correct and confirm read/write access to the path and the file ({filename} )" );
 			}
+		}
+		internal static HandleWebDownload Deserialize( string filename )
+		{
+			if( !string.IsNullOrEmpty(filename ) )
+			try
+			{
+				LogTrace.Label( filename );
+					if( File.Exists( filename ) )
+						using( FileStream fs = new FileStream( filename , FileMode.Open , FileAccess.Read , FileShare.Read ) )
+						using( XmlReader reader = XmlReader.Create( fs , new XmlReaderSettings() { XmlResolver = null } ) )
+						{
+							HandleWebDownload webdownload = new HandleWebDownload( new XmlSerializer( typeof( WebDownload[] ) ).Deserialize( reader ) as WebDownload[] );
+							return webdownload;
+						}
+			}
+			catch( System.Exception ex )
+			{
+				Logger.TraceException( ex , "The new media will not be loaded" , $"Confirm the Data Path in the configuration file is correct and confirm read access to the path and the file ({filename} )" );
+			}
+			return new HandleWebDownload();
 		}
 		#endregion SERIALIZATION
 	}

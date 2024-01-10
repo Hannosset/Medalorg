@@ -43,6 +43,13 @@ namespace mui
 				textBox4.Text = CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg path" );
 				textBox5.Text = CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" );
 
+				checkBox1.Checked = CltWinEnv.AppReadSetting.GetData( Name , "Default Audio" , true );
+				checkBox2.Checked = CltWinEnv.AppReadSetting.GetData( Name , "Default Best Video" , true );
+				checkBox3.Checked = CltWinEnv.AppReadSetting.GetData( Name , "Default Good Video" , true );
+				checkBox3.Text = $"Video quality between [{CltWinEnv.AppSetting.GetData( Name , "Range Good Video" , "1080,480")}]";
+
+				numericUpDown1.Value = CltWinEnv.AppReadSetting.GetData( Name , "# parallel download" , 5 );
+
 				InitSubtitles();
 			}
 		}
@@ -79,6 +86,13 @@ namespace mui
 			CltWinEnv.AppSetting.SetData( Name , "Use Default Pathname" , radioButton1.Checked ? "True" : "False" );
 			CltWinEnv.AppSetting.SetData( Name , "User Pathname" , textBox3.Text );
 			CltWinEnv.AppSetting.SetData( Name , "Active Pathname" , radioButton1.Checked ? radioButton1.Text : textBox3.Text );
+
+			CltWinEnv.AppSetting.SetData( Name , "Default Audio" , checkBox1.Checked );
+			CltWinEnv.AppSetting.SetData( Name , "Default Best Video" , checkBox2.Checked );
+			CltWinEnv.AppSetting.SetData( Name , "Default Good Video" , checkBox3.Checked );
+			;
+
+			CltWinEnv.AppSetting.SetData( Name , "# parallel download" , numericUpDown1.Value );
 
 			string subtitles = "";
 			foreach( ListViewItem lvi in listView3.CheckedItems )
@@ -615,5 +629,16 @@ namespace mui
 			}
 		}
 		#endregion TAB: FFMPEG
+
+		private void OnAutoVideo2( object sender , EventArgs e )
+		{
+			if( checkBox2.Checked )
+				checkBox3.Checked = false;
+		}
+		private void OnAutoVideo3( object sender , EventArgs e )
+		{
+			if( checkBox3.Checked )
+				checkBox2.Checked = false;
+		}
 	}
 }

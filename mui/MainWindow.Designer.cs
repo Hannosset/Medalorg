@@ -48,6 +48,8 @@
 			this.gotoAudioFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gotoVideoFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.batchDownloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.filterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.downloadingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -76,6 +78,7 @@
 			this.radioButton2 = new System.Windows.Forms.RadioButton();
 			this.radioButton1 = new System.Windows.Forms.RadioButton();
 			this.button1 = new System.Windows.Forms.Button();
+			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
 			this.toolStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -161,6 +164,7 @@
 			this.imageList1.Images.SetKeyName(0, "");
 			this.imageList1.Images.SetKeyName(1, "DOWNLOAD_00.gif");
 			this.imageList1.Images.SetKeyName(2, "page_swap_12968.png");
+			this.imageList1.Images.SetKeyName(3, "swap_110974.png");
 			// 
 			// clipboardMonitor1
 			// 
@@ -227,6 +231,7 @@
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
 			this.listView1.SelectedIndexChanged += new System.EventHandler(this.OnItemSelected);
+			this.listView1.DoubleClick += new System.EventHandler(this.OnOpenVideoOnBrowser);
 			// 
 			// columnHeader1
 			// 
@@ -249,12 +254,14 @@
             this.gotoAudioFileToolStripMenuItem,
             this.gotoVideoFileToolStripMenuItem,
             this.toolStripSeparator2,
+            this.batchDownloadToolStripMenuItem,
+            this.toolStripSeparator4,
             this.filterToolStripMenuItem,
             this.downloadingToolStripMenuItem,
             this.toolStripSeparator3,
             this.forgetCheckedVideoToolStripMenuItem});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(194, 126);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(194, 154);
 			this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpenPopup);
 			// 
 			// gotoAudioFileToolStripMenuItem
@@ -279,6 +286,21 @@
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(190, 6);
+			// 
+			// batchDownloadToolStripMenuItem
+			// 
+			this.batchDownloadToolStripMenuItem.Image = global::mui.Properties.Resources.DOWNLOAD_00;
+			this.batchDownloadToolStripMenuItem.Name = "batchDownloadToolStripMenuItem";
+			this.batchDownloadToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+			this.batchDownloadToolStripMenuItem.Text = "Batch Download";
+			this.batchDownloadToolStripMenuItem.ToolTipText = "Download all the medi usig default \r\nSettings and using the target path as \r\ncurr" +
+    "ently displayed (no author in the path)\r\n";
+			this.batchDownloadToolStripMenuItem.Click += new System.EventHandler(this.OnBatchDownload);
+			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			this.toolStripSeparator4.Size = new System.Drawing.Size(190, 6);
 			// 
 			// filterToolStripMenuItem
 			// 
@@ -385,10 +407,10 @@
 			// pictureBox1
 			// 
 			this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.pictureBox1.Image = global::mui.Properties.Resources.page_swap_12968;
-			this.pictureBox1.Location = new System.Drawing.Point(172, 13);
+			this.pictureBox1.Image = global::mui.Properties.Resources.swap_110974;
+			this.pictureBox1.Location = new System.Drawing.Point(186, 15);
 			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(37, 22);
+			this.pictureBox1.Size = new System.Drawing.Size(23, 22);
 			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
 			this.pictureBox1.TabIndex = 1;
 			this.pictureBox1.TabStop = false;
@@ -400,7 +422,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.textBox3.Location = new System.Drawing.Point(3, 16);
 			this.textBox3.Name = "textBox3";
-			this.textBox3.Size = new System.Drawing.Size(163, 20);
+			this.textBox3.Size = new System.Drawing.Size(177, 20);
 			this.textBox3.TabIndex = 0;
 			this.textBox3.TextChanged += new System.EventHandler(this.OnAuthorLabelChanged);
 			// 
@@ -621,6 +643,13 @@
 			this.button1.UseVisualStyleBackColor = true;
 			this.button1.Click += new System.EventHandler(this.OnAddWebVideo);
 			// 
+			// backgroundWorker1
+			// 
+			this.backgroundWorker1.WorkerReportsProgress = true;
+			this.backgroundWorker1.WorkerSupportsCancellation = true;
+			this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.OnProcessBatch);
+			this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.OnBatchProgress);
+			// 
 			// MainWindow
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -723,6 +752,9 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripMenuItem forgetCheckedVideoToolStripMenuItem;
 		private System.Windows.Forms.PictureBox pictureBox1;
+		private System.Windows.Forms.ToolStripMenuItem batchDownloadToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+		private System.ComponentModel.BackgroundWorker backgroundWorker1;
 	}
 }
 

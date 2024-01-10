@@ -1,6 +1,9 @@
-﻿using mui.Context.Protocol;
+﻿using mde.Context;
+
+using mui.Context.Protocol;
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -8,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Caching;
+using System.Threading;
 using System.Windows.Forms;
 
 using xnext.Context;
@@ -22,6 +26,9 @@ namespace mui
 		private Font StrikeoutFont;
 		private bool FilterToDownload = false;
 		private bool FilterDownloading = false;
+		private int NrParallelDownload;
+		private Semaphore ParallelDownload;
+		AutoResetEvent OnCloseEvent = new AutoResetEvent( false );
 		#endregion LOCAL VARIABLE
 
 		/// <summary>
@@ -47,9 +54,13 @@ namespace mui
 				CltWinEnv.AppReadSetting.GetData( "Configuration" , "User Pathname" , "{Root}" );
 				CltWinEnv.AppReadSetting.GetData( "Configuration" , "Audio {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyMusic ) );
 				CltWinEnv.AppReadSetting.GetData( "Configuration" , "Video {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyVideos ) );
-				CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg path" , new DirectoryInfo( "." ).FullName );
-				CltWinEnv.AppReadSetting.GetData( Name , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}\"" );
-				CltWinEnv.AppReadSetting.GetData( Name , "Use Default Pathname" , "True" );
+				CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" , new DirectoryInfo( "." ).FullName );
+				CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}\"" );
+				CltWinEnv.AppReadSetting.GetData( "Configuration" , "Use Default Pathname" , "True" );
+				CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Audio" , true );
+				CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Best Video" , false );
+				CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Good Video" , true );
+				NrParallelDownload = CltWinEnv.AppReadSetting.GetData( "Configuration" , "# parallel download" , 5 );
 			}
 		}
 		/// <summary>
@@ -74,8 +85,10 @@ namespace mui
 				splitContainer2.SplitterDistance = CltWinEnv.UserSetting.GetData( "Splitter" , "Panel" , splitContainer2.SplitterDistance );
 
 				OnRefreshMediaInfo( sender , e );
+				ParallelDownload = new Semaphore( NrParallelDownload , NrParallelDownload );
 
 				//	Initiate auto load of the incomplete sessions 
+				backgroundWorker1.RunWorkerAsync();
 			}
 		}
 		/// <summary>
@@ -89,6 +102,12 @@ namespace mui
 				LogTrace.Label();
 				Cursor crs = Cursor;
 				Cursor = Cursors.WaitCursor;
+
+				if( backgroundWorker1.WorkerSupportsCancellation )
+					backgroundWorker1.CancelAsync();
+
+				OnCloseEvent.Set();
+				Thread.Sleep( 1000 );
 				try
 				{
 					foreach( ListViewItem lvi in listView1.Items )
@@ -113,6 +132,7 @@ namespace mui
 				{
 					Cursor = crs;
 				}
+				OnCloseEvent.WaitOne();
 			}
 		}
 		#endregion CONSTRUCTOR
@@ -181,8 +201,21 @@ namespace mui
 		{
 			using( Configuration dlg = new Configuration() )
 			{
+				//	Prevent changing the parallelism is currently busy.
+				foreach( MediaInfo mi in Context.HandleMediaInfo.Info.Details )
+					if( mi.ListItem.PDownloading != null )
+					{
+						dlg.numericUpDown1.Enabled = false;
+						break;
+					}
+
 				if( dlg.ShowDialog( this ) == DialogResult.OK )
 				{
+					if( CltWinEnv.AppReadSetting.GetData( "Configuration" , "# parallel download" , 5 ) != NrParallelDownload )
+					{
+						ParallelDownload.Close();
+						ParallelDownload = new Semaphore( NrParallelDownload , NrParallelDownload );
+					}
 					//	Refresh right panel
 					OnRefreshMediaInfo( sender , e );
 				}
@@ -224,6 +257,11 @@ namespace mui
 
 				if( !string.IsNullOrEmpty( selectedItem ) && listView1.Items.ContainsKey( selectedItem ) )
 					listView1.Items[selectedItem].Selected = true;
+				else if( listView1.Items.Count > 0 )
+					listView1.Items[0].Selected = true;
+				else
+					listView3.Items.Clear();
+
 				if( !string.IsNullOrEmpty( topItem ) && listView1.Items.ContainsKey( topItem ) )
 					listView1.TopItem = listView1.Items[topItem];
 			}
@@ -384,6 +422,22 @@ namespace mui
 				radioButton1.Checked = radioButton2.Checked = false;
 				listView4.Items.Clear();
 				listView5.Items.Clear();
+			}
+		}
+		/// <summary>
+		/// What:
+		///  Why:
+		/// </summary>
+		private void OnSwapAuthor_Title( object sender , EventArgs e )
+		{
+			if( listView1.SelectedItems.Count > 0 )
+			{
+				MediaInfo mi = listView1.SelectedItems[0].Tag as MediaInfo;
+				mi.Caption = $"{mi.Title} - {mi.Author}";
+				Context.HandleMediaInfo.Info.Serialize();
+				textBox2.Text = mi.Title;
+				textBox3.Text = mi.Author;
+				RefreshView( mi.VideoId );
 			}
 		}
 		/// <summary>
@@ -630,6 +684,7 @@ namespace mui
 
 		#endregion RIGHT PANEL EVENTS
 
+		#region Download
 		/// <summary>
 		/// What: Starts to download the media from the selected uri
 		///  Why: Create a file in the published directory that will instruct the engine to download. Once fully downloaded, the file will be moved to the history directory.
@@ -672,7 +727,7 @@ namespace mui
 				{
 					if( lvi.Tag is MediaInfo.MediaData md && md.Type == AdaptiveKind.Audio )
 					{
-						HandleDownload.UpdateWith( new DownloadAudio
+						HandleDownload.UpdateWith( new Context.Protocol.DownloadAudio
 						{
 							VideoId = mi.VideoId ,
 							DataLength = md.DataLength ,
@@ -685,7 +740,7 @@ namespace mui
 					}
 					else if( lvi.Tag is MediaInfo.VideoData vd )
 					{
-						HandleDownload.UpdateWith( new DownloadVideo
+						HandleDownload.UpdateWith( new Context.Protocol.DownloadVideo
 						{
 							VideoId = mi.VideoId ,
 							DataLength = vd.DataLength ,
@@ -704,32 +759,36 @@ namespace mui
 				}
 
 				HandleDownload.Serialize();
-
-				LogTrace.Label( $"Execute mde.exe {HandleDownload.Filename}" );
-				Execute exec = new Execute();
-
-				mi.ListItem.webdownload = HandleDownload;
-				mi.ListItem.PDownloading = exec;
-				mi.ListItem.Communication = "Launching mde to download";
-				exec.ConsoleEvent += MDEConsoleEvent;
-				exec.Exit += ( s , ev ) => MDEConsoleExited( exec , mi );
-				exec.Launch( "mde.exe " , HandleDownload.Filename );
-				RefreshView( mi.VideoId );
 			}
 			catch( Exception ex )
 			{
 				Logger.TraceException( ex , "Severe error" , "Restart the application." );
-				try
-				{
-					if( File.Exists( Path.Combine( MemoryCache.Default["PublishPath"] as string , mi.VideoId + ".xml" ) ) )
-						File.Delete( Path.Combine( MemoryCache.Default["PublishPath"] as string , mi.VideoId + ".xml" ) );
-				}
-				catch( Exception ) { }
 			}
 			finally
 			{
 				Cursor = crs;
 			}
+		}
+		private bool LaunchDownload( BackgroundWorker bgnd , MediaInfo mi , Context.HandleWebDownload webDownload )
+		{
+			bool ans = false;
+
+			//	Have we reached the number of allowed parallel download?
+			if( ParallelDownload.WaitOne( 100 ) )
+			{
+				bgnd.ReportProgress( 0 , $"Execute mde.exe {webDownload.Filename}" );
+				Execute exec = new Execute();
+
+				mi.ListItem.webdownload = webDownload;
+				mi.ListItem.PDownloading = exec;
+				mi.ListItem.Communication = "Launching mde to download";
+				exec.ConsoleEvent += MDEConsoleEvent;
+				exec.Exit += ( s , ev ) => MDEConsoleExited( exec , mi );
+				exec.Launch( "mde.exe " , webDownload.Filename );
+				bgnd.ReportProgress( 0 , mi );
+				ans = true;
+			}
+			return ans;
 		}
 		/// <summary>
 		/// What: Shows the progress and communicate the status of the progress on the UI
@@ -738,35 +797,39 @@ namespace mui
 		private void MDEConsoleEvent( object sender , ExecuteEventArgs e )
 		{
 			LogTrace.Label( e.Output );
-			if( !string.IsNullOrEmpty( e.Output ) )
+			try
 			{
-				string[] str = e.Output.Split( new char[] { '\t' } );
-				if( str.Length > 3 )
+				if( !string.IsNullOrEmpty( e.Output ) )
 				{
-					MediaInfo mi = Context.HandleMediaInfo.Info[str[0]];
-					if( mi != null )
+					string[] str = e.Output.Split( new char[] { '\t' } );
+					if( str.Length > 3 )
 					{
-						if( decimal.TryParse( str[2] , out decimal downloaded ) && int.TryParse( str[1] , out int id ) )
+						MediaInfo mi = Context.HandleMediaInfo.Info[str[0]];
+						if( mi != null )
 						{
-							mi.ListItem.webdownload.Update( id , downloaded );
-							if( mi.ListItem.webdownload.Attempt( id ) > 1 )
+							if( decimal.TryParse( str[2] , out decimal downloaded ) && int.TryParse( str[1] , out int id ) )
 							{
-								if( mi.ListItem.webdownload.Attempt( id ) > 3 )
-									mi.ListItem.Communication = $"{mi.ListItem.webdownload.Attempt( id )}th attempt - {str[3]} packet of {downloaded:#,###,###} bytes";
-								else if( mi.ListItem.webdownload.Attempt( id ) > 2 )
-									mi.ListItem.Communication = $"{mi.ListItem.webdownload.Attempt( id )}rd attempt - {str[3]} packet of {downloaded:#,###,###} bytes";
+								mi.ListItem.webdownload.Update( id , downloaded );
+								if( mi.ListItem.webdownload.Attempt( id ) > 1 )
+								{
+									if( mi.ListItem.webdownload.Attempt( id ) > 3 )
+										mi.ListItem.Communication = $"{mi.ListItem.webdownload.Attempt( id )}th attempt - {str[3]} packet of {downloaded:#,###,###} bytes";
+									else if( mi.ListItem.webdownload.Attempt( id ) > 2 )
+										mi.ListItem.Communication = $"{mi.ListItem.webdownload.Attempt( id )}rd attempt - {str[3]} packet of {downloaded:#,###,###} bytes";
+									else
+										mi.ListItem.Communication = $"{mi.ListItem.webdownload.Attempt( id )}nd attempt - {str[3]} packet of {downloaded:#,###,###} bytes";
+								}
 								else
-									mi.ListItem.Communication = $"{mi.ListItem.webdownload.Attempt( id )}nd attempt - {str[3]} packet of {downloaded:#,###,###} bytes";
+									mi.ListItem.Communication = $"{str[3]} packet of {downloaded:#,###,###} bytes";
 							}
 							else
-								mi.ListItem.Communication = $"{str[3]} packet of {downloaded:#,###,###} bytes";
+								mi.ListItem.Communication = str[3];
+							Invoke( (Action)delegate { RefreshView( str[0] ); } );
 						}
-						else
-							mi.ListItem.Communication = str[3];
-						Invoke( (Action)delegate { RefreshView( str[0] ); } );
 					}
 				}
 			}
+			catch( Exception ) { }
 		}
 		/// <summary>
 		/// What:
@@ -775,64 +838,91 @@ namespace mui
 		private void MDEConsoleExited( object sender , EventArgs e )
 		{
 			LogTrace.Label();
-			MediaInfo mi = e as MediaInfo;
 
-			mi.ListItem.PDownloading = null;
-
-			//	Record the downloaded data.
-			foreach( WebDownload wd in mi.ListItem.webdownload.Details )
-				if( File.Exists( wd.Filename ) )
-				{
-					wd.MediaData.Filename = wd.Filename;
-					wd.Downloaded = true;
-				}
-
-			Context.HandleMediaInfo.Info.Serialize();
-
-			//	Update the UI: the list of audio and video of the selected media
-			Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
-
-			//	Check if merge needs to be invoked
-			if( mi.ListItem.webdownload.VideoNeedsAudio && mi.ListItem.webdownload.HasAudio && !string.IsNullOrEmpty( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) ) )
+			try
 			{
-				bool needserialization = false;
-				foreach( WebDownload wd in mi.ListItem.webdownload.Details )
-				{
-					if( wd.Downloaded && wd is DownloadVideo downloadvideo && (wd.MediaData as MediaInfo.VideoData).BitRate < 1 )
+				ParallelDownload.Release();
+
+				MediaInfo mi = e as MediaInfo;
+
+				mi.ListItem.PDownloading = null;
+
+				//	Record the downloaded data.
+				foreach( Context.Protocol.WebDownload wd in mi.ListItem.webdownload.Details )
+					if( File.Exists( wd.Filename ) )
 					{
-						MediaInfo.VideoData vd = wd.MediaData as MediaInfo.VideoData;
-						downloadvideo.TargetFilename = downloadvideo.TargetFilename.Replace( "@-1." , $"@{mi.ListItem.webdownload.BestAudio.BitRate}." );
+						wd.MediaData.Filename = wd.Filename;
+						wd.Downloaded = true;
+					}
 
-						if( !File.Exists( downloadvideo.TargetFilename ) )
+				Context.HandleMediaInfo.Info.Serialize();
+
+				//	Update the UI: the list of audio and video of the selected media
+				Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
+
+				bool needserialization = false;
+				//	Check if merge needs to be invoked
+				if( mi.ListItem.webdownload.VideoNeedsAudio && mi.ListItem.webdownload.HasAudio )
+				{
+					if( !string.IsNullOrEmpty( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) ) )
+					{
+						foreach( Context.Protocol.WebDownload wd in mi.ListItem.webdownload.Details )
 						{
-							string args = CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}\"" );
-							args = args.Replace( "{audio-file}" , mi.ListItem.webdownload.BestAudio.Filename );
-							args = args.Replace( "{video-file}" , wd.Filename );
-							args = args.Replace( "{media-file}" , downloadvideo.TargetFilename );
+							if( File.Exists( wd.Filename ) && wd is Context.Protocol.DownloadVideo downloadvideo && (wd.MediaData as MediaInfo.VideoData).BitRate < 1 )
+							{
+								MediaInfo.VideoData vd = wd.MediaData as MediaInfo.VideoData;
+								downloadvideo.TargetFilename = downloadvideo.TargetFilename.Replace( "@-1." , $"@{mi.ListItem.webdownload.BestAudio.BitRate}." ).Replace( ".mpeg" , "" );
 
-							mi.ListItem.Communication = "Merging audio and video";
-							Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
+								if( !File.Exists( downloadvideo.TargetFilename ) )
+								{
+									string args = CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}\"" );
+									args = args.Replace( "{audio-file}" , mi.ListItem.webdownload.BestAudio.Filename );
+									args = args.Replace( "{video-file}" , wd.Filename );
+									args = args.Replace( "{media-file}" , downloadvideo.TargetFilename );
 
-							Execute exec = new Execute();
-							exec.Run( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) , args );
+									mi.ListItem.Communication = "Merging audio and video";
+									Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
+
+									Execute exec = new Execute();
+									exec.Run( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) , args );
+								}
+								if( File.Exists( downloadvideo.TargetFilename ) )
+								{
+									mi.Add( downloadvideo.TargetFilename );
+									mi.ListItem.Communication = "Merging Successful";
+									needserialization = true;
+								}
+								else
+									mi.ListItem.Communication = "Error: Merging failed";
+								Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
+							}
 						}
-						if( File.Exists( downloadvideo.TargetFilename ) )
-						{
-							mi.Add( downloadvideo.TargetFilename );
-							mi.ListItem.Communication = "Merging Successful";
-							needserialization = true;
-						}
-						else
-							mi.ListItem.Communication = "Error: Merging failed";
-						Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
 					}
 				}
+				else
+					needserialization = true;
+
 				if( needserialization )
+				{
+					try
+					{
+						if( File.Exists( Path.Combine( MemoryCache.Default["PublishPath"] as string , mi.VideoId + ".xml" ) ) )
+							File.Delete( Path.Combine( MemoryCache.Default["PublishPath"] as string , mi.VideoId + ".xml" ) );
+					}
+					catch( Exception ) { }
 					Context.HandleMediaInfo.Info.Serialize();
+				}
 			}
+			catch( Exception ) { }
 		}
+		#endregion
 
 		#region  CONTEXT MENU
+		private void OnOpenVideoOnBrowser( object sender , EventArgs e )
+		{
+			if( listView1.SelectedItems.Count > 0 )
+				Process.Start( $"https://www.youtube.com/watch?v={listView1.SelectedItems[0].Name}" );
+		}
 		private void OnOpenPopup( object sender , CancelEventArgs e )
 		{
 			filterToolStripMenuItem.Checked = FilterToDownload;
@@ -847,6 +937,10 @@ namespace mui
 		{
 			if( listView1.SelectedItems.Count > 0 && Directory.Exists( RelativeTargetPath().Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) ) )
 				Process.Start( RelativeTargetPath().Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) );
+		}
+		private void OnBatchDownload( object sender , EventArgs e )
+		{
+			SetupBatchDownload();
 		}
 		private void OnFilterListview( object sender , EventArgs e )
 		{
@@ -907,20 +1001,138 @@ namespace mui
 		}
 		#endregion
 
-		private void OnSwapAuthor_Title( object sender , ToolStripItemClickedEventArgs e )
+		#region  BATCH PROCESS
+		/// <summary>
+		/// What: Prepare the checked item to be batch processed generating the download parameter file in the published directory
+		///  Why: the end user run a set of media to download, the background thread will manage the download execution 
+		/// </summary>
+		private void SetupBatchDownload()
 		{
-		}
-
-		private void OnSwapAuthor_Title( object sender , EventArgs e )
-		{
-			if( listView1.SelectedItems.Count > 0 )
+			LogTrace.Label();
+			Cursor crs = Cursor;
+			Cursor = Cursors.WaitCursor;
+			try
 			{
-				MediaInfo mi = listView1.SelectedItems[0].Tag as MediaInfo;
-				mi.Caption = $"{mi.Title} - {mi.Author}";
-				Context.HandleMediaInfo.Info.Serialize();
-				textBox2.Text = mi.Title;
-				textBox3.Text = mi.Author;
+				string filename = RelativeTargetPath();
+
+				string[] range = CltWinEnv.AppSetting.GetData( Name , "Range Good Video" ).Split( ',' );
+				int maxres = CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Best Video" , false ) ? 10000 : 0;
+				int minres = 0;
+				if( CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Good Video" , true ) )
+				{
+					if( range.Length > 0 )
+						int.TryParse( range[0] , out maxres );
+					if( range.Length > 1 )
+						int.TryParse( range[1] , out minres );
+				}
+				List<Context.HandleWebDownload> batchList = new List<Context.HandleWebDownload>();
+
+				foreach( ListViewItem lvi in listView1.CheckedItems )
+				{
+					MediaInfo mi = lvi.Tag as MediaInfo;
+					if( mi.ListItem.PDownloading == null )
+					{
+						MediaInfo.VideoData BestVideo = mi.BestVideo( maxres , minres );
+						MediaInfo.AudioData BestAudio = mi.BestAudio( CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Audio" , true ) );
+
+						Context.HandleWebDownload HandleDownload = new Context.HandleWebDownload();
+						if( BestAudio != null )
+						{
+							HandleDownload.UpdateWith( new Context.Protocol.DownloadAudio
+							{
+								VideoId = mi.VideoId ,
+								DataLength = BestAudio.DataLength ,
+								Filename = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{BestAudio.Extension}").Replace( @"\\" , @"\" ) ,
+								BitRate = BestAudio.BitRate ,
+								Format = BestAudio.Model ,
+								Downloaded = File.Exists( (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{BestAudio.Extension}").Replace( @"\\" , @"\" ) ) ,
+								MediaData = BestAudio
+							} );
+						}
+						if( BestVideo != null )
+						{
+							HandleDownload.UpdateWith( new Context.Protocol.DownloadVideo
+							{
+								VideoId = mi.VideoId ,
+								DataLength = BestVideo.DataLength ,
+								Filename = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{BestVideo.Extension}").Replace( @"\\" , @"\" ) ,
+								Format = BestVideo.Format ,
+								Resolution = BestVideo.Resolution ,
+								Downloaded = File.Exists( (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{BestVideo.Extension}").Replace( @"\\" , @"\" ) ) ,
+								MediaData = BestVideo
+							} );
+						}
+						if( HandleDownload.VideoNeedsAudio && !HandleDownload.HasAudio )
+							continue;
+
+						HandleDownload.Serialize();
+						batchList.Add( HandleDownload );
+					}
+				}
+			}
+			catch( Exception ex )
+			{
+				Logger.TraceException( ex , "Error producing the batch files" , "verify the 'data/MediaInfo.xml' is not corrupted and after correction restart the application." );
+			}
+			finally
+			{
+				Cursor = crs;
+			}
+		}
+		/// <summary>
+		/// What:
+		///  Why:
+		/// </summary>
+		private void OnProcessBatch( object sender , DoWorkEventArgs e )
+		{
+			Thread.CurrentThread.Priority = ThreadPriority.Lowest;
+
+			List<Context.HandleWebDownload> downloading = new List<Context.HandleWebDownload>();
+			DirectoryInfo PublishedDir = new DirectoryInfo( MemoryCache.Default["PublishPath"] as string );
+
+			bool keepon = OnCloseEvent.WaitOne( 1 ) == false;
+
+			//	Loop as long as we are not closing the application.
+			while( keepon )
+			{
+				//	Every time scans the published directory and process each download request
+				foreach( FileInfo fi in PublishedDir.GetFiles( "*.xml" , SearchOption.TopDirectoryOnly ) )
+				{
+					Context.HandleWebDownload webDownload = Context.HandleWebDownload.Deserialize( fi.FullName );
+					MediaInfo mi = Context.HandleMediaInfo.Info[webDownload.VideoId];
+					//	The video id is registered in our database
+					if( mi != null )
+					{
+						webDownload.Bind( mi );
+						//	The item is not currently downloading
+						if( mi.ListItem.PDownloading == null )
+							if( !LaunchDownload( sender as BackgroundWorker , mi , webDownload ) )
+								for( int i = 0 ; keepon && i < 100 ; i++ )
+								{
+									Thread.Sleep( 100 );
+									keepon = OnCloseEvent.WaitOne( 1 ) == false;
+								}
+					}
+					else
+						try { fi.Delete(); } catch( Exception ) { }
+
+					if( !keepon )
+						break;
+				}
+			}
+			e.Cancel = true;
+			OnCloseEvent.Set();
+		}
+		#endregion
+
+		private void OnBatchProgress( object sender , ProgressChangedEventArgs e )
+		{
+			if( e.UserState is MediaInfo mi )
 				RefreshView( mi.VideoId );
+			else
+			{
+				LogTrace.Label( e.UserState as string );
+				OnLogMessage( this , new StatusEventArgs( e.UserState as string ) );
 			}
 		}
 	}

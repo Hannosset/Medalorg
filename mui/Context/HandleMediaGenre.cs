@@ -491,7 +491,7 @@ namespace mui.Context
 		/// </summary>
 		internal void Serialize( string filename = null )
 		{
-			if( filename == null )
+			if( string.IsNullOrEmpty( filename ) )
 				filename = Filename;
 
 			LogTrace.Label( filename );
@@ -522,7 +522,7 @@ namespace mui.Context
 		/// </summary>
 		private static MediaGenre[] Deserialize( string filename = null )
 		{
-			if( filename == null )
+			if( string.IsNullOrEmpty( filename ) )
 				filename = Filename;
 			try
 			{

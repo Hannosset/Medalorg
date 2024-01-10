@@ -51,17 +51,24 @@
 			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.listView2 = new System.Windows.Forms.ListView();
 			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.label4 = new System.Windows.Forms.Label();
-			this.label3 = new System.Windows.Forms.Label();
 			this.listView3 = new System.Windows.Forms.ListView();
 			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+			this.label4 = new System.Windows.Forms.Label();
 			this.panel2 = new System.Windows.Forms.Panel();
+			this.label3 = new System.Windows.Forms.Label();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.groupBox4 = new System.Windows.Forms.GroupBox();
+			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.checkBox3 = new System.Windows.Forms.CheckBox();
+			this.checkBox2 = new System.Windows.Forms.CheckBox();
+			this.checkBox1 = new System.Windows.Forms.CheckBox();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+			this.linkLabel2 = new System.Windows.Forms.LinkLabel();
 			this.label5 = new System.Windows.Forms.Label();
 			this.tabPage3 = new System.Windows.Forms.TabPage();
 			this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -71,13 +78,16 @@
 			this.label7 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
-			this.linkLabel2 = new System.Windows.Forms.LinkLabel();
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			this.panel2.SuspendLayout();
 			this.tabControl1.SuspendLayout();
 			this.tabPage1.SuspendLayout();
+			this.groupBox4.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+			this.groupBox3.SuspendLayout();
 			this.tabPage2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -91,7 +101,7 @@
 			// 
 			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.button1.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.button1.Location = new System.Drawing.Point(483, 280);
+			this.button1.Location = new System.Drawing.Point(483, 279);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(69, 30);
 			this.button1.TabIndex = 0;
@@ -104,7 +114,7 @@
 			this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.button2.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.button2.Location = new System.Drawing.Point(408, 280);
+			this.button2.Location = new System.Drawing.Point(408, 279);
 			this.button2.Name = "button2";
 			this.button2.Size = new System.Drawing.Size(69, 30);
 			this.button2.TabIndex = 0;
@@ -213,7 +223,7 @@
 			this.groupBox2.Location = new System.Drawing.Point(6, 81);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 3, 0, 3);
-			this.groupBox2.Size = new System.Drawing.Size(520, 97);
+			this.groupBox2.Size = new System.Drawing.Size(399, 97);
 			this.groupBox2.TabIndex = 3;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Media directory structure";
@@ -224,7 +234,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.textBox3.Location = new System.Drawing.Point(26, 65);
 			this.textBox3.Name = "textBox3";
-			this.textBox3.Size = new System.Drawing.Size(490, 20);
+			this.textBox3.Size = new System.Drawing.Size(369, 20);
 			this.textBox3.TabIndex = 4;
 			this.textBox3.Text = "{Root}";
 			// 
@@ -279,7 +289,7 @@
 			this.listView1.MultiSelect = false;
 			this.listView1.Name = "listView1";
 			this.listView1.ShowItemToolTips = true;
-			this.listView1.Size = new System.Drawing.Size(152, 185);
+			this.listView1.Size = new System.Drawing.Size(152, 234);
 			this.listView1.TabIndex = 7;
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
@@ -304,7 +314,7 @@
 			this.listView2.MultiSelect = false;
 			this.listView2.Name = "listView2";
 			this.listView2.ShowItemToolTips = true;
-			this.listView2.Size = new System.Drawing.Size(153, 185);
+			this.listView2.Size = new System.Drawing.Size(153, 234);
 			this.listView2.Sorting = System.Windows.Forms.SortOrder.Ascending;
 			this.listView2.TabIndex = 7;
 			this.listView2.UseCompatibleStateImageBehavior = false;
@@ -316,35 +326,6 @@
 			// columnHeader2
 			// 
 			this.columnHeader2.Text = "Style";
-			// 
-			// label4
-			// 
-			this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.label4.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.label4.ImageIndex = 0;
-			this.label4.ImageList = this.imageList1;
-			this.label4.Location = new System.Drawing.Point(158, 22);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(150, 22);
-			this.label4.TabIndex = 4;
-			this.label4.Text = "Add New Style";
-			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.label4.Click += new System.EventHandler(this.OnAddStyle);
-			// 
-			// label3
-			// 
-			this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.label3.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.label3.ImageIndex = 0;
-			this.label3.ImageList = this.imageList1;
-			this.label3.Location = new System.Drawing.Point(0, 22);
-			this.label3.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(152, 22);
-			this.label3.TabIndex = 4;
-			this.label3.Text = "Add New Genre";
-			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.label3.Click += new System.EventHandler(this.OnAddGenre);
 			// 
 			// listView3
 			// 
@@ -361,7 +342,7 @@
 			this.listView3.Name = "listView3";
 			this.listView3.ShowGroups = false;
 			this.listView3.ShowItemToolTips = true;
-			this.listView3.Size = new System.Drawing.Size(337, 230);
+			this.listView3.Size = new System.Drawing.Size(337, 229);
 			this.listView3.TabIndex = 11;
 			this.listView3.UseCompatibleStateImageBehavior = false;
 			this.listView3.View = System.Windows.Forms.View.Details;
@@ -394,8 +375,22 @@
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(311, 230);
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(311, 229);
 			this.tableLayoutPanel2.TabIndex = 8;
+			// 
+			// label4
+			// 
+			this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.label4.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.label4.ImageIndex = 0;
+			this.label4.ImageList = this.imageList1;
+			this.label4.Location = new System.Drawing.Point(158, 22);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(150, 22);
+			this.label4.TabIndex = 4;
+			this.label4.Text = "Add New Style";
+			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.label4.Click += new System.EventHandler(this.OnAddStyle);
 			// 
 			// panel2
 			// 
@@ -406,6 +401,21 @@
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(124, 16);
 			this.panel2.TabIndex = 9;
+			// 
+			// label3
+			// 
+			this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.label3.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.label3.ImageIndex = 0;
+			this.label3.ImageList = this.imageList1;
+			this.label3.Location = new System.Drawing.Point(0, 22);
+			this.label3.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(152, 22);
+			this.label3.TabIndex = 4;
+			this.label3.Text = "Add New Genre";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.label3.Click += new System.EventHandler(this.OnAddGenre);
 			// 
 			// tabControl1
 			// 
@@ -419,20 +429,94 @@
 			this.tabControl1.Location = new System.Drawing.Point(12, 12);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
-			this.tabControl1.Size = new System.Drawing.Size(540, 262);
+			this.tabControl1.Size = new System.Drawing.Size(540, 261);
 			this.tabControl1.TabIndex = 9;
 			// 
 			// tabPage1
 			// 
+			this.tabPage1.Controls.Add(this.groupBox4);
+			this.tabPage1.Controls.Add(this.groupBox3);
 			this.tabPage1.Controls.Add(this.groupBox2);
 			this.tabPage1.Controls.Add(this.groupBox1);
 			this.tabPage1.Location = new System.Drawing.Point(4, 22);
 			this.tabPage1.Name = "tabPage1";
 			this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage1.Size = new System.Drawing.Size(532, 236);
+			this.tabPage1.Size = new System.Drawing.Size(532, 235);
 			this.tabPage1.TabIndex = 0;
-			this.tabPage1.Text = "Target Directory";
+			this.tabPage1.Text = "Defaults";
 			this.tabPage1.UseVisualStyleBackColor = true;
+			// 
+			// groupBox4
+			// 
+			this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox4.Controls.Add(this.numericUpDown1);
+			this.groupBox4.Location = new System.Drawing.Point(418, 81);
+			this.groupBox4.Name = "groupBox4";
+			this.groupBox4.Size = new System.Drawing.Size(108, 97);
+			this.groupBox4.TabIndex = 5;
+			this.groupBox4.TabStop = false;
+			this.groupBox4.Text = "Parallel download";
+			// 
+			// numericUpDown1
+			// 
+			this.numericUpDown1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.numericUpDown1.Location = new System.Drawing.Point(24, 37);
+			this.numericUpDown1.Name = "numericUpDown1";
+			this.numericUpDown1.Size = new System.Drawing.Size(50, 22);
+			this.numericUpDown1.TabIndex = 0;
+			this.numericUpDown1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			// 
+			// groupBox3
+			// 
+			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox3.Controls.Add(this.checkBox3);
+			this.groupBox3.Controls.Add(this.checkBox2);
+			this.groupBox3.Controls.Add(this.checkBox1);
+			this.groupBox3.Location = new System.Drawing.Point(6, 184);
+			this.groupBox3.Name = "groupBox3";
+			this.groupBox3.Size = new System.Drawing.Size(520, 40);
+			this.groupBox3.TabIndex = 4;
+			this.groupBox3.TabStop = false;
+			this.groupBox3.Text = "Auto Media download selection";
+			// 
+			// checkBox3
+			// 
+			this.checkBox3.AutoSize = true;
+			this.checkBox3.Location = new System.Drawing.Point(253, 19);
+			this.checkBox3.Name = "checkBox3";
+			this.checkBox3.Size = new System.Drawing.Size(140, 17);
+			this.checkBox3.TabIndex = 0;
+			this.checkBox3.Text = "Video quality up to 1080";
+			this.toolTip1.SetToolTip(this.checkBox3, "Choose the best video up to 1080.\r\nIf none are selected, then the default will be" +
+        " the first\r\nvideo available from the list\r\n");
+			this.checkBox3.UseVisualStyleBackColor = true;
+			this.checkBox3.Click += new System.EventHandler(this.OnAutoVideo3);
+			// 
+			// checkBox2
+			// 
+			this.checkBox2.AutoSize = true;
+			this.checkBox2.Location = new System.Drawing.Point(122, 19);
+			this.checkBox2.Name = "checkBox2";
+			this.checkBox2.Size = new System.Drawing.Size(125, 17);
+			this.checkBox2.TabIndex = 0;
+			this.checkBox2.Text = "Highest Video quality";
+			this.toolTip1.SetToolTip(this.checkBox2, resources.GetString("checkBox2.ToolTip"));
+			this.checkBox2.UseVisualStyleBackColor = true;
+			this.checkBox2.Click += new System.EventHandler(this.OnAutoVideo2);
+			// 
+			// checkBox1
+			// 
+			this.checkBox1.AutoSize = true;
+			this.checkBox1.Location = new System.Drawing.Point(6, 19);
+			this.checkBox1.Name = "checkBox1";
+			this.checkBox1.Size = new System.Drawing.Size(110, 17);
+			this.checkBox1.TabIndex = 0;
+			this.checkBox1.Text = "Best Audio quality";
+			this.toolTip1.SetToolTip(this.checkBox1, "The default will go to the highest bitrate\r\nOpus, Vorbis, then aac.\r\nOtherwise th" +
+        "e first audio available in the list.");
+			this.checkBox1.UseVisualStyleBackColor = true;
 			// 
 			// tabPage2
 			// 
@@ -440,7 +524,7 @@
 			this.tabPage2.Location = new System.Drawing.Point(4, 22);
 			this.tabPage2.Name = "tabPage2";
 			this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage2.Size = new System.Drawing.Size(532, 236);
+			this.tabPage2.Size = new System.Drawing.Size(532, 235);
 			this.tabPage2.TabIndex = 1;
 			this.tabPage2.Text = "Media Genre";
 			this.tabPage2.UseVisualStyleBackColor = true;
@@ -459,9 +543,22 @@
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.linkLabel2);
 			this.splitContainer1.Panel2.Controls.Add(this.label5);
-			this.splitContainer1.Size = new System.Drawing.Size(526, 230);
+			this.splitContainer1.Size = new System.Drawing.Size(526, 229);
 			this.splitContainer1.SplitterDistance = 311;
 			this.splitContainer1.TabIndex = 9;
+			// 
+			// linkLabel2
+			// 
+			this.linkLabel2.Dock = System.Windows.Forms.DockStyle.Top;
+			this.linkLabel2.Location = new System.Drawing.Point(0, 0);
+			this.linkLabel2.Name = "linkLabel2";
+			this.linkLabel2.Size = new System.Drawing.Size(211, 45);
+			this.linkLabel2.TabIndex = 1;
+			this.linkLabel2.TabStop = true;
+			this.linkLabel2.Text = "Thanks to musician wave & Jazzfuel website for the audio classification and Studi" +
+    "o Binder for the video classification";
+			this.linkLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnGoToLink);
 			// 
 			// label5
 			// 
@@ -471,7 +568,7 @@
 			this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label5.Location = new System.Drawing.Point(3, 45);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(205, 185);
+			this.label5.Size = new System.Drawing.Size(205, 184);
 			this.label5.TabIndex = 0;
 			// 
 			// tabPage3
@@ -480,7 +577,7 @@
 			this.tabPage3.Location = new System.Drawing.Point(4, 22);
 			this.tabPage3.Name = "tabPage3";
 			this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage3.Size = new System.Drawing.Size(532, 236);
+			this.tabPage3.Size = new System.Drawing.Size(532, 235);
 			this.tabPage3.TabIndex = 2;
 			this.tabPage3.Text = "Subtitles";
 			this.tabPage3.UseVisualStyleBackColor = true;
@@ -495,7 +592,7 @@
 			this.tabPage4.Controls.Add(this.linkLabel1);
 			this.tabPage4.Location = new System.Drawing.Point(4, 22);
 			this.tabPage4.Name = "tabPage4";
-			this.tabPage4.Size = new System.Drawing.Size(532, 236);
+			this.tabPage4.Size = new System.Drawing.Size(532, 235);
 			this.tabPage4.TabIndex = 3;
 			this.tabPage4.Text = "Merge tool";
 			this.tabPage4.UseVisualStyleBackColor = true;
@@ -565,32 +662,19 @@
 			this.linkLabel1.Text = "Download the latest ffmpeg";
 			this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnLinkClicked);
 			// 
-			// linkLabel2
-			// 
-			this.linkLabel2.Dock = System.Windows.Forms.DockStyle.Top;
-			this.linkLabel2.Location = new System.Drawing.Point(0, 0);
-			this.linkLabel2.Name = "linkLabel2";
-			this.linkLabel2.Size = new System.Drawing.Size(211, 45);
-			this.linkLabel2.TabIndex = 1;
-			this.linkLabel2.TabStop = true;
-			this.linkLabel2.Text = "Thanks to musician wave & Jazzfuel website for the audio classification and Studi" +
-    "o Binder for the video classification";
-			this.linkLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnGoToLink);
-			// 
 			// Configuration
 			// 
 			this.AcceptButton = this.button2;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.button1;
-			this.ClientSize = new System.Drawing.Size(564, 322);
+			this.ClientSize = new System.Drawing.Size(564, 344);
 			this.ControlBox = false;
 			this.Controls.Add(this.button1);
 			this.Controls.Add(this.tabControl1);
 			this.Controls.Add(this.button2);
 			this.DoubleBuffered = true;
-			this.MinimumSize = new System.Drawing.Size(580, 280);
+			this.MinimumSize = new System.Drawing.Size(580, 360);
 			this.Name = "Configuration";
 			this.ShowIcon = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
@@ -607,6 +691,10 @@
 			this.panel2.PerformLayout();
 			this.tabControl1.ResumeLayout(false);
 			this.tabPage1.ResumeLayout(false);
+			this.groupBox4.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+			this.groupBox3.ResumeLayout(false);
+			this.groupBox3.PerformLayout();
 			this.tabPage2.ResumeLayout(false);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
@@ -663,5 +751,12 @@
 		private System.Windows.Forms.TextBox textBox5;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.LinkLabel linkLabel2;
+		private System.Windows.Forms.GroupBox groupBox3;
+		private System.Windows.Forms.CheckBox checkBox1;
+		private System.Windows.Forms.ToolTip toolTip1;
+		private System.Windows.Forms.CheckBox checkBox2;
+		private System.Windows.Forms.CheckBox checkBox3;
+		private System.Windows.Forms.GroupBox groupBox4;
+		internal System.Windows.Forms.NumericUpDown numericUpDown1;
 	}
 }

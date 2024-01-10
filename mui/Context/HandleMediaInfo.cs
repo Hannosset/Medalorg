@@ -126,12 +126,20 @@ namespace mui.Context
 		/// </summary>
 		internal void Serialize( string filename = null )
 		{
-			if( filename == null )
+			if( string.IsNullOrEmpty( filename ) )
 				filename = Filename;
 			lock( Info )
 				try
 				{
 					LogTrace.Label( filename );
+					try
+					{
+						if( File.Exists( filename.Replace( ".xml" , ".bak" ) ) )
+							File.Delete( filename.Replace( ".xml" , ".bak" ) );
+					}
+					catch( Exception ) { }
+					try { File.Move( filename , filename.Replace( ".xml" , ".bak" ) ); } catch( Exception ) { }
+
 					using( FileStream fs = new FileStream( filename , FileMode.Create , FileAccess.Write , FileShare.None ) )
 						new XmlSerializer( typeof( MediaInfo[] ) ).Serialize( fs , Details );
 				}
@@ -146,7 +154,7 @@ namespace mui.Context
 		/// </summary>
 		private static MediaInfo[] Deserialize( string filename = null )
 		{
-			if( filename == null )
+			if( string.IsNullOrEmpty( filename ) )
 				filename = Filename;
 			try
 			{
@@ -159,6 +167,7 @@ namespace mui.Context
 			catch( System.Exception ex )
 			{
 				Logger.TraceException( ex , "The new media will not be loaded" , $"Confirm the Data Path in the configuration file is correct and confirm read access to the path and the file ({filename} )" );
+				return Deserialize( filename.Replace( ".xml" , ".bak" ) );
 			}
 			return Array.Empty<MediaInfo>();
 		}

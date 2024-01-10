@@ -80,7 +80,6 @@ namespace xnext.ui
 					CltWinEnv.UserReadSetting.Load( this );
 
 					sbMode.ForeColor = SystemColors.WindowText;
-					sbMode.Text = "";
 
 					DateTimeTimer.Start();
 					OnReady( sender , e );
