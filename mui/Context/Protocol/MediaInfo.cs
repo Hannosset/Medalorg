@@ -74,7 +74,12 @@ namespace mui.Context.Protocol
 		public string[] MovieFilenames
 		{
 			get => _MovieFilenames.ToArray();
-			set => _MovieFilenames.AddRange( value );
+			set
+			{
+				foreach( string filename in value )
+					if( File.Exists( filename ) )
+						_MovieFilenames.Add( filename );
+			}
 		}
 		[
 			XmlElement( Type = typeof( MediaData ) , IsNullable = true ),
@@ -278,7 +283,7 @@ namespace mui.Context.Protocol
 		/// </summary>
 		/// <param name="best"></param>
 		/// <returns></returns>
-		public VideoData BestVideo( int maxres = 0, int minres = 0 )
+		public VideoData BestVideo( int maxres = 0 , int minres = 0 )
 		{
 			VideoData BestVideo = null;
 
@@ -289,7 +294,7 @@ namespace mui.Context.Protocol
 				{
 					if( BestVideo == null && maxres == 0 )
 						return vd;
-					else if( maxres >= vd.Resolution && vd.Resolution <= minres  )
+					else if( maxres >= vd.Resolution && vd.Resolution <= minres )
 						if( BestVideo == null || BestVideo.Resolution < vd.Resolution )
 							BestVideo = vd;
 				}

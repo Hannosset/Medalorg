@@ -171,11 +171,10 @@ namespace mui.Context
 			}
 			return Array.Empty<MediaInfo>();
 		}
-
 		internal void Remove( string name )
 		{
 			MediaInfo mi = this[name];
-			
+
 			if( mi != null )
 			{
 				_Details.Remove( mi );
