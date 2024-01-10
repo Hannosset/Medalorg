@@ -727,27 +727,35 @@ namespace mui
 				{
 					if( lvi.Tag is MediaInfo.MediaData md && md.Type == AdaptiveKind.Audio )
 					{
+						string audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{md.Extension}").Replace( @"\\" , @"\" );
+						if( !CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ).ToLower().Contains( "{Author}" ) )
+							audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{md.Extension}").Replace( @"\\" , @"\" );
+						
 						HandleDownload.UpdateWith( new Context.Protocol.DownloadAudio
 						{
 							VideoId = mi.VideoId ,
 							DataLength = md.DataLength ,
-							Filename = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{md.Extension}").Replace( @"\\" , @"\" ) ,
+							Filename = audiofname ,
 							BitRate = (md as MediaInfo.AudioData).BitRate ,
 							Format = (md as MediaInfo.AudioData).Model ,
-							Downloaded = File.Exists( (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{md.Extension}").Replace( @"\\" , @"\" ) ) ,
+							Downloaded = File.Exists( audiofname ) ,
 							MediaData = md
 						} );
 					}
 					else if( lvi.Tag is MediaInfo.VideoData vd )
 					{
+						string videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{vd.Extension}").Replace( @"\\" , @"\" );
+						if( !CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ).ToLower().Contains( "{Author}" ) )
+							videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{vd.Extension}").Replace( @"\\" , @"\" );
+
 						HandleDownload.UpdateWith( new Context.Protocol.DownloadVideo
 						{
 							VideoId = mi.VideoId ,
 							DataLength = vd.DataLength ,
-							Filename = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{vd.Extension}").Replace( @"\\" , @"\" ) ,
+							Filename = videofname ,
 							Format = vd.Format ,
 							Resolution = vd.Resolution ,
-							Downloaded = File.Exists( (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{vd.Extension}").Replace( @"\\" , @"\" ) ) ,
+							Downloaded = File.Exists( videofname ) ,
 							MediaData = vd
 						} );
 					}
@@ -1032,33 +1040,42 @@ namespace mui
 					MediaInfo mi = lvi.Tag as MediaInfo;
 					if( mi.ListItem.PDownloading == null )
 					{
-						MediaInfo.VideoData BestVideo = mi.BestVideo( maxres , minres );
-						MediaInfo.AudioData BestAudio = mi.BestAudio( CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Audio" , true ) );
-
 						Context.HandleWebDownload HandleDownload = new Context.HandleWebDownload();
+
+						MediaInfo.AudioData BestAudio = mi.BestAudio( CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Audio" , true ) );
 						if( BestAudio != null )
 						{
+							string audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{BestAudio.Extension}").Replace( @"\\" , @"\" );
+							if( !CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ).ToLower().Contains( "{Author}" ) )
+								audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{BestAudio.Extension}").Replace( @"\\" , @"\" );
+
 							HandleDownload.UpdateWith( new Context.Protocol.DownloadAudio
 							{
 								VideoId = mi.VideoId ,
 								DataLength = BestAudio.DataLength ,
-								Filename = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{BestAudio.Extension}").Replace( @"\\" , @"\" ) ,
+								Filename = audiofname ,
 								BitRate = BestAudio.BitRate ,
 								Format = BestAudio.Model ,
-								Downloaded = File.Exists( (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{BestAudio.Extension}").Replace( @"\\" , @"\" ) ) ,
+								Downloaded = File.Exists( audiofname ) ,
 								MediaData = BestAudio
 							} );
 						}
+
+						MediaInfo.VideoData BestVideo = mi.BestVideo( maxres , minres );
 						if( BestVideo != null )
 						{
+							string videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{BestVideo.Extension}").Replace( @"\\" , @"\" );
+							if( !CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ).ToLower().Contains( "{Author}" ) )
+								videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{BestVideo.Extension}").Replace( @"\\" , @"\" );
+
 							HandleDownload.UpdateWith( new Context.Protocol.DownloadVideo
 							{
 								VideoId = mi.VideoId ,
 								DataLength = BestVideo.DataLength ,
-								Filename = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{BestVideo.Extension}").Replace( @"\\" , @"\" ) ,
+								Filename = videofname ,
 								Format = BestVideo.Format ,
 								Resolution = BestVideo.Resolution ,
-								Downloaded = File.Exists( (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{BestVideo.Extension}").Replace( @"\\" , @"\" ) ) ,
+								Downloaded = File.Exists( videofname ) ,
 								MediaData = BestVideo
 							} );
 						}
