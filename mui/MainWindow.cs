@@ -887,7 +887,7 @@ namespace mui
 									args = args.Replace( "{audio-file}" , mi.ListItem.webdownload.BestAudio.Filename );
 									args = args.Replace( "{video-file}" , wd.Filename );
 									args = args.Replace( "{media-file}" , downloadvideo.TargetFilename );
-
+									
 									mi.ListItem.Communication = "Merging audio and video";
 									Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
 
@@ -1118,7 +1118,7 @@ namespace mui
 					Context.HandleWebDownload webDownload = Context.HandleWebDownload.Deserialize( fi.FullName );
 					MediaInfo mi = Context.HandleMediaInfo.Info[webDownload.VideoId];
 					//	The video id is registered in our database
-					if( mi != null )
+					if( mi != null && fi.Exists )
 					{
 						webDownload.Bind( mi );
 						//	The item is not currently downloading

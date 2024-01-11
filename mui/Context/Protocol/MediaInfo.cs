@@ -174,7 +174,7 @@ namespace mui.Context.Protocol
 			{
 				lvi.SubItems[2].Text = mi.ListItem.Communication;
 
-				if( mi.ListItem.webdownload != null )
+				if( mi.ListItem.webdownload != null && mi.ListItem.PDownloading != null )
 					lvi.SubItems[1].Text = $"{mi.ListItem.webdownload.Progress:##0.00} %";
 				else
 					lvi.SubItems[1].Text = "-";

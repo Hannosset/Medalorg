@@ -185,7 +185,7 @@
 			this.textBox1.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
 			this.textBox1.Name = "textBox1";
 			this.textBox1.Size = new System.Drawing.Size(643, 20);
-			this.textBox1.TabIndex = 28;
+			this.textBox1.TabIndex = 1;
 			// 
 			// splitContainer1
 			// 
@@ -227,7 +227,7 @@
 			this.listView1.ShowGroups = false;
 			this.listView1.ShowItemToolTips = true;
 			this.listView1.Size = new System.Drawing.Size(337, 542);
-			this.listView1.TabIndex = 0;
+			this.listView1.TabIndex = 3;
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
 			this.listView1.SelectedIndexChanged += new System.EventHandler(this.OnItemSelected);
@@ -368,7 +368,7 @@
 			this.tableLayoutPanel3.RowCount = 1;
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel3.Size = new System.Drawing.Size(432, 50);
-			this.tableLayoutPanel3.TabIndex = 22;
+			this.tableLayoutPanel3.TabIndex = 4;
 			// 
 			// groupBox1
 			// 
@@ -378,7 +378,7 @@
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Padding = new System.Windows.Forms.Padding(0, 0, 3, 3);
 			this.groupBox1.Size = new System.Drawing.Size(210, 43);
-			this.groupBox1.TabIndex = 16;
+			this.groupBox1.TabIndex = 5;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Media Title";
 			// 
@@ -389,7 +389,7 @@
 			this.textBox2.Location = new System.Drawing.Point(3, 16);
 			this.textBox2.Name = "textBox2";
 			this.textBox2.Size = new System.Drawing.Size(201, 20);
-			this.textBox2.TabIndex = 0;
+			this.textBox2.TabIndex = 5;
 			// 
 			// groupBox3
 			// 
@@ -400,9 +400,10 @@
 			this.groupBox3.Name = "groupBox3";
 			this.groupBox3.Padding = new System.Windows.Forms.Padding(0, 0, 3, 3);
 			this.groupBox3.Size = new System.Drawing.Size(210, 43);
-			this.groupBox3.TabIndex = 16;
+			this.groupBox3.TabIndex = 4;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Author";
+			this.groupBox3.UseCompatibleTextRendering = true;
 			// 
 			// pictureBox1
 			// 
@@ -423,7 +424,7 @@
 			this.textBox3.Location = new System.Drawing.Point(3, 16);
 			this.textBox3.Name = "textBox3";
 			this.textBox3.Size = new System.Drawing.Size(177, 20);
-			this.textBox3.TabIndex = 0;
+			this.textBox3.TabIndex = 4;
 			this.textBox3.TextChanged += new System.EventHandler(this.OnAuthorLabelChanged);
 			// 
 			// button2
@@ -436,7 +437,7 @@
 			this.button2.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
 			this.button2.Name = "button2";
 			this.button2.Size = new System.Drawing.Size(84, 24);
-			this.button2.TabIndex = 17;
+			this.button2.TabIndex = 12;
 			this.button2.Text = "Download";
 			this.button2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.button2.UseVisualStyleBackColor = true;
@@ -461,7 +462,7 @@
 			this.textBox4.Location = new System.Drawing.Point(3, 21);
 			this.textBox4.Name = "textBox4";
 			this.textBox4.Size = new System.Drawing.Size(420, 20);
-			this.textBox4.TabIndex = 0;
+			this.textBox4.TabIndex = 11;
 			// 
 			// splitContainer2
 			// 
@@ -502,7 +503,7 @@
 			this.listView3.ShowGroups = false;
 			this.listView3.ShowItemToolTips = true;
 			this.listView3.Size = new System.Drawing.Size(432, 177);
-			this.listView3.TabIndex = 1;
+			this.listView3.TabIndex = 6;
 			this.listView3.UseCompatibleStateImageBehavior = false;
 			this.listView3.SelectedIndexChanged += new System.EventHandler(this.OnUriSelected);
 			// 
@@ -557,7 +558,7 @@
 			this.listView4.Name = "listView4";
 			this.listView4.ShowItemToolTips = true;
 			this.listView4.Size = new System.Drawing.Size(213, 198);
-			this.listView4.TabIndex = 11;
+			this.listView4.TabIndex = 9;
 			this.listView4.UseCompatibleStateImageBehavior = false;
 			this.listView4.View = System.Windows.Forms.View.Details;
 			this.listView4.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.OnGenreCheck);
@@ -585,7 +586,7 @@
 			this.listView5.ShowItemToolTips = true;
 			this.listView5.Size = new System.Drawing.Size(213, 198);
 			this.listView5.Sorting = System.Windows.Forms.SortOrder.Ascending;
-			this.listView5.TabIndex = 12;
+			this.listView5.TabIndex = 10;
 			this.listView5.UseCompatibleStateImageBehavior = false;
 			this.listView5.View = System.Windows.Forms.View.Details;
 			this.listView5.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.OnStyleCheck);
@@ -603,7 +604,8 @@
 			this.panel1.Location = new System.Drawing.Point(3, 3);
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(210, 24);
-			this.panel1.TabIndex = 13;
+			this.panel1.TabIndex = 7;
+			this.panel1.TabStop = true;
 			// 
 			// radioButton2
 			// 
@@ -611,8 +613,7 @@
 			this.radioButton2.Location = new System.Drawing.Point(61, 3);
 			this.radioButton2.Name = "radioButton2";
 			this.radioButton2.Size = new System.Drawing.Size(59, 17);
-			this.radioButton2.TabIndex = 1;
-			this.radioButton2.TabStop = true;
+			this.radioButton2.TabIndex = 8;
 			this.radioButton2.Text = "Movies";
 			this.radioButton2.UseVisualStyleBackColor = true;
 			this.radioButton2.CheckedChanged += new System.EventHandler(this.OnVideoGenre);
@@ -623,7 +624,7 @@
 			this.radioButton1.Location = new System.Drawing.Point(3, 3);
 			this.radioButton1.Name = "radioButton1";
 			this.radioButton1.Size = new System.Drawing.Size(53, 17);
-			this.radioButton1.TabIndex = 0;
+			this.radioButton1.TabIndex = 7;
 			this.radioButton1.TabStop = true;
 			this.radioButton1.Text = "Music";
 			this.radioButton1.UseVisualStyleBackColor = true;
@@ -639,7 +640,7 @@
 			this.button1.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(32, 21);
-			this.button1.TabIndex = 26;
+			this.button1.TabIndex = 2;
 			this.button1.UseVisualStyleBackColor = true;
 			this.button1.Click += new System.EventHandler(this.OnAddWebVideo);
 			// 

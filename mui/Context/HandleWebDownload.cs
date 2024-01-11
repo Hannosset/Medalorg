@@ -213,7 +213,7 @@ namespace mui.Context
 				else if( wd is DownloadVideo video )
 				{
 					foreach( MediaInfo.MediaData md in mi.Details )
-						if( md.Type == AdaptiveKind.Video && video.DataLength == video.DataLength )
+						if( md.Type == AdaptiveKind.Video && video.DataLength == md.DataLength )
 						{
 							prev = wd.MediaData = md;
 							break;
