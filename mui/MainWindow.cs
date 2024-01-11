@@ -681,18 +681,13 @@ namespace mui
 
 			textBox4.Text = tmp.Replace( @"\\" , @"\" );
 		}
-
-		#endregion RIGHT PANEL EVENTS
-
-		#region Download
 		/// <summary>
-		/// What: Starts to download the media from the selected uri
-		///  Why: Create a file in the published directory that will instruct the engine to download. Once fully downloaded, the file will be moved to the history directory.
-		///		This mean that upon start up, the UI will continue any interrupted or failed download.
+		/// What:
+		///  Why:
 		/// </summary>
-		private void OnDownload( object sender , EventArgs e )
+		private void OnSaveMediaParam( object sender , EventArgs e )
 		{
-			if( listView1.SelectedItems.Count == 0 || listView3.CheckedItems.Count == 0 )
+			if( listView1.SelectedItems.Count == 0 )
 				return;
 
 			LogTrace.Label();
@@ -718,7 +713,39 @@ namespace mui
 				//	All the word in the interface title and author that are not in our record are to be recorded as to skip
 				Context.Handle2Skip.Update( mi.Title.Replace( textBox2.Text , "" ).Trim() );
 				Context.Handle2Skip.Update( mi.Author.Replace( textBox3.Text , "" ).Trim() );
+			}
+			catch( Exception ex )
+			{
+				Logger.TraceException( ex , "Severe error" , "Restart the application." );
+			}
+			finally
+			{
+				Cursor = crs;
+			}
+		}
+		#endregion RIGHT PANEL EVENTS
 
+		#region Download
+		/// <summary>
+		/// What: Starts to download the media from the selected uri
+		///  Why: Create a file in the published directory that will instruct the engine to download. Once fully downloaded, the file will be moved to the history directory.
+		///		This mean that upon start up, the UI will continue any interrupted or failed download.
+		/// </summary>
+		private void OnDownload( object sender , EventArgs e )
+		{
+			if( listView1.SelectedItems.Count == 0 || listView3.CheckedItems.Count == 0 )
+				return;
+
+			LogTrace.Label();
+			Cursor crs = Cursor;
+			Cursor = Cursors.WaitCursor;
+
+			OnSaveMediaParam( sender , e );
+
+			MediaInfo mi = listView1.SelectedItems[0].Tag as MediaInfo;
+
+			try
+			{
 				//	Create a handle web download object to attach to the left panel list view item
 				Context.HandleWebDownload HandleDownload = new Context.HandleWebDownload();
 				//	set the relative path for the genre/style/author

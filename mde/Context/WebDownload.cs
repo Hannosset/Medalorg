@@ -179,7 +179,7 @@ namespace mde.Context
 					fi.Delete();
 			try
 			{
-				for( int attempt = 0 ; attempt < 10 ; attempt++ )
+				for( int attempt = 0 ; attempt < 3 ; attempt++ )
 				{
 					try
 					{

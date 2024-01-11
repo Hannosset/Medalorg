@@ -152,6 +152,8 @@
     <None Include="Resources\page_swap_12968.png" />
     <None Include="Resources\swap_110974.png" />
     <None Include="Resources\DOWNLOAD_00.gif" />
+    <None Include="Resources\CompareSuccess.PNG" />
+    <None Include="Resources\saveHS.png" />
     <Content Include="wolf-48_46777.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

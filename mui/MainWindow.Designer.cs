@@ -77,8 +77,9 @@
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.radioButton2 = new System.Windows.Forms.RadioButton();
 			this.radioButton1 = new System.Windows.Forms.RadioButton();
-			this.button1 = new System.Windows.Forms.Button();
 			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+			this.button1 = new System.Windows.Forms.Button();
+			this.button3 = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
 			this.toolStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -165,6 +166,7 @@
 			this.imageList1.Images.SetKeyName(1, "DOWNLOAD_00.gif");
 			this.imageList1.Images.SetKeyName(2, "page_swap_12968.png");
 			this.imageList1.Images.SetKeyName(3, "swap_110974.png");
+			this.imageList1.Images.SetKeyName(4, "SaveFormDesignHS.png");
 			// 
 			// clipboardMonitor1
 			// 
@@ -388,7 +390,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.textBox2.Location = new System.Drawing.Point(3, 16);
 			this.textBox2.Name = "textBox2";
-			this.textBox2.Size = new System.Drawing.Size(201, 20);
+			this.textBox2.Size = new System.Drawing.Size(210, 20);
 			this.textBox2.TabIndex = 5;
 			// 
 			// groupBox3
@@ -533,6 +535,7 @@
 			this.tableLayoutPanel1.Controls.Add(this.listView4, 0, 1);
 			this.tableLayoutPanel1.Controls.Add(this.listView5, 1, 1);
 			this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this.button3, 1, 0);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
 			this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
@@ -630,6 +633,13 @@
 			this.radioButton1.UseVisualStyleBackColor = true;
 			this.radioButton1.CheckedChanged += new System.EventHandler(this.OnAudioGenre);
 			// 
+			// backgroundWorker1
+			// 
+			this.backgroundWorker1.WorkerReportsProgress = true;
+			this.backgroundWorker1.WorkerSupportsCancellation = true;
+			this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.OnProcessBatch);
+			this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.OnBatchProgress);
+			// 
 			// button1
 			// 
 			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -644,12 +654,18 @@
 			this.button1.UseVisualStyleBackColor = true;
 			this.button1.Click += new System.EventHandler(this.OnAddWebVideo);
 			// 
-			// backgroundWorker1
+			// button3
 			// 
-			this.backgroundWorker1.WorkerReportsProgress = true;
-			this.backgroundWorker1.WorkerSupportsCancellation = true;
-			this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.OnProcessBatch);
-			this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.OnBatchProgress);
+			this.button3.Dock = System.Windows.Forms.DockStyle.Right;
+			this.button3.ImageIndex = 4;
+			this.button3.ImageList = this.imageList1;
+			this.button3.Location = new System.Drawing.Point(389, 3);
+			this.button3.Name = "button3";
+			this.button3.Size = new System.Drawing.Size(40, 24);
+			this.button3.TabIndex = 11;
+			this.toolTip1.SetToolTip(this.button3, "Save the author, title, genre and style selection.\r\n");
+			this.button3.UseVisualStyleBackColor = true;
+			this.button3.Click += new System.EventHandler(this.OnSaveMediaParam);
 			// 
 			// MainWindow
 			// 
@@ -756,6 +772,7 @@
 		private System.Windows.Forms.ToolStripMenuItem batchDownloadToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.ComponentModel.BackgroundWorker backgroundWorker1;
+		private System.Windows.Forms.Button button3;
 	}
 }
 

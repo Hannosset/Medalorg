@@ -73,6 +73,16 @@ namespace mui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap CompareSuccess {
+            get {
+                object obj = ResourceManager.GetObject("CompareSuccess", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap delete {
             get {
                 object obj = ResourceManager.GetObject("delete", resourceCulture);
@@ -136,6 +146,16 @@ namespace mui.Properties {
         internal static System.Drawing.Bitmap RefreshDocViewHS {
             get {
                 object obj = ResourceManager.GetObject("RefreshDocViewHS", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap saveHS {
+            get {
+                object obj = ResourceManager.GetObject("saveHS", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
