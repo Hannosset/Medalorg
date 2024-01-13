@@ -713,6 +713,9 @@ namespace mui
 				//	All the word in the interface title and author that are not in our record are to be recorded as to skip
 				Context.Handle2Skip.Update( mi.Title.Replace( textBox2.Text , "" ).Trim() );
 				Context.Handle2Skip.Update( mi.Author.Replace( textBox3.Text , "" ).Trim() );
+
+				mi.Caption = $"{textBox3.Text} - {textBox2.Text}";
+				Context.HandleMediaInfo.Info.Serialize();
 			}
 			catch( Exception ex )
 			{
@@ -920,6 +923,11 @@ namespace mui
 
 									Execute exec = new Execute();
 									exec.Run( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) , args );
+
+									foreach( FileInfo fi in new FileInfo( downloadvideo.TargetFilename ).Directory.GetFiles( downloadvideo.TargetFilename.Replace( (wd.MediaData as MediaInfo.VideoData).Format.ToString().ToLower() , "*.srt" ) ) )
+										if( fi.Name.IndexOf( "@-1" ) > 0 && !File.Exists( fi.FullName.Replace( "@-1" , $"@{mi.ListItem.webdownload.BestAudio.BitRate}" ) ) )
+											fi.MoveTo( fi.FullName.Replace( "@-1" , $"@{mi.ListItem.webdownload.BestAudio.BitRate}" ) );
+
 								}
 								if( File.Exists( downloadvideo.TargetFilename ) )
 								{

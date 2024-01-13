@@ -44,16 +44,16 @@ namespace mui.Context
 				LogTrace.Label();
 				Info.Details = new CountryCode[]
 				{
-					new CountryCode { Code = "en" , Label = "English" } ,
-					new CountryCode { Code = "ru" , Label = "Russian" } ,
-					new CountryCode { Code = "zh" , Label = "Chinese" } ,
-					new CountryCode { Code = "fa" , Label = "Persian" } ,
-					new CountryCode { Code = "be" , Label = "Belarusian" } ,
-					new CountryCode { Code = "ar" , Label = "Arabic" } ,
-					new CountryCode { Code = "kk" , Label = "Kazakh" } ,
+					new CountryCode { Code = "eng" , Label = "English" } ,
+					new CountryCode { Code = "rus" , Label = "Russian" } ,
+					new CountryCode { Code = "chi" , Label = "Chinese" } ,
+					new CountryCode { Code = "far" , Label = "Persian" } ,
+					new CountryCode { Code = "bel" , Label = "Belarusian" } ,
+					new CountryCode { Code = "ara" , Label = "Arabic" } ,
+					new CountryCode { Code = "kaz" , Label = "Kazakh" } ,
 					new CountryCode { Code = "ug" , Label = "Uighur; Uyghur" } ,
-					new CountryCode { Code = "tr" , Label = "Turkish" } ,
-					new CountryCode { Code = "th" , Label = "Thai" } ,
+					new CountryCode { Code = "tur" , Label = "Turkish" } ,
+					new CountryCode { Code = "tha" , Label = "Thai" } ,
 
 					new CountryCode { Code = "aa" , Label = "Afar" } ,
 					new CountryCode { Code = "ab" , Label = "Abkhazian" } ,

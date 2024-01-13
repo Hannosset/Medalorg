@@ -148,7 +148,7 @@ namespace mui.Context
 
 					_Details.Add( new DownloadLyrics
 					{
-						Lang = xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "Subtitles" , "en" ) ,
+						Lang = xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "Subtitles" , "eng" ) ,
 						Filename = request.Filename.Replace( ext , ".{lang}.lyric" ) ,
 						Id = _Details.Count ,
 						VideoId = request.VideoId ,
@@ -173,13 +173,13 @@ namespace mui.Context
 
 				if( !HasVideo )
 				{
-					string ext = request.Filename.Substring( request.Filename.LastIndexOf( '\\' ) + 1 );
-					ext = ext.Substring( ext.IndexOf( $".{video.Resolution}@" ) );
+					//string ext = request.Filename.Substring( request.Filename.LastIndexOf( '\\' ) + 1 );
+					//ext = ext.Substring( ext.IndexOf( $".{video.Resolution}@" ) );
 
 					_Details.Add( new DownloadSubtitle
 					{
-						Lang = xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "Subtitles" , "en" ) ,
-						Filename = request.Filename.Replace( ext , ".{lang}.srt" ) ,
+						Lang = xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "Subtitles" , "eng" ) ,
+						Filename = request.Filename.Replace( video.Format.ToString().ToLower() , "{lang}.srt" ) ,
 						Id = _Details.Count ,
 						VideoId = request.VideoId ,
 						MediaData = request.MediaData
