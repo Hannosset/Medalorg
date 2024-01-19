@@ -1,6 +1,4 @@
-﻿using mde.Context;
-
-using mui.Context.Protocol;
+﻿using mui.Context.Protocol;
 
 using System;
 using System.Collections.Generic;
@@ -760,7 +758,7 @@ namespace mui
 						string audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{md.Extension}").Replace( @"\\" , @"\" );
 						if( !CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ).ToLower().Contains( "{Author}" ) )
 							audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{md.Extension}").Replace( @"\\" , @"\" );
-						
+
 						HandleDownload.UpdateWith( new Context.Protocol.DownloadAudio
 						{
 							VideoId = mi.VideoId ,
@@ -917,7 +915,7 @@ namespace mui
 									args = args.Replace( "{audio-file}" , mi.ListItem.webdownload.BestAudio.Filename );
 									args = args.Replace( "{video-file}" , wd.Filename );
 									args = args.Replace( "{media-file}" , downloadvideo.TargetFilename );
-									
+
 									mi.ListItem.Communication = "Merging audio and video";
 									Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
 
