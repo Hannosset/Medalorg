@@ -113,14 +113,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\mde\mde.csproj">
-      <Project>{c5a8bb0b-f824-4728-95a4-7f9e2a2d6c85}</Project>
-      <Name>mde</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\mid\mid.csproj">
-      <Project>{fe6717e5-1978-4c58-89a0-402ef44f814c}</Project>
-      <Name>mid</Name>
-    </ProjectReference>
     <ProjectReference Include="..\xnext\xnext.csproj">
       <Project>{2c2db6e5-83e8-4bde-bbd0-63f44265b80d}</Project>
       <Name>xnext</Name>

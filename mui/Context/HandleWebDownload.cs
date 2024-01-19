@@ -179,7 +179,7 @@ namespace mui.Context
 					_Details.Add( new DownloadSubtitle
 					{
 						Lang = xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "Subtitles" , "eng" ) ,
-						Filename = request.Filename.Replace( video.Format.ToString().ToLower() , "{lang}.srt" ) ,
+						Filename = request.Filename.Replace( video.Format.ToString().ToLower() , "{lang}.srt" ).Replace( ".mpeg" , "" ) ,
 						Id = _Details.Count ,
 						VideoId = request.VideoId ,
 						MediaData = request.MediaData
