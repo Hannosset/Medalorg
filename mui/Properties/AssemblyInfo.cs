@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion( "1.0.*" )]
-[assembly: AssemblyFileVersion( "1.1" )]
+[assembly: AssemblyFileVersion( "1.1.1" )]
 
 /*
  * 2024-01012:	V1.1	->	Allow to save the author, title, genre and style association independently.
