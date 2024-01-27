@@ -172,6 +172,7 @@ namespace mui.Context.Protocol
 
 			if( mi.ListItem.PDownloading != null )
 			{
+				lvi.ForeColor = Color.DarkOrange;
 				lvi.SubItems[2].Text = mi.ListItem.Communication;
 
 				if( mi.ListItem.webdownload != null && mi.ListItem.PDownloading != null )
@@ -187,6 +188,7 @@ namespace mui.Context.Protocol
 			}
 			else if( mi.Downloaded )
 			{
+				lvi.Checked = false;
 				lvi.SubItems[1].Text = "";
 				lvi.ForeColor = Color.Gray;
 				lvi.SubItems[2].Text = $"{mi.DownloadedVideo} Video & {mi.DownloadedAudio} Audio files";
@@ -351,6 +353,7 @@ namespace mui.Context.Protocol
 							.Replace( "\"" , "'" )
 							.Replace( "|" , "-" ).Replace( "\\" , "-" ).Replace( "/" , "-" ).Replace( "~" , "-" ).Replace( ":" , "-" )
 							.Replace( "*" , "" ).Replace( "?" , "" ).Replace( "!" , "" ).Replace( "<" , "" ).Replace( ">" , "" )
+							.Replace( "&" , "and" )
 							.Replace( "HQ Audio" , "" ).Replace( "_" , " " );
 
 			int at = fname.IndexOf( '(' );
@@ -362,6 +365,10 @@ namespace mui.Context.Protocol
 				else
 					fname = fname.Substring( at - 1 );
 			}
+
+			at = fname.IndexOf( "Performed" );
+			if( at != -1 )
+					fname = fname.Substring( 0 , at - 1 );
 
 			foreach( string s in Handle2Skip.Info.Details )
 				if( fname.Contains( s ) )

@@ -148,7 +148,7 @@ namespace mui.Context
 
 					_Details.Add( new DownloadLyrics
 					{
-						Lang = xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "Subtitles" , "eng" ) ,
+						Lang = xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "Subtitles" , "en" ) ,
 						Filename = request.Filename.Replace( ext , ".{lang}.lyric" ) ,
 						Id = _Details.Count ,
 						VideoId = request.VideoId ,
@@ -178,7 +178,7 @@ namespace mui.Context
 
 					_Details.Add( new DownloadSubtitle
 					{
-						Lang = xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "Subtitles" , "eng" ) ,
+						Lang = xnext.Context.CltWinEnv.AppReadSetting.GetData( "Configuration" , "Subtitles" , "en" ) ,
 						Filename = request.Filename.Replace( video.Format.ToString().ToLower() , "{lang}.srt" ).Replace( ".mpeg" , "" ) ,
 						Id = _Details.Count ,
 						VideoId = request.VideoId ,

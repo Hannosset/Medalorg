@@ -78,24 +78,24 @@ namespace mde.Context
 			if( string.IsNullOrEmpty( LangList ) )
 				return 0;
 
-			
+
 			using( YouTubeTranscriptApi uttla = new YouTubeTranscriptApi() )
 			{
 				try
 				{
 					TranscriptList tl = uttla.ListTranscripts( VideoId );
 					foreach( Transcript t in tl )
-					{ 
+					{
 						if( LangList.Contains( t.LanguageCode ) )
 						{
-							Console.Write( $"{VideoId}\t \t \tDownload transcript for " + t.Language );
+							Console.WriteLine( $"{VideoId}\t \t \tDownload transcript for " + t.Language );
 
 							using( FileStream fs = new FileStream( Filename.Replace( "{lang}" , t.LanguageCode ) , FileMode.Create ) )
 							{
 								line = 0;
 								foreach( TranscriptItem ti in t.Fetch() )
-								{ 
-									byte[] txt = Encoding.UTF8.GetBytes(FormatLine( ti ) );
+								{
+									byte[] txt = Encoding.UTF8.GetBytes( FormatLine( ti ) );
 									fs.Write( txt , 0 , txt.Length );
 								}
 							}
@@ -128,6 +128,8 @@ namespace mde.Context
 		protected string _uri = string.Empty;
 		#endregion LOCAL VARIABLE
 
+		protected string label = string.Empty;
+
 		#region PUBLIC PROPERTIES
 		[XmlAttribute] public long DataLength { get; set; }
 		#endregion PUBLIC PROPERTIES
@@ -140,6 +142,15 @@ namespace mde.Context
 		public override bool Initialize()
 		{
 			Close();
+
+			FileInfo fi = new FileInfo( Filename );
+			if( !fi.Directory.Exists )
+				fi.Directory.Create();
+			else if( fi.Exists )
+			{
+				Console.WriteLine( $"{VideoId}\t \t \t{label} Media downloaded" );
+				return true;
+			}
 
 			try
 			{
@@ -164,26 +175,15 @@ namespace mde.Context
 		public override long Download()
 		{
 			if( _request == null )
-				return 0;
+				return DataLength;
 
-			FileInfo fi = new FileInfo( Filename );
-			if( !fi.Directory.Exists )
-				fi.Directory.Create();
-			else if( fi.Exists )
-				if( fi.Length == DataLength )
-				{
-					Console.WriteLine( $"{VideoId}\t \t \tMedia downloaded" );
-					return DataLength;
-				}
-				else
-					fi.Delete();
 			try
 			{
 				for( int attempt = 0 ; attempt < 3 ; attempt++ )
 				{
 					try
 					{
-						Console.WriteLine( $"{VideoId}\t{Id}\t0\tRequest data stream" );
+						Console.WriteLine( $"{VideoId}\t{Id}\t0\tRequest {label} data stream" );
 						_response = (HttpWebResponse)_request.GetResponse();
 						if( _response != null )
 						{
@@ -262,25 +262,45 @@ namespace mde.Context
 		#region LOCAL METHODS
 		bool DownloadFromStream( Stream streamweb )
 		{
+			FileInfo fifilename = new FileInfo( Filename );
+
+			Console.WriteLine( $"{VideoId}\t{Id}\t0\tDownloading {label}" );
+			if( fifilename.Exists )
+			{
+				Console.WriteLine( $"\r{VideoId}\t{Id}\t{fifilename.Length}\tDownloading {label}" );
+				return true;
+			}
+
 			decimal total = 0;
-			int bytesRead;
+			int bytesRead = 0;
 			using( var tempFile = new TemporaryFile() )
 			{
 				using( FileStream fileStream = File.Create( tempFile.FilePath ) )
 				{
 					do
 					{
-						bytesRead = streamweb.Read( _buffer , 0 , _buffer.Length );
-						if( bytesRead > 0 )
-							fileStream.Write( _buffer , 0 , bytesRead );
+						try
+						{
+							bytesRead = streamweb.Read( _buffer , 0 , _buffer.Length );
+							if( bytesRead > 0 )
+								fileStream.Write( _buffer , 0 , bytesRead );
 
-						total += bytesRead;
-						if( bytesRead > 0 )
-							Console.Write( $"\r{VideoId}\t{Id}\t{bytesRead}\tDownloading" );
-
+							total += bytesRead;
+							if( bytesRead > 0 )
+								Console.Write( $"\r{VideoId}\t{Id}\t{bytesRead}\tDownloading {label} [{total / 1024:#,###,##0} Kb]" );
+						}
+						catch( Exception ex )
+						{
+							if( total != DataLength )
+								throw ex;
+							else
+								bytesRead = 0;
+						}
 					} while( bytesRead > 0 );
 				}
+
 				File.Move( tempFile.FilePath , Filename );
+
 				return true;
 			}
 		}
@@ -293,12 +313,13 @@ namespace mde.Context
 
 		public override bool Initialize()
 		{
+			label = "audio";
 			try
 			{
 				foreach( YouTubeVideo item in _videos )
 					if( item.AdaptiveKind == AdaptiveKind.Audio && item.AudioBitrate == BitRate && item.AudioFormat == Format )
 					{
-						Console.WriteLine( $"{VideoId}\t \t \tGet the media uri" );
+						Console.WriteLine( $"{VideoId}\t \t \tGet the {label} media uri" );
 						_uri = item.Uri;
 						return base.Initialize();
 					}
@@ -316,12 +337,13 @@ namespace mde.Context
 
 		public override bool Initialize()
 		{
+			label = "video";
 			try
 			{
 				foreach( YouTubeVideo item in _videos )
 					if( item.AdaptiveKind == AdaptiveKind.Video && item.Resolution == Resolution && item.Format == Format )
 					{
-						Console.WriteLine( $"{VideoId}\t \t \tGet the media uri" );
+						Console.WriteLine( $"{VideoId}\t \t \tGet the {label} media uri" );
 						_uri = item.Uri;
 						return base.Initialize();
 					}

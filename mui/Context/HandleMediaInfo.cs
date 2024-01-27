@@ -98,6 +98,15 @@ namespace mui.Context
 			}
 			return null;
 		}
+		internal void Remove( string name )
+		{
+			MediaInfo mi = this[name];
+
+			if( mi != null )
+			{
+				_Details.Remove( mi );
+			}
+		}
 		#endregion PUBLIC METHODS
 
 		#region SERIALIZATION
@@ -170,15 +179,6 @@ namespace mui.Context
 				return Deserialize( filename.Replace( ".xml" , ".bak" ) );
 			}
 			return Array.Empty<MediaInfo>();
-		}
-		internal void Remove( string name )
-		{
-			MediaInfo mi = this[name];
-
-			if( mi != null )
-			{
-				_Details.Remove( mi );
-			}
 		}
 		#endregion SERIALIZATION
 	}

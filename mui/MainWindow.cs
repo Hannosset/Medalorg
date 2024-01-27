@@ -756,10 +756,10 @@ namespace mui
 					if( lvi.Tag is MediaInfo.MediaData md && md.Type == AdaptiveKind.Audio )
 					{
 						string audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{md.Extension}").Replace( @"\\" , @"\" );
-						if( !CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ).ToLower().Contains( "{Author}" ) )
+						if( !CltWinEnv.AppReadSetting.GetData( "Configuration" , "Active Pathname").ToLower().Contains( "{author}" ) )
 							audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{md.Extension}").Replace( @"\\" , @"\" );
 
-						HandleDownload.UpdateWith( new Context.Protocol.DownloadAudio
+						HandleDownload.UpdateWith( new DownloadAudio
 						{
 							VideoId = mi.VideoId ,
 							DataLength = md.DataLength ,
@@ -773,10 +773,10 @@ namespace mui
 					else if( lvi.Tag is MediaInfo.VideoData vd )
 					{
 						string videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{vd.Extension}").Replace( @"\\" , @"\" );
-						if( !CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ).ToLower().Contains( "{Author}" ) )
+						if( !CltWinEnv.AppReadSetting.GetData( "Configuration" , "Active Pathname" ).ToLower().Contains( "{author}" ) )
 							videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{vd.Extension}").Replace( @"\\" , @"\" );
 
-						HandleDownload.UpdateWith( new Context.Protocol.DownloadVideo
+						HandleDownload.UpdateWith( new DownloadVideo
 						{
 							VideoId = mi.VideoId ,
 							DataLength = vd.DataLength ,
@@ -884,7 +884,7 @@ namespace mui
 				mi.ListItem.PDownloading = null;
 
 				//	Record the downloaded data.
-				foreach( Context.Protocol.WebDownload wd in mi.ListItem.webdownload.Details )
+				foreach( WebDownload wd in mi.ListItem.webdownload.Details )
 					if( File.Exists( wd.Filename ) )
 					{
 						wd.MediaData.Filename = wd.Filename;
@@ -898,45 +898,44 @@ namespace mui
 
 				bool needserialization = false;
 				//	Check if merge needs to be invoked
-				if( mi.ListItem.webdownload.VideoNeedsAudio && mi.ListItem.webdownload.HasAudio )
+				if( mi.ListItem.webdownload.VideoNeedsAudio && mi.ListItem.webdownload.HasAudio && !string.IsNullOrEmpty( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) ) )
 				{
-					if( !string.IsNullOrEmpty( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) ) )
+					foreach( WebDownload wd in mi.ListItem.webdownload.Details )
 					{
-						foreach( Context.Protocol.WebDownload wd in mi.ListItem.webdownload.Details )
+						if( wd is DownloadVideo downloadvideo && (wd.MediaData as MediaInfo.VideoData).BitRate < 1 )
 						{
-							if( File.Exists( wd.Filename ) && wd is Context.Protocol.DownloadVideo downloadvideo && (wd.MediaData as MediaInfo.VideoData).BitRate < 1 )
+							MediaInfo.VideoData vd = wd.MediaData as MediaInfo.VideoData;
+							downloadvideo.TargetFilename = downloadvideo.TargetFilename.Replace( "@-1." , $"@{mi.ListItem.webdownload.BestAudio.BitRate}." ).Replace( ".mpeg" , "" );
+
+							if( !File.Exists( downloadvideo.TargetFilename ) && File.Exists( wd.Filename ) )
 							{
-								MediaInfo.VideoData vd = wd.MediaData as MediaInfo.VideoData;
-								downloadvideo.TargetFilename = downloadvideo.TargetFilename.Replace( "@-1." , $"@{mi.ListItem.webdownload.BestAudio.BitRate}." ).Replace( ".mpeg" , "" );
+								string args = CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}\"" );
+								args = args.Replace( "{audio-file}" , mi.ListItem.webdownload.BestAudio.Filename );
+								args = args.Replace( "{video-file}" , wd.Filename );
+								args = args.Replace( "{media-file}" , downloadvideo.TargetFilename );
 
-								if( !File.Exists( downloadvideo.TargetFilename ) )
-								{
-									string args = CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg arguments" , "-v 0 -y -max_error_rate 0.0 -i \"{audio-file}\" -i \"{video-file}\" -preset veryfast \"{media-file}\"" );
-									args = args.Replace( "{audio-file}" , mi.ListItem.webdownload.BestAudio.Filename );
-									args = args.Replace( "{video-file}" , wd.Filename );
-									args = args.Replace( "{media-file}" , downloadvideo.TargetFilename );
-
-									mi.ListItem.Communication = "Merging audio and video";
-									Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
-
-									Execute exec = new Execute();
-									exec.Run( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) , args );
-
-									foreach( FileInfo fi in new FileInfo( downloadvideo.TargetFilename ).Directory.GetFiles( downloadvideo.TargetFilename.Replace( (wd.MediaData as MediaInfo.VideoData).Format.ToString().ToLower() , "*.srt" ) ) )
-										if( fi.Name.IndexOf( "@-1" ) > 0 && !File.Exists( fi.FullName.Replace( "@-1" , $"@{mi.ListItem.webdownload.BestAudio.BitRate}" ) ) )
-											fi.MoveTo( fi.FullName.Replace( "@-1" , $"@{mi.ListItem.webdownload.BestAudio.BitRate}" ) );
-
-								}
-								if( File.Exists( downloadvideo.TargetFilename ) )
-								{
-									mi.Add( downloadvideo.TargetFilename );
-									mi.ListItem.Communication = "Merging Successful";
-									needserialization = true;
-								}
-								else
-									mi.ListItem.Communication = "Error: Merging failed";
+								mi.ListItem.Communication = "Merging audio and video";
 								Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
+
+								Execute exec = new Execute();
+								exec.Run( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) , args );
+
 							}
+
+							foreach( FileInfo fi in new FileInfo( downloadvideo.TargetFilename ).Directory.GetFiles( "*.srt" ) )
+								if( fi.Name.IndexOf( "@-1" ) > 0 && !File.Exists( fi.FullName.Replace( "@-1" , $"@{mi.ListItem.webdownload.BestAudio.BitRate}" ) ) )
+									try { fi.MoveTo( fi.FullName.Replace( "@-1" , $"@{mi.ListItem.webdownload.BestAudio.BitRate}" ) ); } catch( Exception ) { }
+
+							if( File.Exists( downloadvideo.TargetFilename ) )
+							{
+								mi.Add( downloadvideo.TargetFilename );
+								mi.ListItem.Communication = "Merging Successful";
+								needserialization = true;
+								//	try { File.Delete( wd.Filename ); } catch( Exception ) { }
+							}
+							else
+								mi.ListItem.Communication = "Error: Merging failed";
+							Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
 						}
 					}
 				}
@@ -1079,10 +1078,10 @@ namespace mui
 						if( BestAudio != null )
 						{
 							string audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{BestAudio.Extension}").Replace( @"\\" , @"\" );
-							if( !CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ).ToLower().Contains( "{Author}" ) )
+							if( !CltWinEnv.AppReadSetting.GetData( "Configuration" , "Active Pathname" ).ToLower().Contains( "{author}" ) )
 								audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{BestAudio.Extension}").Replace( @"\\" , @"\" );
 
-							HandleDownload.UpdateWith( new Context.Protocol.DownloadAudio
+							HandleDownload.UpdateWith( new DownloadAudio
 							{
 								VideoId = mi.VideoId ,
 								DataLength = BestAudio.DataLength ,
@@ -1098,10 +1097,10 @@ namespace mui
 						if( BestVideo != null )
 						{
 							string videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{BestVideo.Extension}").Replace( @"\\" , @"\" );
-							if( !CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ).ToLower().Contains( "{Author}" ) )
+							if( !CltWinEnv.AppReadSetting.GetData( "Configuration" , "Active Pathname" ).ToLower().Contains( "{author}" ) )
 								videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{BestVideo.Extension}").Replace( @"\\" , @"\" );
 
-							HandleDownload.UpdateWith( new Context.Protocol.DownloadVideo
+							HandleDownload.UpdateWith( new DownloadVideo
 							{
 								VideoId = mi.VideoId ,
 								DataLength = BestVideo.DataLength ,
@@ -1168,6 +1167,11 @@ namespace mui
 
 					if( !keepon )
 						break;
+				}
+				for( int i = 0 ; keepon && i < 100 ; i++ )
+				{
+					Thread.Sleep( 100 );
+					keepon = OnCloseEvent.WaitOne( 1 ) == false;
 				}
 			}
 			e.Cancel = true;

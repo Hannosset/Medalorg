@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mui", "mui\mui.csproj", "{1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xnext", "xnext\xnext.csproj", "{2C2DB6E5-83E8-4BDE-BBD0-63F44265B80D}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{992B6184-9169-499F-A1D1-C4DE3F4ABDA0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,8 @@ Global
 		{2C2DB6E5-83E8-4BDE-BBD0-63F44265B80D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C2DB6E5-83E8-4BDE-BBD0-63F44265B80D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C2DB6E5-83E8-4BDE-BBD0-63F44265B80D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{992B6184-9169-499F-A1D1-C4DE3F4ABDA0}.Debug|Any CPU.ActiveCfg = Debug
+		{992B6184-9169-499F-A1D1-C4DE3F4ABDA0}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

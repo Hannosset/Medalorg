@@ -563,7 +563,7 @@ namespace mui
 		/// </summary>
 		private void InitSubtitles()
 		{
-			string subtitles = CltWinEnv.AppReadSetting.GetData( Name , "Subtitles" , "eng" );
+			string subtitles = CltWinEnv.AppReadSetting.GetData( Name , "Subtitles" , "en" );
 			Cursor crs = Cursor;
 			Cursor = Cursors.WaitCursor;
 			listView3.BeginUpdate();
