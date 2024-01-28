@@ -335,11 +335,16 @@ namespace mde.Context
 		[XmlAttribute] public int Resolution { get; set; }
 		[XmlAttribute] public VideoFormat Format { get; set; }
 
+		[XmlAttribute] public string TargetFilename { get; set; }
+
 		public override bool Initialize()
 		{
 			label = "video";
 			try
 			{
+				if( File.Exists( TargetFilename ) )
+					return false;
+
 				foreach( YouTubeVideo item in _videos )
 					if( item.AdaptiveKind == AdaptiveKind.Video && item.Resolution == Resolution && item.Format == Format )
 					{

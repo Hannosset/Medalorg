@@ -39,6 +39,6 @@ namespace mui.Context.Protocol
 		[XmlAttribute] public int Resolution { get; set; }
 		[XmlAttribute] public VideoFormat Format { get; set; }
 
-		[XmlIgnore] internal string TargetFilename { get; set; }
+		[XmlAttribute] public string TargetFilename { get; set; }
 	}
 }

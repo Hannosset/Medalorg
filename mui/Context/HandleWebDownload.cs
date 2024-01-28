@@ -61,7 +61,7 @@ namespace mui.Context
 			}
 		}
 		public int Attempt( int id  ) => id < _Attempts.Count ? _Attempts[id] : 0;
-		public decimal Progress => Math.Round( (_Downloaded / _Totalsize) * 100 , 2 , MidpointRounding.AwayFromZero );
+		public decimal Progress => _Totalsize > 0 ? Math.Round( (_Downloaded / _Totalsize) * 100 , 2 , MidpointRounding.AwayFromZero ) : 0;
 		internal string VideoId => _Details.Count > 0 ? _Details[0].VideoId : string.Empty;
 		/// <summary>
 		/// What: array of the download request

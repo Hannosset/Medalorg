@@ -241,7 +241,7 @@ namespace mui
 					//	Filter here the item to add
 					if( FilterDownloading )
 					{
-						if( mi.ListItem.PDownloading != null )
+						if( mi.ListItem.webdownload.Details.Length > 0 )
 							listView1.Items.Add( mi );
 					}
 					else if( FilterToDownload )
@@ -787,6 +787,7 @@ namespace mui
 							MediaData = vd
 						} );
 					}
+					RefreshView( mi.VideoId ); ; 
 				}
 				if( HandleDownload.VideoNeedsAudio && !HandleDownload.HasAudio )
 				{
@@ -808,6 +809,12 @@ namespace mui
 		private bool LaunchDownload( BackgroundWorker bgnd , MediaInfo mi , Context.HandleWebDownload webDownload )
 		{
 			bool ans = false;
+
+			if( mi.ListItem.webdownload.Details.Length == 0 )
+			{
+				mi.ListItem.webdownload = webDownload;
+				Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
+			}
 
 			//	Have we reached the number of allowed parallel download?
 			if( ParallelDownload.WaitOne( 100 ) )
@@ -898,7 +905,7 @@ namespace mui
 
 				bool needserialization = false;
 				//	Check if merge needs to be invoked
-				if( mi.ListItem.webdownload.VideoNeedsAudio && mi.ListItem.webdownload.HasAudio && !string.IsNullOrEmpty( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) ) )
+				if( mi.ListItem.webdownload.Details.Length > 0 && mi.ListItem.webdownload.VideoNeedsAudio && mi.ListItem.webdownload.HasAudio && !string.IsNullOrEmpty( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) ) )
 				{
 					foreach( WebDownload wd in mi.ListItem.webdownload.Details )
 					{
@@ -931,13 +938,15 @@ namespace mui
 								mi.Add( downloadvideo.TargetFilename );
 								mi.ListItem.Communication = "Merging Successful";
 								needserialization = true;
-								//	try { File.Delete( wd.Filename ); } catch( Exception ) { }
+								//	delete mpeg file
+								try { File.Delete( wd.Filename ); } catch( Exception ) { }
 							}
 							else
 								mi.ListItem.Communication = "Error: Merging failed";
-							Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
 						}
 					}
+
+					Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
 				}
 				else
 					needserialization = true;
@@ -1156,11 +1165,8 @@ namespace mui
 						//	The item is not currently downloading
 						if( mi.ListItem.PDownloading == null )
 							if( !LaunchDownload( sender as BackgroundWorker , mi , webDownload ) )
-								for( int i = 0 ; keepon && i < 100 ; i++ )
-								{
-									Thread.Sleep( 100 );
-									keepon = OnCloseEvent.WaitOne( 1 ) == false;
-								}
+								for( int i = 0 ; keepon && i < 10 ; i++ )
+									keepon = OnCloseEvent.WaitOne( 100 ) == false;
 					}
 					else
 						try { fi.Delete(); } catch( Exception ) { }
@@ -1168,11 +1174,8 @@ namespace mui
 					if( !keepon )
 						break;
 				}
-				for( int i = 0 ; keepon && i < 100 ; i++ )
-				{
-					Thread.Sleep( 100 );
-					keepon = OnCloseEvent.WaitOne( 1 ) == false;
-				}
+				for( int i = 0 ; keepon && i < 10 ; i++ )
+					keepon = OnCloseEvent.WaitOne( 100 ) == false;
 			}
 			e.Cancel = true;
 			OnCloseEvent.Set();

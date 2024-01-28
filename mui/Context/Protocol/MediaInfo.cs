@@ -170,9 +170,10 @@ namespace mui.Context.Protocol
 		{
 			MediaInfo mi = lvi.Tag as MediaInfo;
 
+			lvi.UseItemStyleForSubItems = true;
+
 			if( mi.ListItem.PDownloading != null )
 			{
-				lvi.ForeColor = Color.DarkOrange;
 				lvi.SubItems[2].Text = mi.ListItem.Communication;
 
 				if( mi.ListItem.webdownload != null && mi.ListItem.PDownloading != null )
@@ -198,6 +199,9 @@ namespace mui.Context.Protocol
 				lvi.SubItems[2].Text = mi.ListItem.Communication;
 				lvi.ForeColor = Color.DarkBlue;
 			}
+
+			if( mi.ListItem.webdownload.Details.Length != 0 && mi.ListItem.Communication.CompareTo( "Merging Successful" ) != 0 )
+				lvi.ForeColor = Color.DarkOrange;
 		}
 		internal void Add( string v )
 		{
