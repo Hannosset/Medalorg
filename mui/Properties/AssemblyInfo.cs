@@ -21,9 +21,10 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion( "1.0.*" )]
-[assembly: AssemblyFileVersion( "1.1.1" )]
+[assembly: AssemblyVersion( "1.2.*" )]
+[assembly: AssemblyFileVersion( "1.2" )]
 
 /*
- * 2024-01012:	V1.1	->	Allow to save the author, title, genre and style association independently.
+ * 2024-01-12:	V1.1	->	Allow to save the author, title, genre and style association independently.
+ * 2024-01-28:	v1.2	->	various cosmetic and end-user fixes
  */

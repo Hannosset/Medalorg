@@ -22,8 +22,9 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion( "1.1.*" )]
-[assembly: AssemblyFileVersion( "1.1" )]
+[assembly: AssemblyFileVersion( "1.1.1" )]
 
 /*
  * 2024-01012:	V1.1	->	set the number of attempts to 3
+ * 2023-01-28:	V1.1.1	->	specify what we are downloading and check if the video target exist before downloading
  */
