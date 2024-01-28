@@ -903,6 +903,7 @@ namespace mui
 				//	Update the UI: the list of audio and video of the selected media
 				Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
 
+				string communication = "Merging Successful";
 				bool needserialization = false;
 				//	Check if merge needs to be invoked
 				if( mi.ListItem.webdownload.Details.Length > 0 && mi.ListItem.webdownload.VideoNeedsAudio && mi.ListItem.webdownload.HasAudio && !string.IsNullOrEmpty( CltWinEnv.AppReadSetting.GetData( "Configuration" , "ffmpeg path" ) ) )
@@ -936,16 +937,16 @@ namespace mui
 							if( File.Exists( downloadvideo.TargetFilename ) )
 							{
 								mi.Add( downloadvideo.TargetFilename );
-								mi.ListItem.Communication = "Merging Successful";
 								needserialization = true;
 								//	delete mpeg file
 								try { File.Delete( wd.Filename ); } catch( Exception ) { }
 							}
 							else
-								mi.ListItem.Communication = "Error: Merging failed";
+								communication = "Error: Merging failed";
 						}
 					}
 
+					mi.ListItem.Communication = communication;
 					Invoke( (Action)delegate { RefreshView( mi.VideoId ); } );
 				}
 				else
