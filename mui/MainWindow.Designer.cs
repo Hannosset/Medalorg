@@ -77,9 +77,9 @@
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.radioButton2 = new System.Windows.Forms.RadioButton();
 			this.radioButton1 = new System.Windows.Forms.RadioButton();
+			this.button3 = new System.Windows.Forms.Button();
 			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			this.button1 = new System.Windows.Forms.Button();
-			this.button3 = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
 			this.toolStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -170,7 +170,7 @@
 			// 
 			// clipboardMonitor1
 			// 
-			this.clipboardMonitor1.BackColor = System.Drawing.SystemColors.Control;
+			this.clipboardMonitor1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
 			this.clipboardMonitor1.Location = new System.Drawing.Point(110, 28);
 			this.clipboardMonitor1.Name = "clipboardMonitor1";
 			this.clipboardMonitor1.Size = new System.Drawing.Size(75, 23);
@@ -633,6 +633,19 @@
 			this.radioButton1.UseVisualStyleBackColor = true;
 			this.radioButton1.CheckedChanged += new System.EventHandler(this.OnAudioGenre);
 			// 
+			// button3
+			// 
+			this.button3.Dock = System.Windows.Forms.DockStyle.Right;
+			this.button3.ImageIndex = 4;
+			this.button3.ImageList = this.imageList1;
+			this.button3.Location = new System.Drawing.Point(389, 3);
+			this.button3.Name = "button3";
+			this.button3.Size = new System.Drawing.Size(40, 24);
+			this.button3.TabIndex = 11;
+			this.toolTip1.SetToolTip(this.button3, "Save the author, title, genre and style selection.\r\n");
+			this.button3.UseVisualStyleBackColor = true;
+			this.button3.Click += new System.EventHandler(this.OnSaveMediaParam);
+			// 
 			// backgroundWorker1
 			// 
 			this.backgroundWorker1.WorkerReportsProgress = true;
@@ -653,19 +666,6 @@
 			this.button1.TabIndex = 2;
 			this.button1.UseVisualStyleBackColor = true;
 			this.button1.Click += new System.EventHandler(this.OnAddWebVideo);
-			// 
-			// button3
-			// 
-			this.button3.Dock = System.Windows.Forms.DockStyle.Right;
-			this.button3.ImageIndex = 4;
-			this.button3.ImageList = this.imageList1;
-			this.button3.Location = new System.Drawing.Point(389, 3);
-			this.button3.Name = "button3";
-			this.button3.Size = new System.Drawing.Size(40, 24);
-			this.button3.TabIndex = 11;
-			this.toolTip1.SetToolTip(this.button3, "Save the author, title, genre and style selection.\r\n");
-			this.button3.UseVisualStyleBackColor = true;
-			this.button3.Click += new System.EventHandler(this.OnSaveMediaParam);
 			// 
 			// MainWindow
 			// 

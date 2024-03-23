@@ -168,6 +168,9 @@ namespace mui.Context
 			try
 			{
 				LogTrace.Label( filename );
+				if( !File.Exists( filename ) )
+					filename = filename.Replace( ".xml" , ".bak" );
+
 				if( File.Exists( filename ) )
 					using( FileStream fs = new FileStream( filename , FileMode.Open , FileAccess.Read , FileShare.Read ) )
 					using( XmlReader reader = XmlReader.Create( fs , new XmlReaderSettings() { XmlResolver = null } ) )

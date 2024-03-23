@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
 
-using xnext.Context;
 using xnext.Diagnostics;
 
 namespace mui.Context.Protocol
@@ -289,23 +288,39 @@ namespace mui.Context.Protocol
 		/// </summary>
 		/// <param name="best"></param>
 		/// <returns></returns>
-		public VideoData BestVideo( int maxres = 0 , int minres = 0 )
+		public VideoData BestVideo( int maxres = 0 , int minres = 0 , bool onlyGoodVideo = true )
 		{
-			VideoData BestVideo = null;
+			VideoData bestVideo = null;
 
 			foreach( MediaData md in Details )
 			{
 				VideoData vd = md as VideoData;
 				if( md.Type == AdaptiveKind.Video )
 				{
-					if( BestVideo == null && maxres == 0 )
-						return vd;
-					else if( maxres >= vd.Resolution && vd.Resolution <= minres )
-						if( BestVideo == null || BestVideo.Resolution < vd.Resolution )
-							BestVideo = vd;
+					if( onlyGoodVideo )
+					{
+						if( vd.BitRate > 0 )
+							if( bestVideo == null || vd.Resolution > bestVideo.Resolution )
+								bestVideo = vd;
+					}
+					else
+					{
+						if( bestVideo == null )
+						{
+							if( maxres >= vd.Resolution && vd.Resolution >= minres )
+								bestVideo = vd;
+						}
+						else if( vd.Resolution <= maxres && vd.Resolution >= minres && vd.Resolution > bestVideo.Resolution )
+							bestVideo = vd;
+					}
 				}
 			}
-			return BestVideo;
+			if( maxres == 0 && bestVideo == null )
+				if( onlyGoodVideo == false )
+					return BestVideo( 0 , 0 , true );
+				else
+					return Details[0] as VideoData;
+			return bestVideo;
 		}
 		/// <summary>
 		/// What: 
@@ -322,7 +337,7 @@ namespace mui.Context.Protocol
 				if( md.Type == AdaptiveKind.Audio && md is AudioData ad )
 				{
 					if( BestAudio == null )
-						return ad;
+						BestAudio = ad;
 					else if( best )
 					{
 						if( BestAudio.BitRate < ad.BitRate )
@@ -372,12 +387,15 @@ namespace mui.Context.Protocol
 
 			at = fname.IndexOf( "Performed" );
 			if( at != -1 )
-					fname = fname.Substring( 0 , at - 1 );
+				fname = fname.Substring( 0 , at - 1 );
 
 			foreach( string s in Handle2Skip.Info.Details )
 				if( fname.Contains( s ) )
 					fname = fname.Replace( s , "" ).Trim();
 
+			at = System.Text.ASCIIEncoding.ASCII.GetString( System.Text.ASCIIEncoding.ASCII.GetBytes( fname ) ).IndexOf( "??" );
+			if( at != -1 )
+				fname = fname.Substring( 0 , at );
 			return fname.Trim();
 		}
 		/// <summary>

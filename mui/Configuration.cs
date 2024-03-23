@@ -46,7 +46,8 @@ namespace mui
 				checkBox1.Checked = CltWinEnv.AppReadSetting.GetData( Name , "Default Audio" , true );
 				checkBox2.Checked = CltWinEnv.AppReadSetting.GetData( Name , "Default Best Video" , true );
 				checkBox3.Checked = CltWinEnv.AppReadSetting.GetData( Name , "Default Good Video" , true );
-				checkBox3.Text = $"Video quality between [{CltWinEnv.AppSetting.GetData( Name , "Range Good Video" , "1080,480")}]";
+				textBox6.Text = CltWinEnv.AppSetting.GetData( Name , "Good Video res" , "1080" );
+				checkBox3.Text = $"Video quality up to {CltWinEnv.AppSetting.GetData( Name , "Good Video res" , "1080")}]";
 
 				numericUpDown1.Value = CltWinEnv.AppReadSetting.GetData( Name , "# parallel download" , 5 );
 
@@ -90,7 +91,7 @@ namespace mui
 			CltWinEnv.AppSetting.SetData( Name , "Default Audio" , checkBox1.Checked );
 			CltWinEnv.AppSetting.SetData( Name , "Default Best Video" , checkBox2.Checked );
 			CltWinEnv.AppSetting.SetData( Name , "Default Good Video" , checkBox3.Checked );
-			;
+			CltWinEnv.AppSetting.SetData( Name , "Good Video res" , textBox6.Text );
 
 			CltWinEnv.AppSetting.SetData( Name , "# parallel download" , numericUpDown1.Value );
 

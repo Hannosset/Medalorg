@@ -79,6 +79,7 @@
 			this.label6 = new System.Windows.Forms.Label();
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			this.textBox6 = new System.Windows.Forms.TextBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
@@ -471,6 +472,7 @@
 			// 
 			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox3.Controls.Add(this.textBox6);
 			this.groupBox3.Controls.Add(this.checkBox3);
 			this.groupBox3.Controls.Add(this.checkBox2);
 			this.groupBox3.Controls.Add(this.checkBox1);
@@ -484,13 +486,13 @@
 			// checkBox3
 			// 
 			this.checkBox3.AutoSize = true;
-			this.checkBox3.Location = new System.Drawing.Point(253, 19);
+			this.checkBox3.Location = new System.Drawing.Point(329, 19);
 			this.checkBox3.Name = "checkBox3";
 			this.checkBox3.Size = new System.Drawing.Size(140, 17);
 			this.checkBox3.TabIndex = 0;
 			this.checkBox3.Text = "Video quality up to 1080";
-			this.toolTip1.SetToolTip(this.checkBox3, "Choose the best video up to 1080.\r\nIf none are selected, then the default will be" +
-        " the first\r\nvideo available from the list\r\n");
+			this.toolTip1.SetToolTip(this.checkBox3, "Choose the best video with sounds.\r\nIf none are selected, then the default will b" +
+        "e the highest\r\nvideo quality.\r\n");
 			this.checkBox3.UseVisualStyleBackColor = true;
 			this.checkBox3.Click += new System.EventHandler(this.OnAutoVideo3);
 			// 
@@ -499,9 +501,9 @@
 			this.checkBox2.AutoSize = true;
 			this.checkBox2.Location = new System.Drawing.Point(122, 19);
 			this.checkBox2.Name = "checkBox2";
-			this.checkBox2.Size = new System.Drawing.Size(125, 17);
+			this.checkBox2.Size = new System.Drawing.Size(152, 17);
 			this.checkBox2.TabIndex = 0;
-			this.checkBox2.Text = "Highest Video quality";
+			this.checkBox2.Text = "Highest Video quality up to";
 			this.toolTip1.SetToolTip(this.checkBox2, resources.GetString("checkBox2.ToolTip"));
 			this.checkBox2.UseVisualStyleBackColor = true;
 			this.checkBox2.Click += new System.EventHandler(this.OnAutoVideo2);
@@ -662,6 +664,15 @@
 			this.linkLabel1.Text = "Download the latest ffmpeg";
 			this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnLinkClicked);
 			// 
+			// textBox6
+			// 
+			this.textBox6.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textBox6.Location = new System.Drawing.Point(271, 21);
+			this.textBox6.Name = "textBox6";
+			this.textBox6.Size = new System.Drawing.Size(47, 13);
+			this.textBox6.TabIndex = 1;
+			this.textBox6.Text = "1080";
+			// 
 			// Configuration
 			// 
 			this.AcceptButton = this.button2;
@@ -758,5 +769,6 @@
 		private System.Windows.Forms.CheckBox checkBox3;
 		private System.Windows.Forms.GroupBox groupBox4;
 		internal System.Windows.Forms.NumericUpDown numericUpDown1;
+		private System.Windows.Forms.TextBox textBox6;
 	}
 }

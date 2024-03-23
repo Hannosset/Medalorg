@@ -310,6 +310,8 @@ namespace mui
 
 				MediaInfo mi = listView1.SelectedItems[0].Tag as MediaInfo;
 
+
+				bool HasSelection = false;
 				foreach( MediaInfo.MediaData md in mi.Details )
 				{
 					ListViewItem lvi = new ListViewItem( md.ToString() );
@@ -320,12 +322,45 @@ namespace mui
 					{
 						lvi.ForeColor = Color.Gray;
 						lvi.Font = StrikeoutFont;
+						HasSelection = true;
 					}
 
 					if( mi.ListItem.webdownload != null && mi.ListItem.webdownload[md.DataLength] != null )
+					{
 						lvi.Checked = true;
+						HasSelection = true;
+					}
 
 					listView3.Items.Add( lvi );
+				}
+
+				//	Set up the pre-selection based on the configuration settings
+				if( !HasSelection  )
+				{
+					string[] range = CltWinEnv.AppSetting.GetData( "Configuration" , "Range Good Video" ).Split( ',' );
+					int maxres = 1000;
+					if( CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Best Video" , false ) )
+						maxres = CltWinEnv.AppSetting.GetData( "Configuration" , "Good Video res" , 1080 );
+					int minres = 360;
+					if( CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Good Video" , true ) )
+					{
+						if( range.Length > 0 )
+							int.TryParse( range[0] , out maxres );
+						if( range.Length > 1 )
+							int.TryParse( range[1] , out minres );
+					}
+					MediaInfo.AudioData BestAudio = mi.BestAudio( CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Audio" , true ) );
+					MediaInfo.VideoData BestVideo = mi.BestVideo( maxres , minres , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Good Video" , true ) );
+
+					foreach( ListViewItem lvi in listView3.Items )
+					{
+						MediaInfo.MediaData md = lvi.Tag as MediaInfo.MediaData;
+
+						if( md.Type == AdaptiveKind.Audio && md.DataLength == BestAudio.DataLength )
+							lvi.Checked = true;
+						if( md.Type == AdaptiveKind.Video && md.DataLength == BestVideo.DataLength )
+							lvi.Checked = true;
+					}
 				}
 				if( textBox3.Text.CompareTo( mi.Author ) == 0 )
 					UpdateTargetPath();
@@ -673,9 +708,9 @@ namespace mui
 
 			if( listView3.SelectedItems.Count > 0 )
 				if( (listView3.SelectedItems[0].ImageIndex & 0x01) == 0x01 )
-					tmp = tmp.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyMusic ) ) );
+					tmp = tmp.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Audio {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyMusic ) ) );
 				else
-					tmp = tmp.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyVideos ) ) );
+					tmp = tmp.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Video {Root}" , Environment.GetFolderPath( Environment.SpecialFolder.MyVideos ) ) );
 
 			textBox4.Text = tmp.Replace( @"\\" , @"\" );
 		}
@@ -755,9 +790,9 @@ namespace mui
 				{
 					if( lvi.Tag is MediaInfo.MediaData md && md.Type == AdaptiveKind.Audio )
 					{
-						string audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{md.Extension}").Replace( @"\\" , @"\" );
+						string audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Audio {Root}" ) ) + $@"\{mi.Title}{md.Extension}").Replace( @"\\" , @"\" );
 						if( !CltWinEnv.AppReadSetting.GetData( "Configuration" , "Active Pathname").ToLower().Contains( "{author}" ) )
-							audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{md.Extension}").Replace( @"\\" , @"\" );
+							audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Audio {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{md.Extension}").Replace( @"\\" , @"\" );
 
 						HandleDownload.UpdateWith( new DownloadAudio
 						{
@@ -772,9 +807,9 @@ namespace mui
 					}
 					else if( lvi.Tag is MediaInfo.VideoData vd )
 					{
-						string videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{vd.Extension}").Replace( @"\\" , @"\" );
+						string videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Video {Root}" ) ) + $@"\{mi.Title}{vd.Extension}").Replace( @"\\" , @"\" );
 						if( !CltWinEnv.AppReadSetting.GetData( "Configuration" , "Active Pathname" ).ToLower().Contains( "{author}" ) )
-							videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{vd.Extension}").Replace( @"\\" , @"\" );
+							videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Video {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{vd.Extension}").Replace( @"\\" , @"\" );
 
 						HandleDownload.UpdateWith( new DownloadVideo
 						{
@@ -980,13 +1015,39 @@ namespace mui
 		}
 		private void gotoAudioFile( object sender , EventArgs e )
 		{
-			if( listView1.SelectedItems.Count > 0 && Directory.Exists( RelativeTargetPath().Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) ) )
-				Process.Start( RelativeTargetPath().Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) );
+			if( listView1.SelectedItems.Count > 0  )
+			{
+				MediaInfo mi = listView1.SelectedItems[0].Tag as MediaInfo;
+				foreach( MediaInfo.MediaData md in mi.Details )
+					if( md.Type == AdaptiveKind.Audio && !string.IsNullOrEmpty( md.Filename ) )
+					{
+						Process.Start( Path.GetDirectoryName( md.Filename ) );
+						return;
+					}
+				Process.Start( RelativeTargetPath().Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Audio {Root}" ) ) );
+			}
 		}
 		private void GotoVideoFile( object sender , EventArgs e )
 		{
-			if( listView1.SelectedItems.Count > 0 && Directory.Exists( RelativeTargetPath().Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) ) )
-				Process.Start( RelativeTargetPath().Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) );
+			if( listView1.SelectedItems.Count > 0 && Directory.Exists( RelativeTargetPath().Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Video {Root}" ) ) ) )
+			{
+				MediaInfo mi = listView1.SelectedItems[0].Tag as MediaInfo;
+				if( mi.MovieFilenames.Length > 0 )
+				{
+					Process.Start( Path.GetDirectoryName( mi.MovieFilenames[0] ) );
+					return;
+				}
+				else
+				{
+					foreach( MediaInfo.MediaData md in mi.Details )
+						if( md.Type == AdaptiveKind.Video && !string.IsNullOrEmpty( md.Filename ) )
+						{
+							Process.Start( Path.GetDirectoryName( md.Filename ) );
+							return;
+						}
+				}
+				Process.Start( RelativeTargetPath().Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Video {Root}" ) ) );
+			}
 		}
 		private void OnBatchDownload( object sender , EventArgs e )
 		{
@@ -1065,9 +1126,11 @@ namespace mui
 			{
 				string filename = RelativeTargetPath();
 
-				string[] range = CltWinEnv.AppSetting.GetData( Name , "Range Good Video" ).Split( ',' );
-				int maxres = CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Best Video" , false ) ? 10000 : 0;
-				int minres = 0;
+				string[] range = CltWinEnv.AppSetting.GetData( "Configuration" , "Range Good Video" ).Split( ',' );
+				int maxres = 1000;
+				if( CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Best Video" , false ) )
+					maxres = CltWinEnv.AppSetting.GetData( "Configuration" , "Good Video res" , 1080 );
+				int minres = 360;
 				if( CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Good Video" , true ) )
 				{
 					if( range.Length > 0 )
@@ -1087,9 +1150,9 @@ namespace mui
 						MediaInfo.AudioData BestAudio = mi.BestAudio( CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Audio" , true ) );
 						if( BestAudio != null )
 						{
-							string audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Title}{BestAudio.Extension}").Replace( @"\\" , @"\" );
+							string audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Audio {Root}" ) ) + $@"\{mi.Title}{BestAudio.Extension}").Replace( @"\\" , @"\" );
 							if( !CltWinEnv.AppReadSetting.GetData( "Configuration" , "Active Pathname" ).ToLower().Contains( "{author}" ) )
-								audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Audio {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{BestAudio.Extension}").Replace( @"\\" , @"\" );
+								audiofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Audio {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{BestAudio.Extension}").Replace( @"\\" , @"\" );
 
 							HandleDownload.UpdateWith( new DownloadAudio
 							{
@@ -1103,12 +1166,12 @@ namespace mui
 							} );
 						}
 
-						MediaInfo.VideoData BestVideo = mi.BestVideo( maxres , minres );
+						MediaInfo.VideoData BestVideo = mi.BestVideo( maxres , minres , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Default Good Video" , true ) );
 						if( BestVideo != null )
 						{
-							string videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Title}{BestVideo.Extension}").Replace( @"\\" , @"\" );
+							string videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Video {Root}" ) ) + $@"\{mi.Title}{BestVideo.Extension}").Replace( @"\\" , @"\" );
 							if( !CltWinEnv.AppReadSetting.GetData( "Configuration" , "Active Pathname" ).ToLower().Contains( "{author}" ) )
-								videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( Name , "Video {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{BestVideo.Extension}").Replace( @"\\" , @"\" );
+								videofname = (filename.Replace( "{ROOT}" , CltWinEnv.AppReadSetting.GetData( "Configuration" , "Video {Root}" ) ) + $@"\{mi.Author} - {mi.Title}{BestVideo.Extension}").Replace( @"\\" , @"\" );
 
 							HandleDownload.UpdateWith( new DownloadVideo
 							{
